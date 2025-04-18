@@ -1,5 +1,5 @@
 import { createReadStream } from 'fs';
-import { writeFile, readdir } from 'fs/promises';
+import { writeFile, readdir, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'csv-parse/sync';
@@ -423,11 +423,22 @@ async function main() {
     const zipPath = await findLatestLinkedInExport();
     console.log(`📦 Reading LinkedIn export from: ${zipPath}`);
     
+    // Extract date from filename
+    const dateMatch = zipPath.match(/(\d{2}-\d{2}-\d{4})\.zip$/);
+    if (!dateMatch) {
+      throw new Error('Could not extract date from LinkedIn export filename');
+    }
+    const exportDate = dateMatch[1];
+    
     const linkedInData = await extractLinkedInData(zipPath);
     const jsonResume = convertToJsonResume(linkedInData);
     
-    // Write the JSON Resume to a file
-    const outputPath = join(__dirname, '../resume.json');
+    // Create resume directory if it doesn't exist
+    const resumeDir = join(__dirname, '../resume');
+    await mkdir(resumeDir, { recursive: true });
+    
+    // Write the JSON Resume to a file with the date
+    const outputPath = join(resumeDir, `resume-${exportDate}.json`);
     await writeFile(
       outputPath,
       JSON.stringify(jsonResume, null, 2)
