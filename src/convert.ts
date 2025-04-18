@@ -80,6 +80,52 @@ interface LinkedInData {
   Courses?: Course[];
 }
 
+interface PositionRecord {
+  'Company Name': string;
+  Title: string;
+  Description: string;
+  'Started On': string;
+  'Finished On': string;
+}
+
+interface EducationRecord {
+  'School Name': string;
+  'Field of Study': string;
+  'Degree Name': string;
+  'Start Date': string;
+  'End Date': string;
+}
+
+interface SkillRecord {
+  Name: string;
+}
+
+interface LanguageRecord {
+  Language: string;
+}
+
+interface ProjectRecord {
+  'Project Name': string;
+  Description: string;
+  'Started On': string;
+  'Finished On': string;
+  Url: string;
+}
+
+interface CertificationRecord {
+  Name: string;
+  Url: string;
+  Authority: string;
+  'Started On': string;
+  'Finished On': string;
+  'License Number': string;
+}
+
+interface CourseRecord {
+  Name: string;
+  Number: string;
+}
+
 interface JsonResume {
   basics: {
     name: string;
@@ -146,6 +192,13 @@ interface JsonResume {
     url: string;
     issuer: string;
   }>;
+  meta: {
+    training: Array<{
+      name: string;
+      institution: string;
+      number: string;
+    }>;
+  };
 }
 
 function convertToJsonResume(data: LinkedInData): JsonResume {
@@ -189,16 +242,6 @@ function convertToJsonResume(data: LinkedInData): JsonResume {
         endDate: edu.FinishedOn || '',
         gpa: '',
         courses: []
-      })) || []),
-      // Training courses
-      ...(data.Courses?.map(course => ({
-        institution: course.Name.split(' by ')[1]?.split(',')[0]?.trim() || '',
-        area: course.Name.split(' by ')[0]?.trim() || '',
-        studyType: 'Training',
-        startDate: '',
-        endDate: '',
-        gpa: '',
-        courses: []
       })) || [])
     ],
     skills: data.Skills?.map(skill => ({
@@ -227,7 +270,14 @@ function convertToJsonResume(data: LinkedInData): JsonResume {
       date: cert.FinishedOn || '',
       url: cert.Url || '',
       issuer: cert.Authority || ''
-    })) || []
+    })) || [],
+    meta: {
+      training: data.Courses?.map(course => ({
+        name: course.Name.split(' by ')[0]?.trim() || '',
+        institution: course.Name.split(' by ')[1]?.split(',')[0]?.trim() || '',
+        number: course.Number || ''
+      })) || []
+    }
   };
 }
 
@@ -300,7 +350,7 @@ async function extractLinkedInData(zipPath: string): Promise<LinkedInData> {
                     ZipCode: ''
                   };
                 } else if (entry.fileName === 'Positions.csv') {
-                  data.Positions = records.map(record => ({
+                  data.Positions = records.map((record: PositionRecord) => ({
                     CompanyName: record['Company Name'],
                     Title: record.Title,
                     Description: record.Description,
@@ -308,7 +358,7 @@ async function extractLinkedInData(zipPath: string): Promise<LinkedInData> {
                     FinishedOn: record['Finished On']
                   }));
                 } else if (entry.fileName === 'Education.csv') {
-                  data.Education = records.map(record => ({
+                  data.Education = records.map((record: EducationRecord) => ({
                     SchoolName: record['School Name'],
                     FieldOfStudy: record['Field of Study'],
                     Degree: record['Degree Name'],
@@ -316,15 +366,15 @@ async function extractLinkedInData(zipPath: string): Promise<LinkedInData> {
                     FinishedOn: record['End Date']
                   }));
                 } else if (entry.fileName === 'Skills.csv') {
-                  data.Skills = records.map(record => ({
+                  data.Skills = records.map((record: SkillRecord) => ({
                     Name: record.Name
                   }));
                 } else if (entry.fileName === 'Languages.csv') {
-                  data.Languages = records.map(record => ({
+                  data.Languages = records.map((record: LanguageRecord) => ({
                     Name: record.Language
                   }));
                 } else if (entry.fileName === 'Projects.csv') {
-                  data.Projects = records.map(record => ({
+                  data.Projects = records.map((record: ProjectRecord) => ({
                     Name: record['Project Name'],
                     Description: record.Description,
                     StartedOn: record['Started On'],
@@ -332,7 +382,7 @@ async function extractLinkedInData(zipPath: string): Promise<LinkedInData> {
                     Url: record.Url
                   }));
                 } else if (entry.fileName === 'Certifications.csv') {
-                  data.Certifications = records.map(record => ({
+                  data.Certifications = records.map((record: CertificationRecord) => ({
                     Name: record.Name,
                     Url: record.Url,
                     Authority: record.Authority,
@@ -341,7 +391,7 @@ async function extractLinkedInData(zipPath: string): Promise<LinkedInData> {
                     LicenseNumber: record['License Number']
                   }));
                 } else if (entry.fileName === 'Courses.csv') {
-                  data.Courses = records.map(record => ({
+                  data.Courses = records.map((record: CourseRecord) => ({
                     Name: record.Name,
                     Number: record.Number
                   }));
