@@ -34,7 +34,12 @@ npm install
 
 2. Place the downloaded ZIP file in the `linkedin-export` directory
 
-3. Run the conversion:
+3. Build the project:
+```bash
+npm run build
+```
+
+4. Run the conversion:
 ```bash
 npm run convert
 ```
