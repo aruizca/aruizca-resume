@@ -66,3 +66,37 @@ The script will:
 ## License
 
 MIT 
+
+# Resume AI Builder (CLI)
+
+A local-first, CLI-based resume generator that takes a LinkedIn export ZIP, extracts relevant data, and produces:
+- `resume.json` (JSON Resume format)
+- `resume.html` (rendered with jsonresume-theme-even)
+- `resume.pdf` (PDF export)
+
+## Usage
+
+```sh
+npm run build
+npm start [path/to/linkedin-export/extracted]
+```
+- If no path is provided, defaults to `linkedin-export/extracted`.
+- Outputs are written to the `output/` directory.
+
+## Architecture
+
+- **src/app/GenerateResume.ts**: Orchestrates the pipeline
+- **src/domain/model/Resume.ts**: Resume entity (JSON Resume schema)
+- **src/domain/services/ResumeBuilder.ts**: Resume construction logic
+- **src/infrastructure/parsers/LinkedInParser.ts**: LinkedIn CSV/HTML extraction
+- **src/infrastructure/langchain/PromptRunner.ts**: LLM prompt runner (LangChain/OpenAI)
+- **src/adapters/output/HtmlRenderer.ts**: HTML rendering (jsonresume-theme-even)
+- **src/adapters/output/PdfExporter.ts**: HTML-to-PDF export
+- **src/main.ts**: CLI entrypoint
+
+## Roadmap
+- Integrate LangChain.js + OpenAI for structured resume generation
+- Improve theme rendering and PDF export
+- Add UI and cover letter support (future)
+
+--- 

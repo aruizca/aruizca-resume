@@ -1,24 +1,15 @@
 {
-  "name": "aruizca-resume",
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/convert.ts --bundle --outfile=dist/convert.js --platform=node --target=node20 --format=esm --sourcemap --external:yauzl --external:csv-parse",
-    "convert": "node dist/convert.js",
-    "start": "npm run build && npm run convert"
+    "build": "esbuild src/main.ts --bundle --platform=node --format=esm --outfile=dist/main.js",
+    "start": "npm run build && node dist/main.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "yauzl": "^2.10.0"
+    "jsonresume-theme-even": "^0.23.0",
+    "papaparse": "^5.5.3",
+    "puppeteer": "^24.12.1"
   },
   "devDependencies": {
-    "@types/node": "^22.14.1",
-    "@types/yauzl": "^2.10.3",
-    "csv-parse": "^5.5.3",
-    "esbuild": "^0.20.1",
-    "typescript": "^5.3.3"
+    "@types/papaparse": "^5.3.16"
   }
 }
