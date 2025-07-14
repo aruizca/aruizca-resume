@@ -1,3 +1,10 @@
 Convert the following LinkedIn data to a JSON Resume (https://jsonresume.org/schema):
 
+- For the "skills" section, categorize and order the skills as follows:
+  1. Soft skills (e.g., communication, teamwork, adaptability, etc.)
+  2. Management skills (e.g., leadership, project management, mentoring, etc.)
+  3. Technical skills (e.g., programming languages, frameworks, tools, etc.)
+- List soft and management skills first, then technical skills.
+- If a skill could fit in more than one category, use your best judgment.
+
 {{linkedinData}} 

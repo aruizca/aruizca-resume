@@ -19,15 +19,19 @@ export class GenerateResume {
     const llmResumeData = await this.promptRunner.run(parsedData);
     // 3. Build JSON Resume
     const resume = this.resumeBuilder.build(llmResumeData);
+    // Get current date in -yyyymmdd format
+    const now = new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const dateStr = `-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
     // 4. Write resume.json
-    const jsonPath = join(outputDir, 'resume.json');
+    const jsonPath = join(outputDir, `resume${dateStr}.json`);
     await writeFile(jsonPath, JSON.stringify(resume, null, 2));
     // 5. Render HTML
     const html = await this.htmlRenderer.render(resume);
-    const htmlPath = join(outputDir, 'resume.html');
+    const htmlPath = join(outputDir, `resume${dateStr}.html`);
     await writeFile(htmlPath, html);
     // 6. Export PDF
-    const pdfPath = join(outputDir, 'resume.pdf');
+    const pdfPath = join(outputDir, `resume${dateStr}.pdf`);
     await this.pdfExporter.export(html, pdfPath);
     return { jsonPath, htmlPath, pdfPath };
   }

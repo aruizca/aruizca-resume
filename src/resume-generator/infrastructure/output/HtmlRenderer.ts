@@ -1,8 +1,9 @@
-import { Resume } from '../../domain/model/Resume.js';
+import { Resume } from '../../domain/model/Resume';
+import * as theme from 'jsonresume-theme-even';
 
 export class HtmlRenderer {
   async render(resume: Resume): Promise<string> {
-    // TODO: Use jsonresume-theme-even-crewshin to render real HTML
-    return `<html><body><pre>${JSON.stringify(resume, null, 2)}</pre></body></html>`;
+    // Use the jsonresume-theme-even package to render HTML
+    return theme.render(resume as any);
   }
 } 
