@@ -1,11 +1,15 @@
-import { GenerateResume } from './resume-generator/index';
+import { GenerateResume, LinkedInExportFinder } from './resume-generator/index';
 import { join } from 'path';
 
 async function main() {
-  const extractedDir = process.argv[2] || join(process.cwd(), 'linkedin-export', 'extracted');
+  const linkedInExportFinder = new LinkedInExportFinder();
   const outputDir = join(process.cwd(), 'output');
   const generator = new GenerateResume();
+  
   try {
+    // Use command line argument if provided, otherwise find newest export
+    const extractedDir = process.argv[2] || await linkedInExportFinder.findNewestExport();
+    
     const { jsonPath, htmlPath, pdfPath } = await generator.run(extractedDir, outputDir);
     console.log('✅ Resume generated!');
     console.log('JSON:', jsonPath);

@@ -30,6 +30,11 @@
 - Issue: Not fully integrated with actual LinkedIn export structure
 - Next: Implement proper CSV parsing for Profile.csv, Positions.csv, Education.csv, Skills.csv
 
+**LinkedIn Export Auto-Detection**
+- Status: ✅ Implemented
+- Feature: Automatically finds newest LinkedIn export in `linkedin-export/` folder
+- Usage: `npm start` (default) or `npm start /custom/path` (override)
+
 ## Open Threads
 1. **PDF Export**: Placeholder implementation needs real Puppeteer/Playwright integration
 2. **LinkedIn Data Structure**: Need to analyze actual LinkedIn export format
@@ -41,6 +46,7 @@
 - **File Naming**: Added date stamps to output files for versioning
 - **API Parameters**: Updated to use `max_completion_tokens` instead of deprecated `max_tokens`
 - **Prompt Engineering**: Added instructions for skill categorization and work entry summarization
+- **LinkedIn Export**: Auto-detection of newest export file with fallback to command line argument
 
 ## Next Steps (Priority Order)
 1. **Step 4**: PDF Export Implementation

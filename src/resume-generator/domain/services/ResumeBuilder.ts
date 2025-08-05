@@ -1,4 +1,4 @@
-import { Resume } from '../model/Resume.js';
+import { Resume } from '../model/Resume';
 
 export class ResumeBuilder {
   build(data: any): Resume {

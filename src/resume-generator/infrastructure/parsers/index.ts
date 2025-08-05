@@ -1,1 +1,1 @@
-export * from './LinkedInParser.js'; 
+export * from './LinkedInParser'; 

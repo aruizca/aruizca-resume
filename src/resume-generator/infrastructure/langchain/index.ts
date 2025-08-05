@@ -1,1 +1,1 @@
-export * from './PromptRunner.js'; 
+export * from './PromptRunner'; 

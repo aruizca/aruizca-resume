@@ -7,6 +7,7 @@
 - **Build System**: TypeScript + esbuild with ESM modules
 - **CLI Entry Point**: `main.ts` properly configured and working
 - **Context Module**: `resume-generator/` organization with clean imports
+- **LinkedIn Export Auto-Detection**: Automatically finds newest export in `linkedin-export/` folder
 
 ### AI Integration
 - **OpenAI API**: Successfully integrated with ChatGPT 4o
@@ -104,6 +105,7 @@
 ## Recent Achievements 🎉
 
 ### Latest Commits
+- ✅ **LinkedIn Export Auto-Detection**: Automatically finds newest export file
 - ✅ **OpenAI API Update**: Fixed deprecated `max_tokens` parameter
 - ✅ **HTML Rendering**: Successfully integrated JSON Resume theme
 - ✅ **File Naming**: Implemented date-stamped output files

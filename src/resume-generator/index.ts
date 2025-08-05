@@ -1,3 +1,3 @@
-export * from './service/index.js';
-export * from './domain/index.js';
-export * from './infrastructure/index.js'; 
+export * from './service/index';
+export * from './domain/index';
+export * from './infrastructure/index'; 

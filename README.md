@@ -41,6 +41,11 @@ npm run build
 npm start
 ```
 
+The script will automatically use the newest LinkedIn export in the `linkedin-export/` folder. You can also specify a custom path:
+```bash
+npm start /path/to/custom/extracted/directory
+```
+
 Output files will be created in the `output/` directory with date stamps.
 
 ## Project Memory System

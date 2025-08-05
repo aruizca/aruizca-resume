@@ -1,1 +1,1 @@
-export * from './GenerateResume.js'; 
+export * from './GenerateResume'; 
