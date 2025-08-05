@@ -36,6 +36,7 @@
 - Feature: HTML-to-PDF conversion using Chrome headless mode
 - Fallback: Multiple PDF generation methods (wkhtmltopdf, Chrome, Chromium)
 - Output: Professional PDF with proper styling and margins
+- Fast PDF Generator: Separate script for HTML → PDF only (`npm run pdf`)
 
 **LinkedIn Parser Implementation**
 - Status: 🔄 Deferred
@@ -57,6 +58,7 @@
 - **LinkedIn Export**: Auto-detection and extraction of newest export file with smart caching
 - **LinkedIn Parser**: Deferred implementation - placeholder works for current needs
 - **PDF Export**: System command approach with multiple fallback methods for reliability
+- **Fast PDF Generation**: Separate script for HTML → PDF conversion to speed up iteration
 
 ## Next Steps (Priority Order)
 1. **Step 4**: Error Handling Improvements

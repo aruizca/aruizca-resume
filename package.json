@@ -2,7 +2,9 @@
   "type": "module",
   "scripts": {
     "build": "esbuild src/main.ts --bundle --platform=node --format=esm --outfile=dist/main.js",
-    "start": "npm run build && node --env-file=.env dist/main.js"
+    "start": "npm run build && node --env-file=.env dist/main.js",
+    "pdf": "npm run build:pdf && node --env-file=.env dist/pdf-generator.js",
+    "build:pdf": "esbuild src/pdf-generator.ts --bundle --platform=node --format=esm --outfile=dist/pdf-generator.js"
   },
   "dependencies": {
     "jsonresume-theme-even": "^0.23.0",

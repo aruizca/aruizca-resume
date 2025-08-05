@@ -46,6 +46,13 @@ The script will automatically use the newest LinkedIn export in the `linkedin-ex
 npm start /path/to/custom/extracted/directory
 ```
 
+5. **Generate PDF from existing HTML** (faster alternative):
+```bash
+npm run pdf output/resume-20250805.html
+```
+
+This skips LinkedIn parsing and AI generation, using only the PDF export pipeline.
+
 Output files will be created in the `output/` directory with date stamps.
 
 ## Project Memory System
@@ -102,7 +109,8 @@ PdfExporter → PDF
 ### Build & Run
 ```bash
 npm run build    # Compile TypeScript
-npm start        # Run CLI (builds first)
+npm start        # Full pipeline (LinkedIn → AI → HTML → PDF)
+npm run pdf      # PDF only (HTML → PDF, much faster)
 ```
 
 ### Environment Variables
