@@ -26,5 +26,5 @@ yarn-error.log*
 .env.local
 .env.*.local
 
-# Ignore extracted LinkedIn data
-linkedin-export/extracted/
+# Ignore LinkedIn data
+linkedin-export/
