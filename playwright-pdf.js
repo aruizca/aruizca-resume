@@ -49,9 +49,60 @@ function cleanHtmlForPdf(html) {
   // This is the only change we keep - it successfully removed the name
   let cleanHtml = html.replace(/<title>.*?<\/title>/gi, '<title></title>');
   
-
+  // Add JavaScript to reduce font sizes by 1.6px and adjust column widths for PDF
+  const pdfScript = `
+    <script>
+      (function() {
+        // Function to reduce font size by 0.8px (less aggressive)
+        function reduceFontSizes() {
+          const elements = document.querySelectorAll('*');
+          elements.forEach(function(el) {
+            const computedStyle = window.getComputedStyle(el);
+            const currentSize = parseFloat(computedStyle.fontSize);
+            if (currentSize && !isNaN(currentSize)) {
+              const newSize = Math.max(currentSize - 0.8, 10); // Minimum 10px for readability
+              el.style.fontSize = newSize + 'px';
+            }
+          });
+        }
+        
+        // Function to adjust column widths for CSS Grid layout
+        function adjustColumnWidths() {
+          // Target the body element which has the grid layout
+          const body = document.querySelector('body');
+          if (body) {
+            // Override the grid template columns to achieve 15%/85% split
+            body.style.gridTemplateColumns = '[full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end]';
+            
+                         // Also add CSS to ensure the grid areas work correctly
+             const style = document.createElement('style');
+             style.textContent = '@media print { body { grid-template-columns: [full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end] !important; } h3 { grid-column: side !important; } section { grid-column: content !important; } .masthead { grid-column: full !important; } }';
+            document.head.appendChild(style);
+          }
+        }
+        
+        // Run when DOM is loaded
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function() {
+            reduceFontSizes();
+            adjustColumnWidths();
+          });
+        } else {
+          reduceFontSizes();
+          adjustColumnWidths();
+        }
+        
+        // Also run after a short delay to ensure all styles are applied
+        setTimeout(function() {
+          reduceFontSizes();
+          adjustColumnWidths();
+        }, 100);
+      })();
+    </script>
+  `;
   
-
+  // Insert the script before the closing head tag
+  cleanHtml = cleanHtml.replace('</head>', `${pdfScript}</head>`);
   
   return cleanHtml;
 }
