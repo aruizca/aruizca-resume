@@ -1,0 +1,82 @@
+# Cursor Rules for AI-Powered Resume Generator
+
+## Project Memory System
+This project uses a comprehensive memory bank system to maintain context across development sessions. Always load and reference these files for complete project understanding.
+
+### Required Context Files
+Always load these files from `memory-bank/` directory as project context for every session:
+
+1. **projectbrief.md** - Project goals, requirements, and scope
+2. **productContext.md** - Purpose, user stories, and problems addressed  
+3. **activeContext.md** - Current work, open threads, decisions, and next steps
+4. **systemPatterns.md** - Architecture, component relationships, and design patterns
+5. **techContext.md** - Technologies, setup guides, and dependencies
+6. **progress.md** - What's working, what's left, and known issues
+
+### Memory Bank Updates
+Proactively update these files when new important project information emerges:
+
+- **activeContext.md**: Update current work status, decisions made, and next steps
+- **progress.md**: Log completed work, new issues discovered, and updated priorities
+- **systemPatterns.md**: Document new architectural decisions or component changes
+- **techContext.md**: Add new dependencies, setup requirements, or technical decisions
+
+### Development Guidelines
+
+#### Architecture Principles
+- Follow DDD (Domain-Driven Design) + Hexagonal Architecture patterns
+- Maintain clear separation between domain, application, and infrastructure layers
+- Use the `resume-generator` context module for all core functionality
+- Implement dependency injection for testability and flexibility
+
+#### Code Organization
+- Use `index.ts` files for clean import paths
+- Avoid `.js` extensions in ESM imports
+- Prefer relative imports within the context module
+- Follow TypeScript strict typing throughout
+
+#### File Structure Conventions
+```
+src/resume-generator/
+├── service/          # Application services (use cases)
+├── domain/           # Domain models and business logic
+├── infrastructure/   # External integrations and adapters
+└── prompts/         # AI prompt templates
+```
+
+#### Error Handling Strategy
+- Handle API errors gracefully (OpenAI rate limits, quotas)
+- Validate input files and output directories
+- Provide clear error messages for debugging
+- Implement graceful degradation where possible
+
+#### Testing Approach
+- Unit tests for domain logic and services
+- Integration tests for full pipeline
+- Mock external dependencies (OpenAI API, file system)
+- Validate JSON Resume schema compliance
+
+### Current Development Focus
+- **Phase**: Step 3 Complete - HTML Rendering Working
+- **Priority**: LinkedIn parser implementation and PDF export
+- **Architecture**: DDD + Hexagonal with context module organization
+- **Tech Stack**: Node.js + TypeScript + ESM + OpenAI API
+
+### Key Dependencies
+- OpenAI API (ChatGPT 4o) for content generation
+- jsonresume-theme-even-crewshin for HTML rendering
+- papaparse for CSV parsing
+- Puppeteer/Playwright for PDF export (planned)
+
+### Environment Setup
+- Node.js 18+ required
+- OpenAI API key in `.env` file
+- Build with `npm run build`
+- Run with `npm start`
+
+### Output Files
+- Generated files go to `/output` directory
+- Date-stamped naming: `resume-yyyymmdd.{json,html,pdf}`
+- Output directory is gitignored
+
+Always reference the memory bank files for complete context and update them as the project evolves. 

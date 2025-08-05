@@ -1,102 +1,150 @@
-# LinkedIn to JSON Resume Converter
+# AI-Powered Resume Generator
 
-A TypeScript tool to convert LinkedIn data exports into the JSON Resume format.
+A local-first, CLI-based resume generator that transforms LinkedIn export data into professional resumes using AI. Built with Node.js + TypeScript + ESM, following DDD and Hexagonal Architecture principles.
 
 ## Features
 
-- Converts LinkedIn data exports (CSV files) to JSON Resume format
-- Handles multiple sections: work experience, education, skills, languages, projects, and certifications
-- Includes training courses in the meta section
-- Uses the latest LinkedIn export file automatically
+- **LinkedIn Integration**: Parse LinkedIn export ZIP files (CSV + HTML)
+- **AI-Powered**: Uses OpenAI (ChatGPT 4o) for structured content generation
+- **Multiple Formats**: Generates JSON Resume, HTML, and PDF outputs
+- **Professional Themes**: Uses `jsonresume-theme-even-crewshin` for rendering
+- **Date-Stamped Output**: Files named with generation date (`resume-yyyymmdd.*`)
+- **Extensible Architecture**: Ready for future UI and cover letter features
 
-## Setup
+## Quick Start
 
-1. Clone the repository:
+### Prerequisites
+- Node.js 18+ 
+- OpenAI API key
+
+### Setup
+1. **Clone and install**:
 ```bash
 git clone https://github.com/aruizca/aruizca-resume.git
 cd aruizca-resume
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Place your LinkedIn export file in the `linkedin-export` directory
+2. **Configure environment**:
+```bash
+cp env.sample .env
+# Edit .env and add your OpenAI API key
+```
 
-## Usage
+3. **Prepare LinkedIn export**:
+- Export your data from LinkedIn (Settings → Data Privacy → Get a copy)
+- Extract the ZIP to `linkedin-export/extracted/`
 
-1. Export your data from LinkedIn:
-   - Go to LinkedIn Settings & Privacy
-   - Under "Data privacy", click "Get a copy of your data"
-   - Select "Basic profile data" and any other data you want to include
-   - Download the ZIP file when ready
-
-2. Place the downloaded ZIP file in the `linkedin-export` directory
-
-3. Build the project:
+4. **Generate resume**:
 ```bash
 npm run build
+npm start
 ```
 
-4. Run the conversion:
+Output files will be created in the `output/` directory with date stamps.
+
+## Project Memory System
+
+This project uses a comprehensive memory bank system to maintain context across development sessions. The `memory-bank/` directory contains:
+
+- **projectbrief.md**: Project goals, requirements, and scope
+- **productContext.md**: Purpose, user stories, and problems addressed
+- **activeContext.md**: Current work, open threads, decisions, and next steps
+- **systemPatterns.md**: Architecture, component relationships, and design patterns
+- **techContext.md**: Technologies, setup guides, and dependencies
+- **progress.md**: What's working, what's left, and known issues
+
+### For Contributors
+- Always reference memory bank files for complete project context
+- Update relevant memory files when making significant changes
+- Follow the architecture patterns documented in `systemPatterns.md`
+- Check `activeContext.md` for current development status
+
+## Architecture
+
+Built with Domain-Driven Design (DDD) + Hexagonal Architecture:
+
+```
+src/resume-generator/
+├── service/                    # Application Services (Use Cases)
+│   └── GenerateResume.ts      # Main orchestration service
+├── domain/                     # Domain Layer
+│   ├── model/Resume.ts        # Resume entity (JSON Resume schema)
+│   └── services/ResumeBuilder.ts # Domain logic
+├── infrastructure/             # Infrastructure Layer
+│   ├── parsers/LinkedInParser.ts # LinkedIn data extraction
+│   ├── langchain/PromptRunner.ts # AI/LLM integration
+│   └── output/                # Output renderers
+│       ├── HtmlRenderer.ts    # HTML generation
+│       └── PdfExporter.ts     # PDF export
+└── prompts/resumePrompt.txt   # AI prompt templates
+```
+
+## Data Flow
+
+```
+LinkedIn ZIP → LinkedInParser → ParsedData
+                                    ↓
+PromptRunner ← PromptTemplate ← OpenAI API
+                                    ↓
+ResumeBuilder → JSON Resume → HtmlRenderer → HTML
+                                    ↓
+PdfExporter → PDF
+```
+
+## Development
+
+### Build & Run
 ```bash
-npm run convert
+npm run build    # Compile TypeScript
+npm start        # Run CLI (builds first)
 ```
 
-The script will:
-- Find the most recent LinkedIn export file
-- Convert the data to JSON Resume format
-- Save the result as `resume.json`
+### Environment Variables
+```bash
+OPENAI_API_KEY=your-openai-api-key-here
+```
 
-## Project Structure
+### Output Files
+- `output/resume-yyyymmdd.json` - JSON Resume format
+- `output/resume-yyyymmdd.html` - Rendered HTML
+- `output/resume-yyyymmdd.pdf` - PDF export
 
-- `src/convert.ts` - Main conversion script
-- `linkedin-export/` - Directory for LinkedIn export files
-- `public/` - Directory for published files
-- `resume.json` - Generated JSON Resume file
+## Current Status
+
+### ✅ Completed
+- Project setup with DDD + Hexagonal Architecture
+- OpenAI API integration (ChatGPT 4o)
+- HTML rendering with JSON Resume theme
+- Date-stamped file naming
+- AI-powered skill categorization
+
+### 🔄 In Progress
+- LinkedIn parser enhancement (needs real CSV structure analysis)
+- PDF export implementation (Puppeteer/Playwright integration)
+
+### 📋 Planned
+- CLI improvements (options, help, verbose output)
+- Comprehensive error handling
+- Unit and integration testing
+- Web UI and cover letter features
 
 ## Dependencies
 
-- TypeScript
-- csv-parse
-- yauzl
-- esbuild
+### Core
+- **Node.js + TypeScript + ESM**: Modern JavaScript development
+- **esbuild**: Fast TypeScript bundler
+- **OpenAI API**: ChatGPT 4o for content generation
+
+### Data Processing
+- **papaparse**: CSV parsing for LinkedIn exports
+- **adm-zip**: ZIP file extraction
+- **cheerio**: HTML parsing
+
+### Output Generation
+- **jsonresume-theme-even-crewshin**: Professional HTML theme
+- **Puppeteer/Playwright**: PDF export (planned)
 
 ## License
 
 MIT 
-
-# Resume AI Builder (CLI)
-
-A local-first, CLI-based resume generator that takes a LinkedIn export ZIP, extracts relevant data, and produces:
-- `resume.json` (JSON Resume format)
-- `resume.html` (rendered with jsonresume-theme-even)
-- `resume.pdf` (PDF export)
-
-## Usage
-
-```sh
-npm run build
-npm start [path/to/linkedin-export/extracted]
-```
-- If no path is provided, defaults to `linkedin-export/extracted`.
-- Outputs are written to the `output/` directory.
-
-## Architecture
-
-- **src/app/GenerateResume.ts**: Orchestrates the pipeline
-- **src/domain/model/Resume.ts**: Resume entity (JSON Resume schema)
-- **src/domain/services/ResumeBuilder.ts**: Resume construction logic
-- **src/infrastructure/parsers/LinkedInParser.ts**: LinkedIn CSV/HTML extraction
-- **src/infrastructure/langchain/PromptRunner.ts**: LLM prompt runner (LangChain/OpenAI)
-- **src/adapters/output/HtmlRenderer.ts**: HTML rendering (jsonresume-theme-even)
-- **src/adapters/output/PdfExporter.ts**: HTML-to-PDF export
-- **src/main.ts**: CLI entrypoint
-
-## Roadmap
-- Integrate LangChain.js + OpenAI for structured resume generation
-- Improve theme rendering and PDF export
-- Add UI and cover letter support (future)
-
---- 
