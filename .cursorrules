@@ -30,7 +30,12 @@ Proactively update these files when new important project information emerges:
 - Implement dependency injection for testability and flexibility
 
 #### Code Organization
-- Use `index.ts` files for clean import paths
+- **Barrel Exports Pattern**: Use `index.ts` files for clean import paths
+  - Each directory should have an `index.ts` that re-exports from sub-modules
+  - Enables clean imports: `import { Component } from './components'` vs `import { Component } from './components/Component'`
+  - Provides encapsulation and easier refactoring
+  - Use explicit named exports over `export *` for better tree-shaking
+  - Avoid `export *` with CommonJS modules
 - Avoid `.js` extensions in ESM imports
 - Prefer relative imports within the context module
 - Follow TypeScript strict typing throughout
@@ -39,9 +44,43 @@ Proactively update these files when new important project information emerges:
 ```
 src/resume-generator/
 ├── service/          # Application services (use cases)
+│   ├── GenerateResume.ts
+│   └── index.ts      # Barrel exports
 ├── domain/           # Domain models and business logic
+│   ├── model/
+│   │   ├── Resume.ts
+│   │   └── index.ts  # Barrel exports
+│   ├── services/
+│   │   ├── ResumeBuilder.ts
+│   │   └── index.ts  # Barrel exports
+│   └── index.ts      # Barrel exports
 ├── infrastructure/   # External integrations and adapters
+│   ├── parsers/
+│   │   ├── LinkedInParser.ts
+│   │   └── index.ts  # Barrel exports
+│   ├── langchain/
+│   │   ├── PromptRunner.ts
+│   │   └── index.ts  # Barrel exports
+│   ├── output/
+│   │   ├── HtmlRenderer.ts
+│   │   ├── PdfExporter.ts
+│   │   └── index.ts  # Barrel exports
+│   └── index.ts      # Barrel exports
 └── prompts/         # AI prompt templates
+```
+
+#### Barrel Pattern Examples
+```typescript
+// ✅ Good - Explicit named exports
+export { Resume } from './model/Resume';
+export { ResumeBuilder } from './services/ResumeBuilder';
+
+// ✅ Good - Re-export from sub-modules
+export * from './model';
+export * from './services';
+
+// ❌ Avoid - Wildcard exports with CommonJS modules
+export * from './components';
 ```
 
 #### Error Handling Strategy
@@ -57,8 +96,8 @@ src/resume-generator/
 - Validate JSON Resume schema compliance
 
 ### Current Development Focus
-- **Phase**: Step 3 Complete - HTML Rendering Working
-- **Priority**: LinkedIn parser implementation and PDF export
+- **Phase**: ✅ Milestone 2 Complete - Production Ready
+- **Priority**: Documentation enhancement and Milestone 3 features
 - **Architecture**: DDD + Hexagonal with context module organization
 - **Tech Stack**: Node.js + TypeScript + ESM + OpenAI API
 
@@ -66,13 +105,16 @@ src/resume-generator/
 - OpenAI API (ChatGPT 4o) for content generation
 - jsonresume-theme-even-crewshin for HTML rendering
 - papaparse for CSV parsing
-- Puppeteer/Playwright for PDF export (planned)
+- Playwright for PDF export
+- @jsonresume/schema for validation
+- ajv for JSON schema validation
 
 ### Environment Setup
 - Node.js 18+ required
 - OpenAI API key in `.env` file
 - Build with `npm run build`
 - Run with `npm start`
+- Use `npm run start:fresh` to bypass cache
 
 ### Output Files
 - Generated files go to `/output` directory

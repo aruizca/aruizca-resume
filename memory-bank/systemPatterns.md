@@ -60,6 +60,51 @@ src/resume-generator/
 - Theme selection can be swapped without changing core logic
 - AI providers can be swapped (OpenAI, other LLMs)
 
+### 5. Barrel Exports Pattern
+- **Purpose**: Clean imports and encapsulation through `index.ts` files
+- **Implementation**: Each directory has an `index.ts` that re-exports from sub-modules
+- **Benefits**: 
+  - Clean imports: `import { Component } from './components'` vs `import { Component } from './components/Component'`
+  - Encapsulation: Hide internal file structure from consumers
+  - Refactoring: Change internal organization without breaking external imports
+  - Tree-shaking friendly: Better for bundlers to optimize
+
+#### Barrel Pattern Implementation
+```typescript
+// src/main/resume-generator/index.ts
+export * from './service';
+export * from './domain';
+export * from './infrastructure';
+
+// src/main/resume-generator/domain/index.ts
+export * from './model';
+export * from './services';
+
+// src/main/shared/infrastructure/utils/index.ts
+export * from './fileUtils';
+export * from './errors';
+export * from './validation';
+export * from './errorMessages';
+export * from './recovery';
+export * from './performanceMonitor';
+```
+
+#### Best Practices
+- **Explicit named exports** over `export *` for better tree-shaking
+- **Avoid `export *` with CommonJS modules** - use explicit named exports instead
+- **Performance consideration**: Barrel files can slow down builds in Next.js
+- **Consistent naming**: Use `index.ts` for all barrel files
+
+#### Example Pattern
+```typescript
+// ✅ Good - Explicit named exports
+export { Resume } from './model/Resume';
+export { ResumeBuilder } from './services/ResumeBuilder';
+
+// ❌ Avoid - Wildcard exports with CommonJS
+export * from './components';
+```
+
 ## Data Flow
 
 ```
