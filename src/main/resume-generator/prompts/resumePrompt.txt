@@ -5,4 +5,4 @@ Convert the following LinkedIn data to a JSON Resume (https://jsonresume.org/sch
 - For each work entry, synthesize and summarize verbose content. Provide a brief, clear description (2-3 sentences max) and then a few highlights as bullet points. Avoid copying long text verbatim from LinkedIn.
 - If a skill or language could fit in more than one category, use your best judgment.
 
-{{linkedinData}} 
+{linkedinData} 

@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@jsonresume/schema": "^1.2.1",
+    "@langchain/core": "^0.3.66",
+    "@langchain/openai": "^0.6.3",
     "ajv": "^8.17.1",
     "jsonresume-theme-even": "^0.23.0",
-    "openai": "^5.9.0",
+    "langchain": "^0.3.30",
     "papaparse": "^5.5.3",
     "playwright": "^1.54.2"
   },
