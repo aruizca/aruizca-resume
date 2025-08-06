@@ -30,14 +30,15 @@ export async function validateLinkedInExportDirectory(exportDir: string): Promis
   }
 
   const files = await readdir(exportDir);
-  const zipFiles = files.filter(file => 
-    file.startsWith('Basic_LinkedInDataExport_') && file.endsWith('.zip')
-  );
-
-  if (zipFiles.length === 0) {
+  
+  // Check for required CSV files that LinkedInParser expects
+  const requiredFiles = ['Profile.csv', 'Positions.csv', 'Education.csv', 'Skills.csv'];
+  const missingFiles = requiredFiles.filter(file => !files.includes(file));
+  
+  if (missingFiles.length > 0) {
     throw new FileSystemError(
-      `No LinkedIn export ZIP files found in ${exportDir}. Please ensure you have exported your LinkedIn data and placed the ZIP file in the 'linkedin-export' folder.`,
-      { code: 'NO_LINKEDIN_EXPORTS', path: exportDir, availableFiles: files }
+      `Missing required LinkedIn export files in ${exportDir}: ${missingFiles.join(', ')}. Please ensure you have a complete LinkedIn export.`,
+      { code: 'MISSING_LINKEDIN_FILES', path: exportDir, missingFiles, availableFiles: files }
     );
   }
 }
