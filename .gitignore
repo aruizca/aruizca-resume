@@ -8,6 +8,9 @@ dist/
 bin/
 output/
 
+# Cache
+.cache/
+
 # IDE and editor files
 .vscode/
 .idea/

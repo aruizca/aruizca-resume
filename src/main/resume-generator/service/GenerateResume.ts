@@ -12,12 +12,12 @@ export class GenerateResume {
     private validator = new JsonResumeValidator()
   ) {}
 
-  async run(linkedInExportPath: string, outputDir: string) {
+  async run(linkedInExportPath: string, outputDir: string, forceRefresh: boolean = false) {
     await mkdir(outputDir, { recursive: true });
     // 1. Parse LinkedIn data
     const parsedData = await this.linkedInParser.parse(linkedInExportPath);
     // 2. Generate structured resume content with LLM
-    const llmResumeData = await this.promptRunner.run(parsedData);
+    const llmResumeData = await this.promptRunner.run(parsedData, forceRefresh);
     // 3. Build JSON Resume
     const resume = this.resumeBuilder.build(llmResumeData);
     
@@ -48,5 +48,19 @@ export class GenerateResume {
     const pdfPath = join(outputDir, `resume${dateStr}.pdf`);
     await this.pdfExporter.export(html, pdfPath);
     return { jsonPath, htmlPath, pdfPath };
+  }
+
+  /**
+   * Get cache statistics
+   */
+  async getCacheStats(): Promise<{ totalEntries: number; totalSize: number }> {
+    return await this.promptRunner.getCacheStats();
+  }
+
+  /**
+   * Clear the cache
+   */
+  async clearCache(): Promise<void> {
+    await this.promptRunner.clearCache();
   }
 } 

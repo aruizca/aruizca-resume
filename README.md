@@ -46,6 +46,13 @@ The script will automatically use the newest LinkedIn export in the `linkedin-ex
 npm start /path/to/custom/extracted/directory
 ```
 
+**Performance Features:**
+- **OpenAI Caching**: Responses are cached for 8 hours to reduce API costs
+- **Force Refresh**: Use `--force-refresh` to bypass cache and get fresh AI responses
+```bash
+npm start --force-refresh
+```
+
 5. **Generate PDF from existing HTML** (faster alternative):
 ```bash
 npm run pdf output/resume-20250805.html

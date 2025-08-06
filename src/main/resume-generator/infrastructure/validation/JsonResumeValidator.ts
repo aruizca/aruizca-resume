@@ -20,7 +20,7 @@ export class JsonResumeValidator {
    * @param resume The resume object to validate
    * @returns ValidationResult with success status and any errors
    */
-  validateResume(resume: Resume): ValidationResult {
+  validateResume(resume: any): ValidationResult {
     const isValid = this.validate(resume);
     
     if (isValid) {

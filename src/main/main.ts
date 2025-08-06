@@ -11,17 +11,20 @@ async function main() {
     const outputDir = join(process.cwd(), 'output');
     await validateOutputDirectory(outputDir);
     
-    // Validate command line arguments if provided
+    // Parse command line arguments
     const args = process.argv.slice(2);
-    validateCommandLineArgs(args);
+    const forceRefresh = args.includes('--force-refresh');
+    const filteredArgs = args.filter(arg => arg !== '--force-refresh');
+    
+    validateCommandLineArgs(filteredArgs);
     
     const linkedInExportFinder = new LinkedInExportFinder();
     const generator = new GenerateResume();
     
     // Use command line argument if provided, otherwise find newest export
     let extractedDir: string;
-    if (args.length > 0) {
-      extractedDir = args[0];
+    if (filteredArgs.length > 0) {
+      extractedDir = filteredArgs[0];
       console.log(`📁 Using custom LinkedIn export path: ${extractedDir}`);
     } else {
       console.log('📁 Finding newest LinkedIn export...');
@@ -31,13 +34,21 @@ async function main() {
     // Validate the LinkedIn export directory
     await validateLinkedInExportDirectory(extractedDir);
     
+    if (forceRefresh) {
+      console.log('🔄 Force refresh enabled - bypassing cache');
+    }
+    
     console.log('🚀 Starting resume generation...');
-    const { jsonPath, htmlPath, pdfPath } = await generator.run(extractedDir, outputDir);
+    const { jsonPath, htmlPath, pdfPath } = await generator.run(extractedDir, outputDir, forceRefresh);
     
     console.log('✅ Resume generated successfully!');
     console.log('📄 JSON:', jsonPath);
     console.log('🌐 HTML:', htmlPath);
     console.log('📋 PDF:', pdfPath);
+    
+    // Show cache statistics
+    const cacheStats = await generator.getCacheStats();
+    console.log(`📊 Cache stats: ${cacheStats.totalEntries} entries, ${(cacheStats.totalSize / 1024).toFixed(1)}KB`);
     
   } catch (err: any) {
     console.error('❌ Resume generation failed:');
