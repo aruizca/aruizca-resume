@@ -30,7 +30,7 @@ export class JsonResumeValidator {
       };
     }
 
-    const errors = this.validate.errors?.map(error => ({
+    const errors = this.validate.errors?.map((error: any) => ({
       path: error.instancePath || 'root',
       message: error.message || 'Unknown validation error',
       keyword: error.keyword,
