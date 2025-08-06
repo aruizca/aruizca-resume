@@ -59,8 +59,7 @@ async function generatePdfWithPlaywright(htmlPath, pdfPath) {
       waitUntil: 'networkidle'
     });
     
-    // Generate PDF with explicit header/footer control
-    // This is the key - setting displayHeaderFooter to false
+    // Generate PDF with custom header and footer templates
     await page.pdf({
       path: pdfPath,
       format: 'A4',
@@ -70,7 +69,9 @@ async function generatePdfWithPlaywright(htmlPath, pdfPath) {
         bottom: '0.5in',
         left: '0.5in'
       },
-      displayHeaderFooter: false, // This is what the user does manually!
+      displayHeaderFooter: true,
+      headerTemplate: '<span></span>',
+      footerTemplate: '<div style="width: 100%; font-size: 10px; padding: 0 0.5in; text-align: right; color: #666; font-family: Lato, sans-serif;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>',
       printBackground: true,
       preferCSSPageSize: false
     });
@@ -186,7 +187,7 @@ async function main() {
     await writeFile(tempHtmlPath, cleanHtml);
     
     try {
-      console.log(`🔧 Trying Playwright with displayHeaderFooter: false...`);
+      console.log(`🔧 Generating PDF with custom header/footer templates...`);
       await generatePdfWithPlaywright(tempHtmlPath, pdfPath);
       console.log(`✅ PDF generated using Playwright: ${pdfPath}`);
     } catch (playwrightError) {
