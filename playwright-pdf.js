@@ -18,6 +18,9 @@ async function generatePdfWithPlaywright(htmlPath, pdfPath) {
   try {
     const page = await browser.newPage();
     
+    // Set viewport to A4 dimensions (595.28 x 841.89 points)
+    await page.setViewportSize({ width: 595, height: 842 });
+    
     // Load the HTML file
     await page.goto(`file://${htmlPath}`, {
       waitUntil: 'networkidle'
@@ -74,9 +77,9 @@ function cleanHtmlForPdf(html) {
             // Override the grid template columns to achieve 15%/85% split
             body.style.gridTemplateColumns = '[full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end]';
             
-                         // Also add CSS to ensure the grid areas work correctly
+                         // Also add CSS to ensure the grid areas work correctly and header spans both columns, and respect page dimensions
              const style = document.createElement('style');
-             style.textContent = '@media print { body { grid-template-columns: [full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end] !important; } h3 { grid-column: side !important; } section { grid-column: content !important; } .masthead { grid-column: full !important; } }';
+             style.textContent = '@media print { body { grid-template-columns: [full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end] !important; max-width: 95% !important; overflow-x: hidden !important; } h3 { grid-column: side !important; } section { grid-column: content !important; } .masthead { grid-column: full !important; } .masthead > * { grid-column: main !important; } * { max-width: 95% !important; box-sizing: border-box !important; } }';
             document.head.appendChild(style);
           }
         }
