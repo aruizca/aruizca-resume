@@ -21,7 +21,7 @@
 ### Resume Generation
 - **JSON Resume**: Standard resume format specification
 - **jsonresume-theme-even-crewshin**: Professional HTML theme
-- **Puppeteer/Playwright**: HTML-to-PDF conversion (planned)
+- **Playwright**: HTML-to-PDF conversion (implemented)
 
 ### Development Tools
 - **Git**: Version control
@@ -37,7 +37,7 @@
   "openai": "^4.0.0",           // OpenAI API client
   "papaparse": "^5.0.0",        // CSV parsing
   "jsonresume-theme-even": "^1.0.0", // HTML theme
-  "puppeteer": "^21.0.0"        // PDF generation (planned)
+  "playwright": "^1.54.2"        // PDF generation (implemented)
 }
 ```
 

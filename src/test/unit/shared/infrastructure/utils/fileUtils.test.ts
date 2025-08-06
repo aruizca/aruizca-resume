@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
-import { findLatestHtmlFile } from '../../main/fileUtils';
-
+import { findLatestHtmlFile } from '../../../../../main';
 // Mock fs/promises
 vi.mock('fs/promises', () => ({
   readdir: vi.fn()

@@ -29,7 +29,7 @@ export async function findLatestHtmlFile(): Promise<string> {
     console.log(`📅 Found ${htmlFiles.length} HTML files, using latest: ${latestFile}`);
     
     return join(outputDir, latestFile);
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Error finding latest HTML file: ${error.message}`);
   }
 } 

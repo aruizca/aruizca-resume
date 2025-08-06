@@ -134,7 +134,7 @@ OPENAI_API_KEY=your-openai-api-key-here
 
 ### 🔄 In Progress
 - LinkedIn parser enhancement (needs real CSV structure analysis)
-- PDF export implementation (Puppeteer/Playwright integration)
+- PDF export implementation (Playwright integration)
 
 ### 📋 Planned
 - CLI improvements (options, help, verbose output)
@@ -156,7 +156,7 @@ OPENAI_API_KEY=your-openai-api-key-here
 
 ### Output Generation
 - **jsonresume-theme-even-crewshin**: Professional HTML theme
-- **Puppeteer/Playwright**: PDF export (planned)
+- **Playwright**: PDF export (implemented)
 
 ## License
 

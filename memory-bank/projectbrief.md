@@ -18,7 +18,7 @@ Build a local-first resume generator tool that transforms LinkedIn export data i
 - **Build**: esbuild for bundling
 - **AI**: OpenAI API (ChatGPT 4o) via LangChain.js
 - **Parsing**: adm-zip, papaparse, cheerio for LinkedIn data extraction
-- **PDF**: Puppeteer/Playwright for HTML-to-PDF conversion
+- **PDF**: Playwright for HTML-to-PDF conversion
 - **Theme**: jsonresume-theme-even-crewshin
 
 ## Project Scope

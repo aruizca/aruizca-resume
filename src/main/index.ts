@@ -1,2 +1,2 @@
 export * from './resume-generator';
-export * from './fileUtils'; 
+export * from './shared'; 
