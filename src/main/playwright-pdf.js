@@ -112,7 +112,7 @@ function cleanHtmlForPdf(html) {
             
                          // Also add CSS to ensure the grid areas work correctly and header spans both columns, and respect page dimensions
              const style = document.createElement('style');
-             style.textContent = '@media print { body { grid-template-columns: [full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end] !important; max-width: 95% !important; overflow-x: hidden !important; } h3 { grid-column: side !important; } section { grid-column: content !important; } .masthead { grid-column: full !important; } .masthead > * { grid-column: main !important; } * { max-width: 95% !important; box-sizing: border-box !important; } }';
+             style.textContent = '@media print { body { grid-template-columns: [full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end] !important; max-width: 96.5% !important; overflow-x: hidden !important; } h1 { font-size: 2.5em !important; } h2 { font-size: 2em !important; } h3 { grid-column: side !important; } section { grid-column: content !important; } .masthead { grid-column: full !important; padding-top: 2em !important; padding-bottom: 2em !important; } .masthead > * { grid-column: main !important; } * { max-width: 96.5% !important; box-sizing: border-box !important; } }';
             document.head.appendChild(style);
           }
         }
