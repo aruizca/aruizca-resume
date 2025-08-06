@@ -1,6 +1,7 @@
 import { LinkedInParser, PromptRunner, ResumeBuilder, HtmlRenderer, PdfExporter, JsonResumeValidator } from '../index';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { performanceMonitor } from '../../shared/infrastructure/utils/performanceMonitor';
 
 export class GenerateResume {
   constructor(
@@ -14,16 +15,35 @@ export class GenerateResume {
 
   async run(linkedInExportPath: string, outputDir: string, forceRefresh: boolean = false) {
     await mkdir(outputDir, { recursive: true });
+    
     // 1. Parse LinkedIn data
-    const parsedData = await this.linkedInParser.parse(linkedInExportPath);
+    const parsedData = await performanceMonitor.trackOperation(
+      'Parse LinkedIn Data',
+      () => this.linkedInParser.parse(linkedInExportPath),
+      { logToConsole: true }
+    );
+    
     // 2. Generate structured resume content with LLM
-    const llmResumeData = await this.promptRunner.run(parsedData, forceRefresh);
+    const llmResumeData = await performanceMonitor.trackOperation(
+      'Generate Resume Content (LLM)',
+      () => this.promptRunner.run(parsedData, forceRefresh),
+      { logToConsole: true }
+    );
+    
     // 3. Build JSON Resume
-    const resume = this.resumeBuilder.build(llmResumeData);
+    const resume = performanceMonitor.trackSyncOperation(
+      'Build JSON Resume',
+      () => this.resumeBuilder.build(llmResumeData),
+      { logToConsole: true }
+    );
     
     // 3.5. Validate against JSON Resume schema
     console.log('🔍 Validating resume against JSON Resume schema...');
-    const validationResult = this.validator.validateResume(resume);
+    const validationResult = performanceMonitor.trackSyncOperation(
+      'Validate JSON Resume Schema',
+      () => this.validator.validateResume(resume),
+      { logToConsole: true }
+    );
     
     if (!validationResult.isValid) {
       console.warn('⚠️  Resume validation warnings:');
@@ -37,16 +57,37 @@ export class GenerateResume {
     const now = new Date();
     const pad = (n: number) => n.toString().padStart(2, '0');
     const dateStr = `-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+    
     // 4. Write resume.json
     const jsonPath = join(outputDir, `resume${dateStr}.json`);
-    await writeFile(jsonPath, JSON.stringify(resume, null, 2));
+    await performanceMonitor.trackOperation(
+      'Write JSON File',
+      () => writeFile(jsonPath, JSON.stringify(resume, null, 2)),
+      { logToConsole: true }
+    );
+    
     // 5. Render HTML
-    const html = await this.htmlRenderer.render(resume);
+    const html = await performanceMonitor.trackOperation(
+      'Render HTML',
+      () => this.htmlRenderer.render(resume),
+      { logToConsole: true }
+    );
+    
     const htmlPath = join(outputDir, `resume${dateStr}.html`);
-    await writeFile(htmlPath, html);
+    await performanceMonitor.trackOperation(
+      'Write HTML File',
+      () => writeFile(htmlPath, html),
+      { logToConsole: true }
+    );
+    
     // 6. Export PDF
     const pdfPath = join(outputDir, `resume${dateStr}.pdf`);
-    await this.pdfExporter.export(html, pdfPath);
+    await performanceMonitor.trackOperation(
+      'Generate PDF',
+      () => this.pdfExporter.export(html, pdfPath),
+      { logToConsole: true }
+    );
+    
     return { jsonPath, htmlPath, pdfPath };
   }
 
@@ -62,5 +103,19 @@ export class GenerateResume {
    */
   async clearCache(): Promise<void> {
     await this.promptRunner.clearCache();
+  }
+
+  /**
+   * Get performance statistics
+   */
+  getPerformanceStats() {
+    return performanceMonitor.getStats();
+  }
+
+  /**
+   * Get performance summary
+   */
+  getPerformanceSummary(): string {
+    return performanceMonitor.getSummary();
   }
 } 

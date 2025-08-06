@@ -50,6 +50,9 @@ async function main() {
     const cacheStats = await generator.getCacheStats();
     console.log(`📊 Cache stats: ${cacheStats.totalEntries} entries, ${(cacheStats.totalSize / 1024).toFixed(1)}KB`);
     
+    // Show performance summary
+    console.log('\n' + generator.getPerformanceSummary());
+    
   } catch (err: any) {
     console.error('❌ Resume generation failed:');
     
