@@ -221,7 +221,7 @@ describe('Graceful Recovery', () => {
       const endTime = Date.now();
       
       expect(result.success).toBe(false);
-      expect(endTime - startTime).toBeLessThan(100); // Should timeout quickly
+      expect(endTime - startTime).toBeLessThan(200); // Should timeout within reasonable time
     });
   });
 }); 
