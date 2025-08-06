@@ -25,28 +25,21 @@
 - Skill categorization (soft, management, technical)
 
 ## Current Work
-**LinkedIn Export Auto-Detection & Extraction**
-- Status: ✅ Implemented
-- Feature: Automatically finds and extracts newest LinkedIn export in `linkedin-export/` folder
-- Usage: `npm start` (default) or `npm start /custom/path` (override)
-- Smart caching: Reuses extracted data if up-to-date
+**Performance Optimization**
+- Status: ⏳ In Progress
+- Focus: API usage optimization and cost management
+- Goal: Reduce API costs and improve processing speed
+- Timeline: 1 week
 
-**PDF Export Implementation**
-- Status: ✅ Implemented
-- Feature: HTML-to-PDF conversion using Chrome headless mode
-- Fallback: Multiple PDF generation methods (wkhtmltopdf, Chrome, Chromium)
-- Output: Professional PDF with proper styling and margins
-- Fast PDF Generator: Separate script for HTML → PDF only (`npm run pdf`)
-
-**LinkedIn Parser Implementation**
-- Status: 🔄 Deferred
-- Decision: Skip LinkedIn parser implementation for now
-- Current: Using placeholder implementation with basic CSV parsing
-- Future: Can be implemented later if needed
+**Documentation Enhancement**
+- Status: ⏳ Planned
+- Focus: Expand README with detailed usage and architecture documentation
+- Goal: Production-ready documentation
+- Timeline: 1 week
 
 ## Open Threads
-1. **Error Handling**: Improve error messages and validation
-2. **Testing**: No unit or integration tests yet
+1. **Performance Optimization**: API usage optimization and cost management
+2. **Documentation**: Production-ready documentation needed
 3. **LinkedIn Parser**: Deferred - placeholder implementation works for basic use cases
 4. **PDF Export**: ✅ Implemented and working
 
@@ -66,17 +59,12 @@
    - Implement input validation
    - Add graceful error recovery
 
-2. **Step 5**: CLI Improvements
-   - Add command-line options for input/output paths
-   - Add verbose/debug output
-   - Add help documentation
+2. **Step 5**: Testing & Validation
+   - ✅ Add unit tests for core components (79 tests passing)
+   - ✅ CI/CD pipeline (GitHub Actions)
+   - ⏳ Validate output against JSON Resume schema
 
-3. **Step 6**: Testing & Validation
-   - Add unit tests for core components
-   - Validate output against JSON Resume schema
-   - Add integration tests
-
-4. **Step 7**: Production Readiness
+3. **Step 6**: Production Readiness
    - Performance optimization
    - Documentation enhancement
    - Deployment preparation

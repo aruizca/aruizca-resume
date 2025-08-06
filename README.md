@@ -137,10 +137,27 @@ OPENAI_API_KEY=your-openai-api-key-here
 - PDF export implementation (Playwright integration)
 
 ### 📋 Planned
-- CLI improvements (options, help, verbose output)
 - Comprehensive error handling
 - Unit and integration testing
 - Web UI and cover letter features
+
+## CI/CD
+
+### GitHub Actions
+
+This project uses GitHub Actions for automated testing and quality assurance:
+
+- **Test Pipeline**: Runs on every push and pull request
+  - Unit tests across Node.js 18.x and 20.x
+  - TypeScript compilation checks
+  - Build verification
+  - Unused dependency detection
+
+- **Security Scanning**: Weekly security audits and vulnerability checks
+
+- **Dependency Management**: Weekly dependency updates and unused dependency detection
+
+See [`.github/README.md`](.github/README.md) for detailed workflow documentation.
 
 ## Dependencies
 
