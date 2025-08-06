@@ -5,7 +5,7 @@ import { join } from 'path';
 export class PromptRunner {
   private openai: OpenAI;
   private model: string = 'gpt-4o';
-  private promptPath = join(process.cwd(), 'src', 'resume-generator', 'prompts', 'resumePrompt.txt');
+  private promptPath = join(process.cwd(), 'src', 'main', 'resume-generator', 'prompts', 'resumePrompt.txt');
 
   constructor() {
     const apiKey = process.env.OPENAI_API_KEY;
