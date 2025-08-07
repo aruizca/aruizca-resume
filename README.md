@@ -79,7 +79,7 @@ npm run cover-letter ./resume/resume-20250807.json https://example.com/job-posti
 **Example Usage:**
 ```bash
 # Generate cover letter for a specific job
-npm run cover-letter ./resume/resume-20250807.json https://job-boards.greenhouse.io/cabify/jobs/4354653002
+npm run cover-letter ./resume/resume-20250807.json https://example.com/job-posting
 
 # The cover letter will be saved to: output/cover-letter-20250807.md
 ```
