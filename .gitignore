@@ -10,6 +10,7 @@ output/
 
 # Cache
 .cache/
+.turbo/
 
 # IDE and editor files
 .vscode/
