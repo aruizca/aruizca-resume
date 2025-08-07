@@ -25,7 +25,7 @@
 
 ### Development Tools
 - **Git**: Version control
-- **npm**: Package management
+- **pnpm**: Package management (primary)
 - **ESLint**: Code linting (planned)
 - **Jest**: Testing framework (planned)
 
@@ -63,28 +63,28 @@ OPENAI_API_KEY=your-openai-api-key-here
 - **Recommended**: Node.js 20+ (LTS)
 
 ### Package Manager
-- **Primary**: npm
-- **Alternative**: yarn, pnpm
+- **Primary**: pnpm (migrated from npm)
+- **Alternative**: npm, yarn
 
 ## Build & Development
 
 ### Build Process
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Build TypeScript to JavaScript
-npm run build
+pnpm run build
 
 # Run the application
-npm start
+pnpm start
 ```
 
 ### Development Workflow
-1. **Setup**: Clone repo, install dependencies, set up `.env`
+1. **Setup**: Clone repo, install dependencies with `pnpm install`, set up `.env`
 2. **Development**: Edit TypeScript files in `src/`
-3. **Build**: Run `npm run build` to compile
-4. **Test**: Run `npm start` to execute CLI
+3. **Build**: Run `pnpm run build` to compile
+4. **Test**: Run `pnpm start` to execute CLI
 5. **Output**: Check `/output` directory for generated files
 
 ## File Structure
@@ -151,7 +151,7 @@ src/
 
 ### Local Development
 - **Environment**: Local Node.js installation
-- **Dependencies**: npm install
+- **Dependencies**: pnpm install
 - **Configuration**: .env file with API keys
 
 ### Future Deployment Options

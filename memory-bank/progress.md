@@ -18,9 +18,10 @@
 - ✅ **URL-based Caching**: 24-hour TTL for job posting data
 - ✅ **Strict Technology Matching**: Only mentions technologies explicitly in job postings
 - ✅ **Professional Output**: Clean, relevant cover letters (200-300 words)
-- ✅ **Standalone Script**: `npm run cover-letter` with proper CLI interface
+- ✅ **Standalone Script**: `pnpm run cover-letter` with proper CLI interface
 - ✅ **Comprehensive Testing**: Full test coverage and error handling
 - ✅ **Production Ready**: System is fully functional and deployed
+- ✅ **Package Manager Migration**: Successfully migrated from npm to pnpm
 
 ### **Successfully Tested With:**
 - ✅ Real job posting testing completed
@@ -45,7 +46,7 @@
 - ✅ **LLM Extraction**: Job information extraction using Langchain
 - ✅ **JSON Processing**: Direct JSON inputs for cover letter generation
 - ✅ **Markdown Output**: Clean, formatted markdown cover letters
-- ✅ **Standalone Script**: `npm run cover-letter` with JSON resume and job URL inputs
+- ✅ **Standalone Script**: `pnpm run cover-letter` with JSON resume and job URL inputs
 - ✅ **Error Handling**: Comprehensive error handling throughout
 - ✅ **Testing**: Full test coverage for all scenarios
 
@@ -84,6 +85,7 @@
 - 📋 Production deployment preparation
 
 ## Latest Commits
+- ✅ **Package Manager Migration**: Successfully migrated from npm to pnpm for better performance
 - ✅ **Langchain Standardization**: Migrated resume generator to use Langchain
 - ✅ **Shared Utilities**: Created ModelFactory, PromptFactory, ChainFactory
 - ✅ **Consistency**: Both contexts now use same Langchain patterns

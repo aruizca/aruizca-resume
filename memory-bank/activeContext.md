@@ -41,18 +41,19 @@
 - **Testing & Documentation**: ✅ Complete
 
 ## Recent Decisions
-1. **Job Posting Caching**: Implemented URL-based caching with 24-hour TTL for job posting extraction
-2. **Cache Architecture**: Created JobPostingCache class following same patterns as OpenAICache
-3. **Cache Integration**: Integrated caching into JobOfferScraper with automatic cache checking
-4. **Real Scraping Implementation**: Implemented actual HTML fetching with native fetch API
-5. **LLM-Based Extraction**: Using LLM to extract job information from raw HTML
-6. **Test Mode**: Added test mode for development with local HTML files
-7. **Langchain Standardization**: Decided to use Langchain across both contexts for consistency
-8. **Shared Utilities**: Created reusable Langchain factories for model, prompt, and chain creation
-9. **Migration Strategy**: Successfully migrated resume generator without breaking existing functionality
-10. **LLM-Based Extraction**: Decided to use LLM-based extraction instead of complex web scraping
-11. **JSON-Based Processing**: Successfully implemented JSON-based cover letter generation with markdown output
-12. **Cover Letter Script**: Created standalone script for cover letter generation with JSON resume and job URL inputs
+1. **Package Manager Migration**: Migrated from npm to pnpm for better performance and disk space efficiency
+2. **Job Posting Caching**: Implemented URL-based caching with 24-hour TTL for job posting extraction
+3. **Cache Architecture**: Created JobPostingCache class following same patterns as OpenAICache
+4. **Cache Integration**: Integrated caching into JobOfferScraper with automatic cache checking
+5. **Real Scraping Implementation**: Implemented actual HTML fetching with native fetch API
+6. **LLM-Based Extraction**: Using LLM to extract job information from raw HTML
+7. **Test Mode**: Added test mode for development with local HTML files
+8. **Langchain Standardization**: Decided to use Langchain across both contexts for consistency
+9. **Shared Utilities**: Created reusable Langchain factories for model, prompt, and chain creation
+10. **Migration Strategy**: Successfully migrated resume generator without breaking existing functionality
+11. **LLM-Based Extraction**: Decided to use LLM-based extraction instead of complex web scraping
+12. **JSON-Based Processing**: Successfully implemented JSON-based cover letter generation with markdown output
+13. **Cover Letter Script**: Created standalone script for cover letter generation with JSON resume and job URL inputs
 
 ## Next Steps
 1. **Documentation Enhancement**: Update README and technical docs with Langchain patterns and caching
