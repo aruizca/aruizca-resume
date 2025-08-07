@@ -60,6 +60,30 @@ npm run pdf output/resume-20250805.html
 
 This skips LinkedIn parsing and AI generation, using only the PDF export pipeline.
 
+### Cover Letter Generation
+
+Generate personalized cover letters using your JSON resume and a job posting URL:
+
+```bash
+# Generate cover letter
+npm run cover-letter ./resume/resume-20250807.json https://example.com/job-posting
+```
+
+**Features:**
+- **JSON Resume Input**: Uses your generated JSON resume file
+- **Job Posting Scraping**: Automatically extracts job information from URLs
+- **AI-Powered**: Generates personalized cover letters using OpenAI
+- **Markdown Output**: Clean, formatted markdown files
+- **Date-Stamped**: Files named with generation date (`cover-letter-yyyymmdd.md`)
+
+**Example Usage:**
+```bash
+# Generate cover letter for a specific job
+npm run cover-letter ./resume/resume-20250807.json https://job-boards.greenhouse.io/cabify/jobs/4354653002
+
+# The cover letter will be saved to: output/cover-letter-20250807.md
+```
+
 Output files will be created in the `output/` directory with date stamps.
 
 ## Project Memory System

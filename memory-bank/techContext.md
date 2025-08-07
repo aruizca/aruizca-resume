@@ -92,7 +92,7 @@ npm start
 ### Source Code
 ```
 src/
-├── main.ts                      # CLI entry point
+├── resume-generator.ts          # CLI entry point for resume generation
 └── resume-generator/            # Main context module
     ├── service/                 # Application services
     ├── domain/                  # Domain models & logic

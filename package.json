@@ -1,9 +1,10 @@
 {
   "type": "module",
   "scripts": {
-    "build": "esbuild src/main/main.ts --bundle --platform=node --format=esm --outfile=dist/main.js",
-    "start": "npm run build && node --env-file=.env dist/main.js",
-    "start:fresh": "npm run build && node --env-file=.env dist/main.js --force-refresh",
+    "build": "esbuild src/main/resume-generator.ts --bundle --platform=node --format=esm --outfile=dist/resume-generator.js && esbuild src/main/cover-letter-generator.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter-generator.js",
+    "start": "npm run build && node --env-file=.env dist/resume-generator.js",
+    "start:fresh": "npm run build && node --env-file=.env dist/resume-generator.js --force-refresh",
+    "cover-letter": "npm run build && node --env-file=.env dist/cover-letter-generator.js",
     "pdf": "node src/main/playwright-pdf.js",
     "test": "vitest run",
     "test:unit": "vitest run src/test/unit",
