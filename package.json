@@ -11,10 +11,10 @@
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
-    "start": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume-generator.js",
-    "start:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume-generator.js --force-refresh",
-    "cover-letter": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter-generator.js",
-    "pdf": "node packages/core/src/main/playwright-pdf.js"
+    "start": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js",
+    "start:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js --force-refresh",
+    "cover-letter": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter.js",
+    "pdf": "node packages/core/src/main/shared/infrastructure/pdf/playwright-pdf.js"
   },
   "devDependencies": {
     "turbo": "^2.5.5"

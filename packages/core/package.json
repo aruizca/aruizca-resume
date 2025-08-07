@@ -6,8 +6,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "esbuild src/main/resume-generator.ts --bundle --platform=node --format=esm --outfile=dist/resume-generator.js && esbuild src/main/cover-letter-generator.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter-generator.js",
-    "dev": "esbuild src/main/resume-generator.ts --bundle --platform=node --format=esm --outfile=dist/resume-generator.js --watch",
+    "build": "esbuild src/main/resume/service/resume.ts --bundle --platform=node --format=esm --outfile=dist/resume.js && esbuild src/main/cover-letter/service/cover-letter.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter.js",
+    "dev": "esbuild src/main/resume/service/resume.ts --bundle --platform=node --format=esm --outfile=dist/resume.js --watch",
     "test": "vitest run",
     "test:unit": "vitest run src/test/unit",
     "test:watch": "vitest",
