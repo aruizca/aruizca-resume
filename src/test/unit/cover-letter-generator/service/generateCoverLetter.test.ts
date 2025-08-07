@@ -5,7 +5,7 @@ import { CoverLetterPromptRunner } from '../../../../main/cover-letter-generator
 import { CoverLetterRenderer } from '../../../../main/cover-letter-generator/infrastructure/output/CoverLetterRenderer';
 import { CoverLetterBuilder } from '../../../../main/cover-letter-generator/domain/services/CoverLetterBuilder';
 import { LinkedInParser } from '../../../../main/resume-generator/infrastructure/parsers/LinkedInParser';
-import { JobOffer, ParsedLinkedInData, CoverLetter } from '../../../../main/cover-letter-generator/domain/model';
+import { JobOffer } from '../../../../main/cover-letter-generator/domain/model';
 
 // Mock the fetch function
 global.fetch = vi.fn();
@@ -20,11 +20,11 @@ vi.mock('fs/promises', () => ({
 
 describe('GenerateCoverLetter', () => {
   let generateCoverLetter: GenerateCoverLetter;
-  let mockJobOfferScraper: vi.Mocked<JobOfferScraper>;
-  let mockPromptRunner: vi.Mocked<CoverLetterPromptRunner>;
-  let mockCoverLetterRenderer: vi.Mocked<CoverLetterRenderer>;
-  let mockCoverLetterBuilder: vi.Mocked<CoverLetterBuilder>;
-  let mockLinkedInParser: vi.Mocked<LinkedInParser>;
+  let mockJobOfferScraper: any;
+  let mockPromptRunner: any;
+  let mockCoverLetterRenderer: any;
+  let mockCoverLetterBuilder: any;
+  let mockLinkedInParser: any;
 
   beforeEach(() => {
     // Create mocks

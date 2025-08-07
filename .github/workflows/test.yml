@@ -31,7 +31,7 @@ jobs:
       run: npm test
       env:
         # Use a dummy API key for testing (tests are mocked)
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY || 'sk-test-dummy-key-for-testing' }}
+        OPENAI_API_KEY: sk-test-dummy-key-for-testing
 
     - name: Run build
       run: npm run build
