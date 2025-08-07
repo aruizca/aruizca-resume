@@ -1,0 +1,18 @@
+{
+  "name": "@aruizca-resume/web-ui",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Web UI for resume and cover letter generation",
+  "scripts": {
+    "build": "echo 'Web UI build script to be implemented'",
+    "dev": "echo 'Web UI dev script to be implemented'",
+    "test": "echo 'Web UI test script to be implemented'",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@aruizca-resume/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+} 

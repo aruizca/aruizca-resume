@@ -1,30 +1,22 @@
 {
+  "name": "aruizca-resume",
+  "version": "1.0.0",
   "type": "module",
+  "description": "AI-powered resume and cover letter generator",
+  "private": true,
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
-    "build": "esbuild src/main/resume-generator.ts --bundle --platform=node --format=esm --outfile=dist/resume-generator.js && esbuild src/main/cover-letter-generator.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter-generator.js",
-    "start": "pnpm run build && node --env-file=.env dist/resume-generator.js",
-    "start:fresh": "pnpm run build && node --env-file=.env dist/resume-generator.js --force-refresh",
-    "cover-letter": "pnpm run build && node --env-file=.env dist/cover-letter-generator.js",
-    "pdf": "node src/main/playwright-pdf.js",
-    "test": "vitest run",
-    "test:unit": "vitest run src/test/unit",
-    "test:watch": "vitest",
-    "test:watch:unit": "vitest src/test/unit"
-  },
-  "dependencies": {
-    "@jsonresume/schema": "^1.2.1",
-    "@langchain/core": "^0.3.66",
-    "@langchain/openai": "^0.6.3",
-    "ajv": "^8.17.1",
-    "jsonresume-theme-even": "^0.23.0",
-    "langchain": "^0.3.30",
-    "papaparse": "^5.5.3",
-    "playwright": "^1.54.2"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "start": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume-generator.js",
+    "start:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume-generator.js --force-refresh",
+    "cover-letter": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter-generator.js",
+    "pdf": "node packages/core/src/main/playwright-pdf.js"
   },
   "devDependencies": {
-    "@types/node": "^24.2.0",
-    "@types/papaparse": "^5.3.16",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
+    "turbo": "^2.5.5"
   }
 }

@@ -1,0 +1,1 @@
+export { GenerateCoverLetter } from './GenerateCoverLetter';

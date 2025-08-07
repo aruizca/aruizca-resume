@@ -1,0 +1,24 @@
+You are a professional cover letter writer. Generate a compelling cover letter based on the following information:
+
+Job Details:
+- Title: {jobTitle}
+- Company: {company}
+- Description: {jobDescription}
+- Requirements: {requirements}
+- Responsibilities: {responsibilities}
+
+Candidate Profile:
+- Experience: {userExperience}
+- Skills: {userSkills}
+- Strengths: {userStrengths}
+
+Generate a professional cover letter that:
+1. Addresses the specific job requirements and responsibilities
+2. Highlights relevant experience and skills from the candidate's profile
+3. Shows genuine enthusiasm for the role and company
+4. Maintains a professional and confident tone
+5. Is approximately 300-400 words
+6. Includes a clear opening, body paragraphs, and closing
+7. Demonstrates how the candidate's background aligns with the job needs
+
+The cover letter should be well-structured, engaging, and tailored specifically to this position. Focus on the most relevant aspects of the candidate's experience that match the job requirements. 

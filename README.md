@@ -2,6 +2,24 @@
 
 A local-first, CLI-based resume generator that transforms LinkedIn export data into professional resumes using AI. Built with Node.js + TypeScript + ESM, following DDD and Hexagonal Architecture principles.
 
+## 🏗️ Monorepo Structure
+
+This project is organized as a **Turborepo monorepo** with the following packages:
+
+```
+aruizca-resume/
+├── packages/
+│   ├── core/           # Resume and cover letter generation
+│   └── web-ui/         # Web interface (Milestone 4)
+├── turbo.json          # Turborepo configuration
+└── pnpm-workspace.yaml # pnpm workspace configuration
+```
+
+### 📦 Packages
+
+- **`@aruizca-resume/core`**: Core functionality for resume and cover letter generation
+- **`@aruizca-resume/web-ui`**: Web UI for cover letter generation (coming in Milestone 4)
+
 ## Features
 
 - **LinkedIn Integration**: Parse LinkedIn export ZIP files (CSV + HTML)
@@ -10,11 +28,13 @@ A local-first, CLI-based resume generator that transforms LinkedIn export data i
 - **Professional Themes**: Uses `jsonresume-theme-even-crewshin` for rendering
 - **Date-Stamped Output**: Files named with generation date (`resume-yyyymmdd.*`)
 - **Extensible Architecture**: Ready for future UI and cover letter features
+- **Monorepo**: Organized with Turborepo for scalability
 
 ## Quick Start
 
 ### Prerequisites
 - Node.js 18+ 
+- pnpm (recommended) or npm
 - OpenAI API key
 
 ### Setup
@@ -22,7 +42,7 @@ A local-first, CLI-based resume generator that transforms LinkedIn export data i
 ```bash
 git clone https://github.com/aruizca/aruizca-resume.git
 cd aruizca-resume
-npm install
+pnpm install
 ```
 
 2. **Configure environment**:
@@ -37,25 +57,24 @@ cp env.sample .env
 
 4. **Generate resume**:
 ```bash
-npm run build
-npm start
+pnpm start
 ```
 
 The script will automatically use the newest LinkedIn export in the `linkedin-export/` folder. You can also specify a custom path:
 ```bash
-npm start /path/to/custom/extracted/directory
+pnpm start /path/to/custom/extracted/directory
 ```
 
 **Performance Features:**
 - **OpenAI Caching**: Responses are cached for 8 hours to reduce API costs
 - **Force Refresh**: Use `--force-refresh` to bypass cache and get fresh AI responses
 ```bash
-npm start --force-refresh
+pnpm start --force-refresh
 ```
 
 5. **Generate PDF from existing HTML** (faster alternative):
 ```bash
-npm run pdf output/resume-20250805.html
+pnpm pdf output/resume-20250805.html
 ```
 
 This skips LinkedIn parsing and AI generation, using only the PDF export pipeline.
@@ -66,82 +85,42 @@ Generate personalized cover letters using your JSON resume and a job posting URL
 
 ```bash
 # Generate cover letter
-npm run cover-letter ./resume/resume-20250807.json https://example.com/job-posting
-```
-
-**Features:**
-- **JSON Resume Input**: Uses your generated JSON resume file
-- **Job Posting Scraping**: Automatically extracts job information from URLs
-- **AI-Powered**: Generates personalized cover letters using OpenAI
-- **Markdown Output**: Clean, formatted markdown files
-- **Date-Stamped**: Files named with generation date (`cover-letter-yyyymmdd.md`)
-
-**Example Usage:**
-```bash
-# Generate cover letter for a specific job
-npm run cover-letter ./resume/resume-20250807.json https://example.com/job-posting
+pnpm cover-letter ./resume/resume-20250807.json https://example.com/job-posting
 
 # The cover letter will be saved to: output/cover-letter-20250807.md
 ```
 
-Output files will be created in the `output/` directory with date stamps.
-
-## Project Memory System
-
-This project uses a comprehensive memory bank system to maintain context across development sessions. The `memory-bank/` directory contains:
-
-- **projectbrief.md**: Project goals, requirements, and scope
-- **productContext.md**: Purpose, user stories, and problems addressed
-- **activeContext.md**: Current work, open threads, decisions, and next steps
-- **systemPatterns.md**: Architecture, component relationships, and design patterns
-- **techContext.md**: Technologies, setup guides, and dependencies
-- **progress.md**: What's working, what's left, and known issues
-
-### For Contributors
-- Always reference memory bank files for complete project context
-- Update relevant memory files when making significant changes
-- Follow the architecture patterns documented in `systemPatterns.md`
-- Check `activeContext.md` for current development status
-
-## Architecture
-
-Built with Domain-Driven Design (DDD) + Hexagonal Architecture:
-
-```
-src/resume-generator/
-├── service/                    # Application Services (Use Cases)
-│   └── GenerateResume.ts      # Main orchestration service
-├── domain/                     # Domain Layer
-│   ├── model/Resume.ts        # Resume entity (JSON Resume schema)
-│   └── services/ResumeBuilder.ts # Domain logic
-├── infrastructure/             # Infrastructure Layer
-│   ├── parsers/LinkedInParser.ts # LinkedIn data extraction
-│   ├── langchain/PromptRunner.ts # AI/LLM integration
-│   └── output/                # Output renderers
-│       ├── HtmlRenderer.ts    # HTML generation
-│       └── PdfExporter.ts     # PDF export
-└── prompts/resumePrompt.txt   # AI prompt templates
-```
-
-## Data Flow
-
-```
-LinkedIn ZIP → LinkedInParser → ParsedData
-                                    ↓
-PromptRunner ← PromptTemplate ← OpenAI API
-                                    ↓
-ResumeBuilder → JSON Resume → HtmlRenderer → HTML
-                                    ↓
-PdfExporter → PDF
-```
-
 ## Development
 
-### Build & Run
+### Monorepo Commands
+
 ```bash
-npm run build    # Compile TypeScript
-npm start        # Full pipeline (LinkedIn → AI → HTML → PDF)
-npm run pdf      # PDF only (HTML → PDF, much faster)
+# Build all packages
+pnpm build
+
+# Run tests across all packages
+pnpm test
+
+# Development mode (watch for changes)
+pnpm dev
+
+# Clean all build artifacts
+pnpm clean
+
+# Lint all packages
+pnpm lint
+```
+
+### Package-Specific Commands
+
+```bash
+# Core package only
+pnpm --filter @aruizca-resume/core build
+pnpm --filter @aruizca-resume/core test
+
+# Web UI package only
+pnpm --filter @aruizca-resume/web-ui build
+pnpm --filter @aruizca-resume/web-ui dev
 ```
 
 ### Environment Variables
@@ -154,6 +133,30 @@ OPENAI_API_KEY=your-openai-api-key-here
 - `output/resume-yyyymmdd.html` - Rendered HTML
 - `output/resume-yyyymmdd.pdf` - PDF export
 
+## Architecture
+
+### Core Package (`@aruizca-resume/core`)
+```
+packages/core/
+├── src/
+│   ├── main/
+│   │   ├── resume-generator.ts      # CLI entry point
+│   │   ├── cover-letter-generator.ts # Cover letter CLI
+│   │   ├── resume-generator/        # Resume generation context
+│   │   ├── cover-letter-generator/  # Cover letter generation context
+│   │   └── shared/                  # Shared utilities
+│   └── test/                        # Unit tests
+└── dist/                            # Build output
+```
+
+### Web UI Package (`@aruizca-resume/web-ui`)
+```
+packages/web-ui/
+├── src/                             # Web UI source code
+├── public/                          # Static assets
+└── dist/                            # Build output
+```
+
 ## Current Status
 
 ### ✅ Completed
@@ -162,15 +165,17 @@ OPENAI_API_KEY=your-openai-api-key-here
 - HTML rendering with JSON Resume theme
 - Date-stamped file naming
 - AI-powered skill categorization
+- Cover letter generation with job scraping
+- Monorepo setup with Turborepo
+- pnpm workspace configuration
 
 ### 🔄 In Progress
-- LinkedIn parser enhancement (needs real CSV structure analysis)
-- PDF export implementation (Playwright integration)
+- Web UI development (Milestone 4)
 
 ### 📋 Planned
-- Comprehensive error handling
-- Unit and integration testing
-- Web UI and cover letter features
+- Web UI for cover letter generation
+- Advanced customization options
+- Multiple theme support
 
 ## CI/CD
 
@@ -188,14 +193,14 @@ This project uses GitHub Actions for automated testing and quality assurance:
 
 - **Dependency Management**: Weekly dependency updates and unused dependency detection
 
-See [`.github/README.md`](.github/README.md) for detailed workflow documentation.
-
 ## Dependencies
 
 ### Core
 - **Node.js + TypeScript + ESM**: Modern JavaScript development
 - **esbuild**: Fast TypeScript bundler
 - **OpenAI API**: ChatGPT 4o for content generation
+- **Turborepo**: Monorepo build system
+- **pnpm**: Package manager
 
 ### Data Processing
 - **papaparse**: CSV parsing for LinkedIn exports
