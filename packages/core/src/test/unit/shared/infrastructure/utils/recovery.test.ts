@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { GracefulRecovery } from '../../../../../main/shared/infrastructure/utils/recovery';
-import { ValidationError, APIError } from '../../../../../main/shared/infrastructure/utils/errors';
+import { GracefulRecovery, ValidationError, APIError } from '../../../../../main/shared';
 
 describe('Graceful Recovery', () => {
   beforeEach(() => {

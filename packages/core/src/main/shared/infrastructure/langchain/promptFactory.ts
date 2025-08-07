@@ -35,7 +35,7 @@ export class PromptFactory {
    * Creates a resume generation prompt template
    */
   static async createResumePrompt(): Promise<PromptTemplate> {
-    const promptPath = join(process.cwd(), 'src', 'main', 'resume-generator', 'prompts', 'resumePrompt.txt');
+    const promptPath = join(process.cwd(), 'packages', 'core', 'src', 'main', 'resume', 'prompts', 'resumePrompt.txt');
     return this.createFromFile(promptPath);
   }
 
@@ -43,7 +43,7 @@ export class PromptFactory {
    * Creates a cover letter generation prompt template
    */
   static async createCoverLetterPrompt(): Promise<PromptTemplate> {
-    const promptPath = join(process.cwd(), 'src', 'main', 'cover-letter-generator', 'prompts', 'coverLetterPrompt.txt');
+    const promptPath = join(process.cwd(), 'packages', 'core', 'src', 'main', 'cover-letter', 'prompts', 'coverLetterPrompt.txt');
     return this.createFromFile(promptPath);
   }
 } 

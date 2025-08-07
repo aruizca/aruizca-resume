@@ -63,6 +63,7 @@ src/resume-generator/
 ### 5. Barrel Exports Pattern
 - **Purpose**: Clean imports and encapsulation through `index.ts` files
 - **Implementation**: Each directory has an `index.ts` that re-exports from sub-modules
+- **Requirement**: ALL imports MUST use the barrel pattern. Direct imports from specific files are NOT allowed.
 - **Benefits**: 
   - Clean imports: `import { Component } from './components'` vs `import { Component } from './components/Component'`
   - Encapsulation: Hide internal file structure from consumers
@@ -90,6 +91,25 @@ export * from './performanceMonitor';
 ```
 
 #### Best Practices
+- **MANDATORY**: All imports must use the barrel pattern through index.ts files
+- **CRITICAL RULE**: NEVER import from subfolders below domain context folders:
+  ```typescript
+  // ✅ CORRECT - Only import from domain context level
+  import { LinkedInParser } from '../main/resume';
+  import { ValidationError } from '../main/shared';
+  import { JobOffer } from '../main/cover-letter';
+
+  // ❌ WRONG - Never import from subfolders
+  import { LinkedInParser } from '../main/resume/infrastructure';
+  import { ValidationError } from '../main/shared/infrastructure/utils';
+  import { JobOffer } from '../main/cover-letter/domain/model';
+  ```
+- **NO EXCEPTIONS**: Direct imports from specific files are not allowed
+- **Import Optimization**:
+  - Combine imports from the same module into a single import statement
+  - Remove all unused imports
+  - Sort imports by: third-party → shared → domain → infrastructure
+  - Keep vitest/jest imports in a single line when used together
 - **Explicit named exports** over `export *` for better tree-shaking
 - **Avoid `export *` with CommonJS modules** - use explicit named exports instead
 - **Performance consideration**: Barrel files can slow down builds in Next.js
@@ -97,7 +117,23 @@ export * from './performanceMonitor';
 
 #### Example Pattern
 ```typescript
-// ✅ Good - Explicit named exports
+// ✅ Good - Optimized imports following standard order
+import { describe, it, expect, vi, beforeEach } from 'vitest';                // Test framework
+import { OpenAI } from 'langchain/llms/openai';                              // Third-party
+import { readFile, writeFile } from 'fs/promises';                           // Node built-ins
+import { Resume, ResumeBuilder } from './domain';                            // Local domain
+import { LinkedInParser, PromptRunner } from './infrastructure';             // Local infrastructure
+
+// ❌ Bad - Unoptimized imports
+import { Resume } from './domain/model/Resume';                              // Direct import
+import { describe } from 'vitest';
+import { it } from 'vitest';                                                 // Split test imports
+import { expect } from 'vitest';
+import { readFile } from 'fs/promises';
+import { writeFile } from 'fs/promises';                                     // Split fs imports
+import { ResumeBuilder } from './domain/services/ResumeBuilder';             // Direct import
+
+// ✅ Good - Explicit named exports in barrel files
 export { Resume } from './model/Resume';
 export { ResumeBuilder } from './services/ResumeBuilder';
 
@@ -160,4 +196,4 @@ interface Resume {
 2. **Cover Letter Generation**: Additional AI-powered content
 3. **Multiple Themes**: Theme selection and customization
 4. **Cloud Storage**: Remote file storage and sharing
-5. **Collaboration**: Multi-user editing and versioning 
+5. **Collaboration**: Multi-user editing and versioning

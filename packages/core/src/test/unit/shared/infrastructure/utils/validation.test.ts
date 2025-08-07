@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { validateLinkedInExportDirectory, validateEnvironment, validateOutputDirectory, validateCommandLineArgs } from '../../../../../main';
+import { validateLinkedInExportDirectory, validateEnvironment, validateOutputDirectory, validateCommandLineArgs } from '../../../../../main/shared';
 import { writeFile, mkdir, rm } from 'fs/promises';
 import { join } from 'path';
 

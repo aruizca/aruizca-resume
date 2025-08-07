@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveErrorMessage } from '../../../../../main/shared';
-import { ValidationError, FileSystemError, APIError } from '../../../../../main/shared';
+import { resolveErrorMessage, ValidationError, FileSystemError, APIError } from '../../../../../main/shared';
 
 describe('Error Message Resolution', () => {
   describe('resolveErrorMessage', () => {

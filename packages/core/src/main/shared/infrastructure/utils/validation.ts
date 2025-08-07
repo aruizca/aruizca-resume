@@ -1,6 +1,6 @@
 import { access, readdir } from 'fs/promises';
 import { join } from 'path';
-import { ValidationError, FileSystemError } from './errors';
+import { ValidationError, FileSystemError } from '../..';
 
 export async function validateEnvironment(): Promise<void> {
   const apiKey = process.env.OPENAI_API_KEY;
