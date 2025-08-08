@@ -68,7 +68,8 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
     handleFileSelection(file)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
     if (!linkedinExportFile) {
       setUploadError('Please upload your LinkedIn data export file')
       return
@@ -79,39 +80,39 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
   const isValid = linkedinExportFile !== null
 
   return (
-    <VStack spacing={6} align="stretch">
-        
-        {/* LinkedIn Export Upload */}
-        <FormControl isRequired>
-          <FormLabel>LinkedIn Data Export</FormLabel>
-          <Box
-            border="2px dashed"
-            borderColor={dragActive ? "brand.500" : "gray.300"}
-            borderRadius="md"
-            p={8}
-            textAlign="center"
-            bg={dragActive ? "brand.50" : "gray.50"}
-            cursor="pointer"
-            transition="all 0.2s"
-            minH="120px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => document.getElementById('linkedin-upload')?.click()}
-          >
-            <Input
-              id="linkedin-upload"
-              type="file"
-              accept=".zip"
-              onChange={handleFileChange}
-              display="none"
-              required={false}
-            />
-            {linkedinExportFile ? (
+    <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <VStack spacing={6} align="stretch">
+          
+          {/* LinkedIn Export Upload */}
+          <FormControl>
+            <FormLabel>LinkedIn Data Export</FormLabel>
+            <Box
+              border="2px dashed"
+              borderColor={dragActive ? "brand.500" : "gray.300"}
+              borderRadius="md"
+              p={8}
+              textAlign="center"
+              bg={dragActive ? "brand.50" : "gray.50"}
+              cursor="pointer"
+              transition="all 0.2s"
+              minH="120px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => document.getElementById('linkedin-upload')?.click()}
+            >
+              <Input
+                id="linkedin-upload"
+                type="file"
+                accept=".zip"
+                onChange={handleFileChange}
+                display="none"
+              />
+              {linkedinExportFile ? (
               <VStack spacing={2}>
                 <Text color="green.600" fontWeight="medium" fontSize="lg">
                   ✅ {linkedinExportFile.name}
@@ -211,7 +212,7 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
 
         {/* Generate Button */}
         <Button
-          onClick={handleSubmit}
+          type="submit"
           colorScheme="brand"
           size="lg"
           isLoading={isGenerating}
@@ -230,6 +231,7 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
             </Text>
           </Box>
         )}
-    </VStack>
+      </VStack>
+    </form>
   )
 }
