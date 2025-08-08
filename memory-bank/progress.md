@@ -15,7 +15,7 @@
 **Status**: ✅ **COMPLETE** - Successfully migrated to clean monorepo structure
 
 ### **Key Achievements:**
-- ✅ **Package Organization**: Clean separation between core and web-ui packages
+- ✅ **Package Organization**: Clean separation between core and webapp packages
 - ✅ **Duplicate Removal**: Eliminated all duplicate code between old `src` and `packages/core/src`
 - ✅ **Path Updates**: Fixed all file paths to use monorepo structure
 - ✅ **Build System**: Turbo-based build system working correctly
@@ -61,7 +61,7 @@
 - ✅ **Export Features**: Copy to clipboard functionality (PDF placeholder)
 
 ### Monorepo Architecture
-- ✅ **Package Structure**: Clean separation between `@aruizca-resume/core` and `@aruizca-resume/web-ui`
+- ✅ **Package Structure**: Clean separation between `@aruizca-resume/core` and `@aruizca-resume/webapp`
 - ✅ **Build System**: Turbo-based build system for efficient monorepo management
 - ✅ **Scripts**: All npm scripts updated to work with monorepo structure
 - ✅ **Path Management**: All file paths updated to use monorepo structure

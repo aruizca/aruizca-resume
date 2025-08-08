@@ -1,8 +1,8 @@
 {
-  "name": "@aruizca-resume/web-ui",
+  "name": "@aruizca-resume/webapp",
   "version": "1.0.0",
   "type": "module",
-  "description": "Web UI for resume and cover letter generation",
+  "description": "Web application for resume and cover letter generation",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

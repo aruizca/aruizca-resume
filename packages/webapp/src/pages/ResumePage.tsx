@@ -1,6 +1,9 @@
 import {
+  Alert,
+  AlertIcon,
   Box,
   Button,
+  CloseButton,
   Heading,
   SimpleGrid,
   Text
@@ -12,7 +15,7 @@ import { ResumeGenerationForm } from '../components/ResumeGenerationForm';
  * Resume generation page component
  */
 export const ResumePage = () => {
-  const { generatedResume, isGenerating, handleResumeSubmit } = useResumeGeneration();
+  const { generatedResume, isGenerating, error, handleResumeSubmit, clearError } = useResumeGeneration();
 
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
@@ -28,6 +31,24 @@ export const ResumePage = () => {
         <Heading as="h2" size="lg" mb={6}>
           LinkedIn Data Upload
         </Heading>
+        
+        {/* Error Alert */}
+        {error && (
+          <Alert status="error" mb={6} borderRadius="md">
+            <AlertIcon />
+            <Box flex="1">
+              <Text fontSize="sm">{error}</Text>
+            </Box>
+            <CloseButton
+              alignSelf="flex-start"
+              position="relative"
+              right={-1}
+              top={-1}
+              onClick={clearError}
+            />
+          </Alert>
+        )}
+        
         <ResumeGenerationForm
           onSubmit={handleResumeSubmit}
           isGenerating={isGenerating}

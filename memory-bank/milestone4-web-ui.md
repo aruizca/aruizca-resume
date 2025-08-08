@@ -4,7 +4,7 @@
 Implementation of a single-page web application that allows users to generate and refine cover letters for job postings based on a JSON Resume and job offer URL.
 
 ## Technical Implementation
-- **Code Location**: `packages/web-ui/` in the monorepo
+- **Code Location**: `packages/webapp/` in the monorepo
 - **Tech Stack**: React 18 + TypeScript + Vite + Chakra UI v3
 - **Design System**: Chakra UI with custom branding and theming
 - **Architecture**: Component-based with clean separation of concerns
@@ -51,7 +51,7 @@ Design and implement a **static HTML single-page UI** that captures all required
 
 #### Technical Details:
 ```
-packages/web-ui/
+packages/webapp/
 ├── src/
 │   ├── App.tsx                    # Main application component
 │   ├── main.tsx                   # React 18 entry point

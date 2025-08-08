@@ -64,7 +64,7 @@ importers:
         specifier: ^1.0.0
         version: 1.6.1(@types/node@24.2.0)
 
-  packages/web-ui:
+  packages/webapp:
     dependencies:
       '@aruizca-resume/core':
         specifier: workspace:*

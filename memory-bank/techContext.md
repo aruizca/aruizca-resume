@@ -27,7 +27,7 @@
 - **Git**: Version control
 - **pnpm**: Package management (primary)
 - **Turbo**: Monorepo build system
-- **Vite**: Fast development server with HMR for web-ui
+- **Vite**: Fast development server with HMR for webapp
 - **concurrently**: Run multiple dev processes in parallel
 - **Vitest**: Fast unit test runner
 - **TypeScript Compiler**: Watch mode for real-time type checking
@@ -88,7 +88,7 @@ pnpm start
 #### For Web UI Development (with Hot Reload)
 ```bash
 # Start full development mode (recommended)
-pnpm start:dev               # Runs both core watch and web-ui dev server
+pnpm start:dev               # Runs both core watch and webapp dev server
 
 # OR start components separately  
 pnpm dev:full                # Same as start:dev - runs both in parallel
@@ -97,7 +97,7 @@ pnpm dev:core                # Core package TypeScript watch only
 ```
 
 **Features:**
-- ✅ **Hot Module Replacement (HMR)**: Changes in web-ui reflect immediately
+- ✅ **Hot Module Replacement (HMR)**: Changes in webapp reflect immediately
 - ✅ **TypeScript Watch Mode**: Core package types update automatically  
 - ✅ **Cross-package Detection**: Vite watches core package changes
 - ✅ **Parallel Execution**: Core and UI build in parallel with colored logs
