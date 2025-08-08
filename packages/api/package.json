@@ -6,11 +6,8 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "build:full": "pnpm --filter @aruizca-resume/webapp run build && tsc",
     "dev": "tsx watch src/server.ts",
-    "dev:full": "pnpm --filter @aruizca-resume/webapp run build && tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "start:full": "pnpm build:full && node dist/server.js",
     "test": "echo 'No tests yet'",
     "clean": "rm -rf dist"
   },
