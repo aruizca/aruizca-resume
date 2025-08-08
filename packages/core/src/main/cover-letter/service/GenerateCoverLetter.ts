@@ -111,7 +111,8 @@ export class GenerateCoverLetter {
   async runWithJsonResume(
     jsonResumePath: string,
     jobOfferUrl: string, 
-    outputDir: string
+    outputDir: string,
+    forceRefresh: boolean = false
   ): Promise<CoverLetterGenerationResult> {
     try {
       console.log('🚀 Starting cover letter generation with JSON resume...');
@@ -122,7 +123,7 @@ export class GenerateCoverLetter {
 
       // Step 2: Scrape job offer
       console.log('📄 Scraping job offer...');
-      const scrapingResult = await this.jobOfferScraper.scrape(jobOfferUrl);
+      const scrapingResult = await this.jobOfferScraper.scrape(jobOfferUrl, forceRefresh);
       if (!scrapingResult.success || !scrapingResult.jobOffer) {
         return {
           success: false,

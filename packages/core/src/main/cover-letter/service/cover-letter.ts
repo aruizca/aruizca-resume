@@ -15,14 +15,19 @@ async function main() {
 
   const args = process.argv.slice(2);
   
-  if (args.length < 2) {
-    console.error('❌ Usage: node cover-letter-generator.js <json-resume-path> <job-posting-url> [--test-html <html-file>]');
-    console.error('   Example: node cover-letter-generator.js ./resume/resume-20250807.json https://example.com/job');
-    console.error('   Test mode: node cover-letter-generator.js ./resume/resume-20250807.json https://example.com/job --test-html ./test-job-posting.html');
+  // Parse command line arguments
+  const forceRefresh = args.includes('--force-refresh');
+  const filteredArgs = args.filter(arg => arg !== '--force-refresh');
+  
+  if (filteredArgs.length < 2) {
+    console.error('❌ Usage: node cover-letter.js <json-resume-path> <job-posting-url> [--test-html <html-file>] [--force-refresh]');
+    console.error('   Example: node cover-letter.js ./resume/resume-20250807.json https://example.com/job');
+    console.error('   Test mode: node cover-letter.js ./resume/resume-20250807.json https://example.com/job --test-html ./test-job-posting.html');
+    console.error('   Force refresh: node cover-letter.js ./resume/resume-20250807.json https://example.com/job --force-refresh');
     process.exit(1);
   }
 
-  const [jsonResumePath, jobPostingUrl, ...remainingArgs] = args;
+  const [jsonResumePath, jobPostingUrl, ...remainingArgs] = filteredArgs;
   
   // Check for test mode
   const testHtmlIndex = remainingArgs.indexOf('--test-html');
@@ -47,6 +52,9 @@ async function main() {
   if (testHtmlPath) {
     console.log(`🧪 Test HTML File: ${testHtmlPath}`);
   }
+  if (forceRefresh) {
+    console.log('🔄 Force refresh enabled - bypassing job posting cache');
+  }
   console.log(`📁 Output Directory: ${join(process.cwd(), 'output')}`);
 
   try {
@@ -66,7 +74,7 @@ async function main() {
       }
     } else {
       // Normal mode: scrape from URL
-      const result = await generator.runWithJsonResume(jsonResumePath, jobPostingUrl, join(process.cwd(), 'output'));
+      const result = await generator.runWithJsonResume(jsonResumePath, jobPostingUrl, join(process.cwd(), 'output'), forceRefresh);
       
       if (result.success) {
         console.log('✅ Cover letter generated successfully!');

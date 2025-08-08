@@ -3,7 +3,7 @@ import { CoverLetterPromptRunner, DefaultCoverLetterPromptRunner } from '../lang
 import { JobPostingCache, JobPostingCacheOptions } from '../cache/JobPostingCache';
 
 export interface JobOfferScraper {
-  scrape(url: string): Promise<JobOfferScrapingResult>;
+  scrape(url: string, forceRefresh?: boolean): Promise<JobOfferScrapingResult>;
 }
 
 export class DefaultJobOfferScraper implements JobOfferScraper {
@@ -18,12 +18,12 @@ export class DefaultJobOfferScraper implements JobOfferScraper {
     this.cache = new JobPostingCache(cacheOptions);
   }
 
-  async scrape(url: string): Promise<JobOfferScrapingResult> {
+  async scrape(url: string, forceRefresh: boolean = false): Promise<JobOfferScrapingResult> {
     try {
       console.log(`🔍 Scraping job offer from: ${url}`);
       
-      // Step 1: Check cache first
-      const cachedJobOffer = await this.cache.get(url);
+      // Step 1: Check cache first (unless force refresh is enabled)
+      const cachedJobOffer = await this.cache.get(url, forceRefresh);
       if (cachedJobOffer) {
         console.log('✅ Using cached job posting data');
         return {

@@ -4,15 +4,29 @@
   "type": "module",
   "description": "Web UI for resume and cover letter generation",
   "scripts": {
-    "build": "echo 'Web UI build script to be implemented'",
-    "dev": "echo 'Web UI dev script to be implemented'",
-    "test": "echo 'Web UI test script to be implemented'",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@aruizca-resume/core": "workspace:*"
+    "@aruizca-resume/core": "workspace:*",
+    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/icons": "^2.1.1",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.0",
+    "framer-motion": "^10.16.16",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.0.0",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
   }
 } 
