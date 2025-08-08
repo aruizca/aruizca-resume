@@ -10,29 +10,28 @@ vi.mock('fs/promises', () => ({
 
 // Mock the resume-generator module
 vi.mock('../../../../main', () => ({
-  GenerateResume: vi.fn().mockImplementation(() => ({
+  ResumeGenerator: vi.fn().mockImplementation(() => ({
     run: vi.fn().mockImplementation(async (linkedInDir: string, outputDir: string) => {
       // Import the mocked dependencies
-      const { LinkedInParser, PromptRunner, ResumeBuilder, HtmlRenderer, PdfExporter } = await import('../../../../main');
+      const { LinkedInZipParser, PromptRunner, HtmlExporter, PdfExporter } = await import('../../../../main');
       
       // Create instances and call the pipeline
-      const linkedInParser = new (LinkedInParser as any)();
+      const linkedInParser = new (LinkedInZipParser as any)();
       const promptRunner = new (PromptRunner as any)();
-      const resumeBuilder = new (ResumeBuilder as any)();
-      const htmlRenderer = new (HtmlRenderer as any)();
+      const htmlExporter = new (HtmlExporter as any)();
       const pdfExporter = new (PdfExporter as any)();
       
       const parsedData = await linkedInParser.parse(linkedInDir);
-      const llmData = await promptRunner.run(parsedData);
-      const resume = resumeBuilder.build(llmData);
-      const html = await htmlRenderer.render(resume);
-      await pdfExporter.export(html, join(outputDir, 'resume-20250806.pdf'));
+      const resume = await promptRunner.run(parsedData);
+      const html = await htmlExporter.export(resume);
+      const pdfBuffer = await pdfExporter.export(resume);
       
       // Mock file operations
       const { writeFile, mkdir } = await import('fs/promises');
       await mkdir(outputDir, { recursive: true });
       await writeFile(join(outputDir, 'resume-20250806.json'), JSON.stringify(resume));
       await writeFile(join(outputDir, 'resume-20250806.html'), html);
+      await writeFile(join(outputDir, 'resume-20250806.pdf'), pdfBuffer);
       
       return {
         jsonPath: join(outputDir, 'resume-20250806.json'),
@@ -41,18 +40,17 @@ vi.mock('../../../../main', () => ({
       };
     })
   })),
-  LinkedInParser: vi.fn(),
+  LinkedInZipParser: vi.fn(),
   PromptRunner: vi.fn(),
-  ResumeBuilder: vi.fn(),
-  HtmlRenderer: vi.fn(),
+  HtmlExporter: vi.fn(),
   PdfExporter: vi.fn()
 }));
 
-describe('GenerateResume', () => {
+describe('ResumeGenerator', () => {
   let generateResume: any;
   let mockLinkedInParser: any;
   let mockPromptRunner: any;
-  let mockResumeBuilder: any;
+
   let mockHtmlRenderer: any;
   let mockPdfExporter: any;
   const mockWriteFile = writeFile as any;
@@ -68,27 +66,25 @@ describe('GenerateResume', () => {
     mockPromptRunner = {
       run: vi.fn()
     };
-    mockResumeBuilder = {
-      build: vi.fn()
-    };
+
     mockHtmlRenderer = {
-      render: vi.fn()
+      export: vi.fn()
     };
     mockPdfExporter = {
       export: vi.fn()
     };
 
     // Import the mocked modules
-    const { GenerateResume, LinkedInParser, PromptRunner, ResumeBuilder, HtmlRenderer, PdfExporter } = await import('../../../../main');
+    const { ResumeGenerator, LinkedInZipParser, PromptRunner, HtmlExporter, PdfExporter } = await import('../../../../main');
     
     // Mock the constructors
-    (LinkedInParser as any).mockImplementation(() => mockLinkedInParser);
+    (LinkedInZipParser as any).mockImplementation(() => mockLinkedInParser);
     (PromptRunner as any).mockImplementation(() => mockPromptRunner);
-    (ResumeBuilder as any).mockImplementation(() => mockResumeBuilder);
-    (HtmlRenderer as any).mockImplementation(() => mockHtmlRenderer);
+
+    (HtmlExporter as any).mockImplementation(() => mockHtmlRenderer);
     (PdfExporter as any).mockImplementation(() => mockPdfExporter);
 
-    generateResume = new (GenerateResume as any)();
+    generateResume = new (ResumeGenerator as any)();
   });
 
   afterEach(() => {
@@ -118,10 +114,10 @@ describe('GenerateResume', () => {
 
       // Mock all the dependencies
       mockLinkedInParser.parse.mockResolvedValue(mockParsedData);
-      mockPromptRunner.run.mockResolvedValue(mockLlmData);
-      mockResumeBuilder.build.mockReturnValue(mockResume);
-      mockHtmlRenderer.render.mockResolvedValue(mockHtml);
-      mockPdfExporter.export.mockResolvedValue(undefined);
+      mockPromptRunner.run.mockResolvedValue(mockResume);
+
+      mockHtmlRenderer.export.mockResolvedValue(mockHtml);
+      mockPdfExporter.export.mockResolvedValue(Buffer.from('fake pdf content'));
       mockMkdir.mockResolvedValue(undefined);
       mockWriteFile.mockResolvedValue(undefined);
 
@@ -130,13 +126,13 @@ describe('GenerateResume', () => {
       // Verify all steps were called
       expect(mockLinkedInParser.parse).toHaveBeenCalledWith('test-linkedin-dir');
       expect(mockPromptRunner.run).toHaveBeenCalledWith(mockParsedData);
-      expect(mockResumeBuilder.build).toHaveBeenCalledWith(mockLlmData);
-      expect(mockHtmlRenderer.render).toHaveBeenCalledWith(mockResume);
-      expect(mockPdfExporter.export).toHaveBeenCalledWith(mockHtml, expect.stringContaining('resume-'));
+
+      expect(mockHtmlRenderer.export).toHaveBeenCalledWith(mockResume);
+      expect(mockPdfExporter.export).toHaveBeenCalledWith(mockResume);
       expect(mockMkdir).toHaveBeenCalledWith('test-output', { recursive: true });
 
       // Verify file writes
-      expect(mockWriteFile).toHaveBeenCalledTimes(2); // JSON and HTML files
+      expect(mockWriteFile).toHaveBeenCalledTimes(3); // JSON, HTML, and PDF files
       expect(result).toHaveProperty('jsonPath');
       expect(result).toHaveProperty('htmlPath');
       expect(result).toHaveProperty('pdfPath');
@@ -158,8 +154,8 @@ describe('GenerateResume', () => {
     it('should handle HtmlRenderer errors', async () => {
       mockLinkedInParser.parse.mockResolvedValue({});
       mockPromptRunner.run.mockResolvedValue({});
-      mockResumeBuilder.build.mockReturnValue({});
-      mockHtmlRenderer.render.mockRejectedValue(new Error('HTML rendering failed'));
+
+      mockHtmlRenderer.export.mockRejectedValue(new Error('HTML rendering failed'));
 
       await expect(generateResume.run('test-dir', 'test-output')).rejects.toThrow('HTML rendering failed');
     });
@@ -167,8 +163,8 @@ describe('GenerateResume', () => {
     it('should handle PdfExporter errors', async () => {
       mockLinkedInParser.parse.mockResolvedValue({});
       mockPromptRunner.run.mockResolvedValue({});
-      mockResumeBuilder.build.mockReturnValue({});
-      mockHtmlRenderer.render.mockResolvedValue('<html></html>');
+
+      mockHtmlRenderer.export.mockResolvedValue('<html></html>');
       mockPdfExporter.export.mockRejectedValue(new Error('PDF export failed'));
 
       await expect(generateResume.run('test-dir', 'test-output')).rejects.toThrow('PDF export failed');
@@ -180,8 +176,8 @@ describe('GenerateResume', () => {
 
       mockLinkedInParser.parse.mockResolvedValue({});
       mockPromptRunner.run.mockResolvedValue({});
-      mockResumeBuilder.build.mockReturnValue({});
-      mockHtmlRenderer.render.mockResolvedValue('<html></html>');
+
+      mockHtmlRenderer.export.mockResolvedValue('<html></html>');
       mockPdfExporter.export.mockResolvedValue(undefined);
       mockMkdir.mockResolvedValue(undefined);
       mockWriteFile.mockResolvedValue(undefined);
@@ -198,8 +194,8 @@ describe('GenerateResume', () => {
     it('should create output directory if it does not exist', async () => {
       mockLinkedInParser.parse.mockResolvedValue({});
       mockPromptRunner.run.mockResolvedValue({});
-      mockResumeBuilder.build.mockReturnValue({});
-      mockHtmlRenderer.render.mockResolvedValue('<html></html>');
+
+      mockHtmlRenderer.export.mockResolvedValue('<html></html>');
       mockPdfExporter.export.mockResolvedValue(undefined);
       mockMkdir.mockResolvedValue(undefined);
       mockWriteFile.mockResolvedValue(undefined);

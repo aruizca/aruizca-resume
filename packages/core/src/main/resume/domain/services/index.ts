@@ -1,1 +1,1 @@
-export * from './ResumeBuilder'; 
+export * from './IJsonResumeExporter'; 

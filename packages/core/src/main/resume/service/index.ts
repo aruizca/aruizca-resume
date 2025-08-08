@@ -1,1 +1,1 @@
-export * from './GenerateResume'; 
+export * from './ResumeGenerator';

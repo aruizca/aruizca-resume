@@ -1,1 +1,1 @@
-export * from './LinkedInParser'; 
+export * from './LinkedInZipParser'; 

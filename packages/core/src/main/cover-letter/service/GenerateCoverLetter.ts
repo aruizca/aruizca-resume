@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { LinkedInParser } from '../../resume';
+import { LinkedInZipParser } from '../../resume';
 import { CoverLetter, CoverLetterBuilder, JobOffer, ParsedLinkedInData } from '../domain';
 import { CoverLetterPromptRunner, CoverLetterRenderer, DefaultCoverLetterPromptRunner, DefaultCoverLetterRenderer, DefaultJobOfferScraper, JobOfferScraper } from '../infrastructure';
 
@@ -16,20 +16,20 @@ export class GenerateCoverLetter {
   private promptRunner: CoverLetterPromptRunner;
   private coverLetterRenderer: CoverLetterRenderer;
   private coverLetterBuilder: CoverLetterBuilder;
-  private linkedInParser: LinkedInParser;
+  private linkedInParser: LinkedInZipParser;
 
   constructor(
     jobOfferScraper?: JobOfferScraper,
     promptRunner?: CoverLetterPromptRunner,
     coverLetterRenderer?: CoverLetterRenderer,
     coverLetterBuilder?: CoverLetterBuilder,
-    linkedInParser?: LinkedInParser
+    linkedInParser?: LinkedInZipParser
   ) {
     this.promptRunner = promptRunner || new DefaultCoverLetterPromptRunner();
     this.jobOfferScraper = jobOfferScraper || new DefaultJobOfferScraper();
     this.coverLetterRenderer = coverLetterRenderer || new DefaultCoverLetterRenderer();
     this.coverLetterBuilder = coverLetterBuilder || new CoverLetterBuilder();
-    this.linkedInParser = linkedInParser || new LinkedInParser();
+    this.linkedInParser = linkedInParser || new LinkedInZipParser();
   }
 
   async run(

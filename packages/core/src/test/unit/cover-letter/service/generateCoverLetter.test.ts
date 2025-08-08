@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CoverLetterBuilder, JobOffer, GenerateCoverLetter, CoverLetterPromptRunner, CoverLetterRenderer, JobOfferScraper } from '../../../../main/cover-letter';
-import { LinkedInParser } from '../../../../main/resume';
+import { LinkedInZipParser } from '../../../../main/resume';
 
 // Mock the fetch function
 global.fetch = vi.fn();
@@ -19,7 +19,7 @@ describe('GenerateCoverLetter', () => {
   let mockPromptRunner: any;
   let mockCoverLetterRenderer: any;
   let mockCoverLetterBuilder: any;
-  let mockLinkedInParser: any;
+  let mockLinkedInZipParser: any;
 
   beforeEach(() => {
     // Create mocks
@@ -42,7 +42,7 @@ describe('GenerateCoverLetter', () => {
       build: vi.fn()
     } as any;
 
-    mockLinkedInParser = {
+    mockLinkedInZipParser = {
       parse: vi.fn()
     } as any;
 
@@ -52,7 +52,7 @@ describe('GenerateCoverLetter', () => {
       mockPromptRunner,
       mockCoverLetterRenderer,
       mockCoverLetterBuilder,
-      mockLinkedInParser
+      mockLinkedInZipParser
     );
   });
 

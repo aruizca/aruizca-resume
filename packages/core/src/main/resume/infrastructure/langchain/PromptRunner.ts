@@ -1,5 +1,6 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { ChainFactory, ModelFactory, OpenAICache } from '../../../shared';
+import { Resume } from '../../domain';
 
 export class PromptRunner {
   private model: ChatOpenAI;
@@ -10,7 +11,7 @@ export class PromptRunner {
     this.cache = new OpenAICache({ forceRefresh });
   }
 
-  async run(parsedData: any, forceRefresh: boolean = false): Promise<any> {
+  async run(parsedData: any, forceRefresh: boolean = false): Promise<Resume> {
     try {
       // Create the chain using shared utilities
       const chain = await ChainFactory.createResumeChain(this.model);
@@ -19,7 +20,7 @@ export class PromptRunner {
       const promptTemplateString = JSON.stringify(parsedData, null, 2);
       const cachedResponse = await this.cache.get(parsedData, promptTemplateString, forceRefresh);
       if (cachedResponse) {
-        return cachedResponse;
+        return cachedResponse as Resume;
       }
 
       // Prepare input variables
@@ -35,7 +36,8 @@ export class PromptRunner {
       // Cache the response
       await this.cache.set(parsedData, promptTemplateString, result);
       
-      return result;
+      // Return as Resume (LLM is configured to output JSON Resume format)
+      return result as Resume;
     } catch (error) {
       // Handle JSON parsing errors more gracefully
       if (error instanceof Error && error.message.includes('JSON')) {
