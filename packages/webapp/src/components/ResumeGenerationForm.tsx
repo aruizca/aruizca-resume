@@ -68,8 +68,7 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
     handleFileSelection(file)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     if (!linkedinExportFile) {
       setUploadError('Please upload your LinkedIn data export file')
       return
@@ -80,8 +79,7 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
   const isValid = linkedinExportFile !== null
 
   return (
-    <form onSubmit={handleSubmit}>
-      <VStack spacing={6} align="stretch">
+    <VStack spacing={6} align="stretch">
         
         {/* LinkedIn Export Upload */}
         <FormControl isRequired>
@@ -111,6 +109,7 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
               accept=".zip"
               onChange={handleFileChange}
               display="none"
+              required={false}
             />
             {linkedinExportFile ? (
               <VStack spacing={2}>
@@ -212,7 +211,7 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
 
         {/* Generate Button */}
         <Button
-          type="submit"
+          onClick={handleSubmit}
           colorScheme="brand"
           size="lg"
           isLoading={isGenerating}
@@ -231,7 +230,6 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
             </Text>
           </Box>
         )}
-      </VStack>
-    </form>
+    </VStack>
   )
 }

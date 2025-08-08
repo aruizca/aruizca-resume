@@ -42,8 +42,14 @@ export const useResumeGeneration = (): UseResumeGenerationReturn => {
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch {
+          // If we can't parse the error response, use the status text
+        }
+        throw new Error(errorMessage);
       }
       
       const result = await response.json();
