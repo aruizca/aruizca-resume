@@ -1,8 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { PromptTemplate } from '@langchain/core/prompts';
-import { ChatOpenAI } from '@langchain/openai';
-import { ModelFactory } from '../../../shared';
+import { LangchainPromptRunner, ModelFactory } from '../../../shared';
 import { JobOffer, ParsedLinkedInData } from '../../domain';
 
 export interface CoverLetterPromptRunner {
@@ -11,74 +10,78 @@ export interface CoverLetterPromptRunner {
   extractJobInfoFromHtml(html: string): Promise<JobOffer>;
 }
 
+interface CoverLetterInput {
+  jobPostingJson: string;
+  resumeJson: string;
+}
+
 export class DefaultCoverLetterPromptRunner implements CoverLetterPromptRunner {
-  private model: ChatOpenAI;
-  private jsonPrompt: PromptTemplate;
-  private jobExtractionPrompt: PromptTemplate;
+  private coverLetterRunner: LangchainPromptRunner<CoverLetterInput, string>;
+  private jobExtractionRunner: LangchainPromptRunner<string, JobOffer>;
 
   constructor() {
-    this.model = ModelFactory.createCoverLetterModel();
-    this.jsonPrompt = this.createJsonPrompt();
-    this.jobExtractionPrompt = this.createJobExtractionPrompt();
+    // Initialize cover letter generation runner
+    this.coverLetterRunner = new LangchainPromptRunner({
+      modelFactory: () => ModelFactory.createCoverLetterModel(),
+      promptFactory: () => this.createJsonPrompt(),
+      inputTransformer: (input) => ({
+        jobPostingJson: input.jobPostingJson,
+        resumeJson: input.resumeJson
+      }),
+      outputTransformer: (result) => {
+        // Handle both string and object responses
+        return typeof result === 'string' ? result : (result.content || result);
+      },
+      outputParser: 'string',
+      cacheConfig: {
+        ttl: 8 * 60 * 60 * 1000 // 8 hours
+      },
+      operationName: 'Generate Cover Letter (LLM)'
+    });
+
+    // Initialize job extraction runner  
+    this.jobExtractionRunner = new LangchainPromptRunner({
+      modelFactory: () => ModelFactory.createCoverLetterModel(),
+      promptFactory: () => this.createJobExtractionPrompt(),
+      inputTransformer: (html) => ({
+        htmlContent: this.truncateHtml(html)
+      }),
+      outputTransformer: (result) => this.parseJobExtractionResult(result.content || result),
+      outputParser: 'string',
+      cacheConfig: {
+        ttl: 8 * 60 * 60 * 1000 // 8 hours
+      },
+      operationName: 'Extract Job Info from HTML (LLM)'
+    });
   }
 
   async run(jobOffer: JobOffer, userProfile: ParsedLinkedInData): Promise<string> {
-    try {
-      // Convert to JSON format for consistency
-      const jobPostingJson = JSON.stringify(jobOffer, null, 2);
-      const resumeJson = JSON.stringify(userProfile, null, 2);
-      
-      return await this.runWithJson(jobPostingJson, resumeJson);
-    } catch (error) {
-      throw new Error(`Failed to generate cover letter: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+    // Convert to JSON format for consistency
+    const jobPostingJson = JSON.stringify(jobOffer, null, 2);
+    const resumeJson = JSON.stringify(userProfile, null, 2);
+    
+    return await this.runWithJson(jobPostingJson, resumeJson);
   }
 
   async runWithJson(jobPostingJson: string, resumeJson: string): Promise<string> {
-    try {
-      console.log('🤖 Generating cover letter with JSON inputs...');
-      
-      // Execute the JSON prompt
-      const result = await this.jsonPrompt.pipe(this.model).invoke({
-        jobPostingJson,
-        resumeJson
-      });
-      
-      return result.content as string;
-    } catch (error) {
-      throw new Error(`Failed to generate cover letter with JSON: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+    return await this.coverLetterRunner.execute({ jobPostingJson, resumeJson });
   }
 
   async extractJobInfoFromHtml(html: string): Promise<JobOffer> {
-    try {
-      console.log('🔍 Extracting job information from HTML using LLM...');
-      
-      // Truncate HTML if it's too long (to avoid token limits)
-      const truncatedHtml = this.truncateHtml(html);
-      
-      // Execute the job extraction prompt
-      const result = await this.jobExtractionPrompt.pipe(this.model).invoke({
-        htmlContent: truncatedHtml
-      });
-      
-      // Parse the JSON response
-      const extractedData = this.parseJobExtractionResult(result.content as string);
-      
-      return {
-        url: '', // Will be set by the scraper
-        title: extractedData.title || 'Unknown Title',
-        company: extractedData.company || 'Unknown Company',
-        description: extractedData.description || 'No description available',
-        requirements: extractedData.requirements || [],
-        responsibilities: extractedData.responsibilities || [],
-        location: extractedData.location,
-        salary: extractedData.salary,
-        scrapedAt: new Date()
-      };
-    } catch (error) {
-      throw new Error(`Failed to extract job information from HTML: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+    const extractedData = await this.jobExtractionRunner.execute(html);
+    
+    // Ensure required fields and set defaults
+    return {
+      url: '', // Will be set by the scraper
+      title: extractedData.title || 'Unknown Title',
+      company: extractedData.company || 'Unknown Company',
+      description: extractedData.description || 'No description available',
+      requirements: extractedData.requirements || [],
+      responsibilities: extractedData.responsibilities || [],
+      location: extractedData.location,
+      salary: extractedData.salary,
+      scrapedAt: new Date()
+    };
   }
 
   private createJsonPrompt(): PromptTemplate {

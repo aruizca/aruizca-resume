@@ -1,63 +1,40 @@
-import { ChatOpenAI } from '@langchain/openai';
-import { ChainFactory, ModelFactory, OpenAICache } from '../../../shared';
+import { LangchainPromptRunner, ModelFactory, PromptFactory } from '../../../shared';
 import { Resume } from '../../domain';
 
 export class PromptRunner {
-  private model: ChatOpenAI;
-  private cache: OpenAICache;
+  private runner: LangchainPromptRunner<any, Resume>;
 
   constructor(forceRefresh: boolean = false) {
-    this.model = ModelFactory.createResumeModel();
-    this.cache = new OpenAICache({ forceRefresh });
+    this.runner = new LangchainPromptRunner({
+      modelFactory: () => ModelFactory.createResumeModel(),
+      promptFactory: () => PromptFactory.createResumePrompt(),
+      inputTransformer: (parsedData) => ({
+        linkedinData: JSON.stringify(parsedData, null, 2)
+      }),
+      outputTransformer: (result) => result as Resume,
+      outputParser: 'json',
+      cacheConfig: {
+        ttl: 8 * 60 * 60 * 1000 // 8 hours
+      },
+      operationName: 'Generate JSON Resume (LLM)'
+    });
   }
 
   async run(parsedData: any, forceRefresh: boolean = false): Promise<Resume> {
-    try {
-      // Create the chain using shared utilities
-      const chain = await ChainFactory.createResumeChain(this.model);
-      
-      // Check cache first
-      const promptTemplateString = JSON.stringify(parsedData, null, 2);
-      const cachedResponse = await this.cache.get(parsedData, promptTemplateString, forceRefresh);
-      if (cachedResponse) {
-        return cachedResponse as Resume;
-      }
-
-      // Prepare input variables
-      const inputVariables = {
-        linkedinData: JSON.stringify(parsedData, null, 2)
-      };
-
-      console.log('🤖 Calling OpenAI API with Langchain...');
-      
-      // Execute the chain
-      const result = await chain.invoke(inputVariables);
-      
-      // Cache the response
-      await this.cache.set(parsedData, promptTemplateString, result);
-      
-      // Return as Resume (LLM is configured to output JSON Resume format)
-      return result as Resume;
-    } catch (error) {
-      // Handle JSON parsing errors more gracefully
-      if (error instanceof Error && error.message.includes('JSON')) {
-        throw new Error(`Failed to parse LLM response as JSON: ${error.message}`);
-      }
-      throw new Error(`Failed to generate resume: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+    return await this.runner.execute(parsedData, forceRefresh);
   }
 
   /**
    * Get cache statistics
    */
   async getCacheStats(): Promise<{ totalEntries: number; totalSize: number }> {
-    return await this.cache.getStats();
+    return await this.runner.getCacheStats();
   }
 
   /**
    * Clear the cache
    */
   async clearCache(): Promise<void> {
-    await this.cache.clear();
+    await this.runner.clearCache();
   }
 } 
