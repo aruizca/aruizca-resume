@@ -1,11 +1,9 @@
 import { LangchainPromptRunner, ModelFactory, PromptFactory } from '../../../shared';
 import { Resume } from '../../domain';
 
-export class PromptRunner {
-  private runner: LangchainPromptRunner<any, Resume>;
-
+export class PromptRunner extends LangchainPromptRunner<any, Resume> {
   constructor(forceRefresh: boolean = false) {
-    this.runner = new LangchainPromptRunner({
+    super({
       modelFactory: () => ModelFactory.createResumeModel(),
       promptFactory: () => PromptFactory.createResumePrompt(),
       inputTransformer: (parsedData) => ({
@@ -21,20 +19,8 @@ export class PromptRunner {
   }
 
   async run(parsedData: any, forceRefresh: boolean = false): Promise<Resume> {
-    return await this.runner.execute(parsedData, forceRefresh);
+    return await this.execute(parsedData, forceRefresh);
   }
 
-  /**
-   * Get cache statistics
-   */
-  async getCacheStats(): Promise<{ totalEntries: number; totalSize: number }> {
-    return await this.runner.getCacheStats();
-  }
-
-  /**
-   * Clear the cache
-   */
-  async clearCache(): Promise<void> {
-    await this.runner.clearCache();
-  }
+  // getCacheStats() and clearCache() methods are inherited from LangchainPromptRunner
 } 
