@@ -1,1 +1,1 @@
-export { GenerateCoverLetter } from './GenerateCoverLetter';
+export { CoverLetterGenerator } from './CoverLetterGenerator';
