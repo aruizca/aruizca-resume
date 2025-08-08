@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { PerformanceMonitor, PerformanceMetric } from '../../../../../main/shared/infrastructure';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PerformanceMonitor } from '../../../../../main/shared';
 
 describe('PerformanceMonitor', () => {
   let monitor: PerformanceMonitor;

@@ -1,7 +1,7 @@
-import { LinkedInParser, PromptRunner, ResumeBuilder, HtmlRenderer, PdfExporter, JsonResumeValidator } from '../index';
-import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { mkdir, writeFile } from 'fs/promises';
 import { performanceMonitor } from '../../shared';
+import { HtmlRenderer, JsonResumeValidator, LinkedInParser, PdfExporter, PromptRunner, ResumeBuilder } from '../index';
 
 export class GenerateResume {
   constructor(

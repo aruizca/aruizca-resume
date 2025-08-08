@@ -1,6 +1,6 @@
-import { JobOffer, JobOfferScrapingResult } from '../../domain/model';
-import { CoverLetterPromptRunner, DefaultCoverLetterPromptRunner } from '../langchain/CoverLetterPromptRunner';
-import { JobPostingCache, JobPostingCacheOptions } from '../cache/JobPostingCache';
+import { JobOfferScrapingResult } from '../../domain';
+import { CoverLetterPromptRunner, DefaultCoverLetterPromptRunner } from '../langchain';
+import { JobPostingCache, JobPostingCacheOptions } from '../cache';
 
 export interface JobOfferScraper {
   scrape(url: string, forceRefresh?: boolean): Promise<JobOfferScrapingResult>;

@@ -17,5 +17,13 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    watch: {
+      // Watch for changes in the core package
+      ignored: ['!**/node_modules/**', '!**/packages/core/dist/**'],
+    },
+  },
+  optimizeDeps: {
+    // Include workspace dependencies for HMR
+    include: ['@aruizca-resume/core'],
   },
 })

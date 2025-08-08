@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { rm } from 'fs/promises';
 import { join } from 'path';
-import { OpenAICache } from '../../../../../main/shared/infrastructure';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { rm } from 'fs/promises';
+import { OpenAICache } from '../../../../../main/shared';
 
 describe('OpenAICache', () => {
   let cache: OpenAICache;

@@ -26,8 +26,11 @@
 ### Development Tools
 - **Git**: Version control
 - **pnpm**: Package management (primary)
-- **ESLint**: Code linting (planned)
-- **Jest**: Testing framework (planned)
+- **Turbo**: Monorepo build system
+- **Vite**: Fast development server with HMR for web-ui
+- **concurrently**: Run multiple dev processes in parallel
+- **Vitest**: Fast unit test runner
+- **TypeScript Compiler**: Watch mode for real-time type checking
 
 ## Project Dependencies
 
@@ -50,7 +53,7 @@
 }
 ```
 
-## Environment Setup
+## Development Workflow (Hot Reload)
 
 ### Required Environment Variables
 ```bash
@@ -81,11 +84,38 @@ pnpm start
 ```
 
 ### Development Workflow
-1. **Setup**: Clone repo, install dependencies with `pnpm install`, set up `.env`
-2. **Development**: Edit TypeScript files in `src/`
-3. **Build**: Run `pnpm run build` to compile
-4. **Test**: Run `pnpm start` to execute CLI
-5. **Output**: Check `/output` directory for generated files
+
+#### For Web UI Development (with Hot Reload)
+```bash
+# Start full development mode (recommended)
+pnpm start                    # Runs both core watch and web-ui dev server
+
+# OR start components separately
+pnpm dev:full                 # Same as start - runs both in parallel
+pnpm dev:ui                   # Web UI only (port 3000)
+pnpm dev:core                 # Core package TypeScript watch only
+```
+
+**Features:**
+- ✅ **Hot Module Replacement (HMR)**: Changes in web-ui reflect immediately
+- ✅ **TypeScript Watch Mode**: Core package types update automatically  
+- ✅ **Cross-package Detection**: Vite watches core package changes
+- ✅ **Parallel Execution**: Core and UI build in parallel with colored logs
+- ✅ **Automatic Browser Refresh**: Opens http://localhost:3000 automatically
+
+#### For CLI Development
+```bash
+# Traditional CLI workflow
+pnpm build                    # Build both packages
+pnpm resume                   # Generate resume
+pnpm cover-letter            # Generate cover letter
+```
+
+#### Setup Steps
+1. **Initial Setup**: `pnpm install` (installs all workspace dependencies)
+2. **Environment**: Copy `env.sample` to `.env` and add your OpenAI API key  
+3. **Start Development**: `pnpm start` for web UI or `pnpm build` for CLI
+4. **Development**: Edit files and see changes automatically reflected
 
 ## File Structure
 

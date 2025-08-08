@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import Papa from 'papaparse';
-import { readFile } from 'fs/promises';
 import { join } from 'path';
+import Papa from 'papaparse';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { readFile } from 'fs/promises';
 import { LinkedInParser } from '../../../../../main/resume';
 
 // Mock fs/promises

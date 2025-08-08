@@ -105,33 +105,69 @@ export * from './performanceMonitor';
   import { JobOffer } from '../main/cover-letter/domain/model';
   ```
 - **NO EXCEPTIONS**: Direct imports from specific files are not allowed
-- **Import Optimization**:
-  - Combine imports from the same module into a single import statement
-  - Remove all unused imports
-  - Sort imports by: third-party → shared → domain → infrastructure
-  - Keep vitest/jest imports in a single line when used together
+- **Import Optimization** (MANDATORY for ALL files):
+  1. **Remove unused imports** FIRST - eliminate any import that is not actually used in the file
+  2. **Alphabetize imports** within each group for consistency
+  3. **Group imports** in this specific order:
+     - Node.js built-ins (path, fs/promises, etc.)
+     - Third-party packages (react, vitest, @chakra-ui/react, etc.)  
+     - Local imports (relative paths starting with ./ or ../)
+  4. **Use barrel patterns** at domain context level ONLY
+  5. **Combine imports** from the same module into a single statement
+  6. **Sort Chakra UI imports** alphabetically for readability
+  7. **Verify usage** - ensure every imported symbol is actually used in the code
 - **Explicit named exports** over `export *` for better tree-shaking
 - **Avoid `export *` with CommonJS modules** - use explicit named exports instead
 - **Performance consideration**: Barrel files can slow down builds in Next.js
 - **Consistent naming**: Use `index.ts` for all barrel files
 
+#### Identifying Unused Imports
+**CRITICAL**: Before organizing imports, always remove unused ones:
+
+1. **Check for usage** - Search for each imported symbol in the file
+2. **Remove completely unused imports** - Delete entire import lines if nothing is used
+3. **Remove specific unused symbols** - Keep only the symbols that are actually used
+4. **Validate after removal** - Ensure code still compiles and tests pass
+
+```typescript
+// ❌ BAD - Has unused imports
+import { useState, useEffect, useCallback } from 'react';                    // useCallback unused
+import { Box, Button, Alert, Badge, Text } from '@chakra-ui/react';         // Badge unused
+import { join, dirname, basename } from 'path';                             // dirname, basename unused
+
+// ✅ GOOD - Only imports what's actually used
+import { useState, useEffect } from 'react';                                // Only used hooks
+import { Alert, Box, Button, Text } from '@chakra-ui/react';                // Only used components
+import { join } from 'path';                                                // Only used function
+```
+
 #### Example Pattern
 ```typescript
-// ✅ Good - Optimized imports following standard order
-import { describe, it, expect, vi, beforeEach } from 'vitest';                // Test framework
-import { OpenAI } from 'langchain/llms/openai';                              // Third-party
-import { readFile, writeFile } from 'fs/promises';                           // Node built-ins
-import { Resume, ResumeBuilder } from './domain';                            // Local domain
-import { LinkedInParser, PromptRunner } from './infrastructure';             // Local infrastructure
+// ✅ PERFECT - Fully optimized imports following ALL standards
+import { join } from 'path';                                                 // Node built-ins first
+import { beforeEach, describe, expect, it, vi } from 'vitest';               // Third-party (alphabetized)
+import { mkdir, readFile, writeFile } from 'fs/promises';                   // Node built-ins (alphabetized)
+import { 
+  Alert,
+  AlertIcon, 
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  VStack 
+} from '@chakra-ui/react';                                                   // Third-party UI (alphabetized)
+import { LinkedInParser } from '../../../main/resume';                      // Local (domain context only)
+import { ValidationError } from '../../../main/shared';                     // Local (domain context only)
 
-// ❌ Bad - Unoptimized imports
-import { Resume } from './domain/model/Resume';                              // Direct import
-import { describe } from 'vitest';
-import { it } from 'vitest';                                                 // Split test imports
-import { expect } from 'vitest';
+// ❌ BAD - Multiple violations
+import { Resume } from './domain/model/Resume';                              // ❌ Too deep (violates barrel pattern)
+import { describe } from 'vitest';                                          // ❌ Split imports
+import { it, expect, vi } from 'vitest';                                    // ❌ Split imports  
+import { VStack, Box, Button, Alert, Badge } from '@chakra-ui/react';       // ❌ Not alphabetized + Badge unused
 import { readFile } from 'fs/promises';
-import { writeFile } from 'fs/promises';                                     // Split fs imports
-import { ResumeBuilder } from './domain/services/ResumeBuilder';             // Direct import
+import { writeFile, stat } from 'fs/promises';                              // ❌ Split fs imports + stat unused
+import { ResumeBuilder } from './domain/services/ResumeBuilder';             // ❌ Too deep (violates barrel pattern)
+import { useState, useEffect } from 'react';                                // ❌ Wrong order + useEffect unused
 
 // ✅ Good - Explicit named exports in barrel files
 export { Resume } from './model/Resume';

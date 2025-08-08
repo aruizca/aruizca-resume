@@ -1,4 +1,4 @@
-import { ValidationError, FileSystemError, APIError, LinkedInParseError, ResumeGenerationError } from './errors';
+import { APIError, FileSystemError, LinkedInParseError, ResumeGenerationError, ValidationError } from './errors';
 
 export interface RecoveryOptions {
   maxRetries?: number;

@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { JsonResumeValidator } from '../../../../../main/resume';
-import type { ValidationResult } from '../../../../../main/resume';
 
 describe('JsonResumeValidator', () => {
   let validator: JsonResumeValidator;

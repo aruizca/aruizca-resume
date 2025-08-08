@@ -1,21 +1,22 @@
+import { useState, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
   Box,
+  Button,
   Container,
   Heading,
-  VStack,
   SimpleGrid,
-  Text,
-  Tabs,
-  TabList,
-  TabPanels,
   Tab,
+  TabList,
   TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  VStack,
 } from '@chakra-ui/react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { CoverLetterForm } from './components/CoverLetterForm'
 import { CoverLetterDisplay } from './components/CoverLetterDisplay'
+import { CoverLetterForm } from './components/CoverLetterForm'
 import { ResumeGenerationForm } from './components/ResumeGenerationForm'
-import { useState, useEffect } from 'react'
 
 export interface CoverLetterFormData {
   resumeFile: File | null

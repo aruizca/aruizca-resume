@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { validateLinkedInExportDirectory, validateEnvironment, validateOutputDirectory, validateCommandLineArgs } from '../../../../../main/shared';
-import { writeFile, mkdir, rm } from 'fs/promises';
 import { join } from 'path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { mkdir, rm, writeFile } from 'fs/promises';
+import { validateCommandLineArgs, validateEnvironment, validateLinkedInExportDirectory, validateOutputDirectory } from '../../../../../main/shared';
 
 describe('Validation Utils', () => {
   const testDir = join(process.cwd(), 'test-validation-dir');

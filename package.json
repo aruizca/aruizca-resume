@@ -9,10 +9,13 @@
     "setup": "pnpm install && pnpm install --filter=\"./packages/*\"",
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:ui": "pnpm --filter @aruizca-resume/web-ui run dev",
+    "dev:core": "pnpm --filter @aruizca-resume/core run dev",
+    "dev:full": "concurrently \"pnpm dev:core\" \"pnpm dev:ui\" --names \"CORE,UI\" --prefix-colors \"blue,green\"",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
-    "start": "pnpm --filter @aruizca-resume/web-ui run dev",
+    "start": "pnpm dev:full",
     "resume": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js",
     "resume:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js --force-refresh",
     "cover-letter": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter.js",
@@ -20,6 +23,7 @@
     "pdf": "node packages/core/src/main/shared/infrastructure/pdf/playwright-pdf.js"
   },
   "devDependencies": {
-    "turbo": "^2.5.5"
+    "turbo": "^2.5.5",
+    "concurrently": "^8.2.2"
   }
 }

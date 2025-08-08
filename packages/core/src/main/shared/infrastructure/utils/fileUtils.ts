@@ -1,5 +1,5 @@
-import { readdir } from 'fs/promises';
 import { join } from 'path';
+import { readdir } from 'fs/promises';
 
 export async function findLatestHtmlFile(): Promise<string> {
   const outputDir = join(process.cwd(), 'output');

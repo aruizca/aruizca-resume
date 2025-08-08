@@ -1,18 +1,18 @@
+import { useState } from 'react'
 import {
-  VStack,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Text,
-  Box,
-  FormHelperText,
   Alert,
   AlertIcon,
-  HStack,
+  Box,
+  Button,
   Checkbox,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  HStack,
+  Input,
+  Text,
+  VStack,
 } from '@chakra-ui/react'
-import { useState } from 'react'
 
 interface ResumeGenerationFormProps {
   onSubmit: (data: { linkedinExportFile: File; useCache: boolean }) => void

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { readdir } from 'fs/promises';
 import { join } from 'path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { readdir } from 'fs/promises';
 import { findLatestHtmlFile } from '../../../../../main/shared';
 // Mock fs/promises
 vi.mock('fs/promises', () => ({

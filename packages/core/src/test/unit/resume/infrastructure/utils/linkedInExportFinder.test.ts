@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { exec } from 'child_process';
-import { readdir, stat, mkdir } from 'fs/promises';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mkdir, readdir, stat } from 'fs/promises';
 import { LinkedInExportFinder } from '../../../../../main/resume';
 
 // Mock fs/promises

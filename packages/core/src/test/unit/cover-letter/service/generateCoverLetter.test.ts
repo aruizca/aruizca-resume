@@ -1,7 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { GenerateCoverLetter } from '../../../../main/cover-letter/service';
-import { JobOffer, CoverLetter, CoverLetterBuilder } from '../../../../main/cover-letter/domain';
-import { JobOfferScraper, CoverLetterPromptRunner, CoverLetterRenderer } from '../../../../main/cover-letter/infrastructure';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CoverLetterBuilder, JobOffer, GenerateCoverLetter, CoverLetterPromptRunner, CoverLetterRenderer, JobOfferScraper } from '../../../../main/cover-letter';
 import { LinkedInParser } from '../../../../main/resume';
 
 // Mock the fetch function
@@ -117,7 +115,7 @@ John Doe`;
     // Assertions
     expect(result.success).toBe(true);
     expect(result.coverLetter).toBeDefined();
-    expect(mockJobOfferScraper.scrape).toHaveBeenCalledWith('https://example.com/job');
+    expect(mockJobOfferScraper.scrape).toHaveBeenCalledWith('https://example.com/job', false);
     expect(mockPromptRunner.runWithJson).toHaveBeenCalledWith(
       JSON.stringify(mockJobOffer, null, 2),
       mockResumeJson
@@ -234,7 +232,7 @@ John Doe`;
     // Assertions
     expect(result.success).toBe(true);
     expect(result.coverLetter).toBeDefined();
-    expect(mockJobOfferScraper.scrape).toHaveBeenCalledWith('https://example.com/job');
+    expect(mockJobOfferScraper.scrape).toHaveBeenCalledWith('https://example.com/job', false);
     expect(mockPromptRunner.runWithJson).toHaveBeenCalledWith(
       JSON.stringify(mockJobOffer, null, 2),
       mockResumeJson

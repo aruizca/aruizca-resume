@@ -1,9 +1,9 @@
-import { JobOffer, CoverLetter, CoverLetterBuilder, ParsedLinkedInData } from '../domain';
-import { JobOfferScraper, DefaultJobOfferScraper, CoverLetterPromptRunner, DefaultCoverLetterPromptRunner, CoverLetterRenderer, DefaultCoverLetterRenderer, JobPostingCache } from '../infrastructure';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { readFileSync } from 'fs';
+import { mkdir, writeFile } from 'fs/promises';
+import { join } from 'path';
 import { LinkedInParser } from '../../resume';
+import { CoverLetter, CoverLetterBuilder, JobOffer, ParsedLinkedInData } from '../domain';
+import { CoverLetterPromptRunner, CoverLetterRenderer, DefaultCoverLetterPromptRunner, DefaultCoverLetterRenderer, DefaultJobOfferScraper, JobOfferScraper } from '../infrastructure';
 
 export interface CoverLetterGenerationResult {
   success: boolean;
@@ -35,14 +35,15 @@ export class GenerateCoverLetter {
   async run(
     jobOfferUrl: string, 
     linkedInExportPath: string, 
-    outputDir: string
+    outputDir: string,
+    forceRefresh: boolean = false
   ): Promise<CoverLetterGenerationResult> {
     try {
       console.log('🚀 Starting cover letter generation...');
       
       // Step 1: Scrape job offer
       console.log('📄 Scraping job offer...');
-      const scrapingResult = await this.jobOfferScraper.scrape(jobOfferUrl);
+      const scrapingResult = await this.jobOfferScraper.scrape(jobOfferUrl, forceRefresh);
       if (!scrapingResult.success || !scrapingResult.jobOffer) {
         return {
           success: false,

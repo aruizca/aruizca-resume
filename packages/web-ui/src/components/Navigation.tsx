@@ -2,10 +2,10 @@ import {
   Box,
   Container,
   Heading,
-  Text,
-  Tabs,
-  TabList,
   Tab,
+  TabList,
+  Tabs,
+  Text,
   VStack,
 } from '@chakra-ui/react'
 

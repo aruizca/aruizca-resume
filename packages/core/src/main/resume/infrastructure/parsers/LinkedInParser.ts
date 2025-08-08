@@ -1,6 +1,6 @@
-import { readFile } from 'fs/promises';
 import { join } from 'path';
 import Papa from 'papaparse';
+import { readFile } from 'fs/promises';
 
 export class LinkedInParser {
   async parse(extractedDir: string): Promise<any> {

@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ResumeBuilder, Resume } from '../../../../../main/resume/domain';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Resume, ResumeBuilder } from '../../../../../main/resume';
 
 describe('ResumeBuilder', () => {
   let builder: ResumeBuilder;

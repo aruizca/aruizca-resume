@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { CoverLetterBuilder, JobOffer, ParsedLinkedInData } from '../../../../../main/cover-letter/domain';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { CoverLetterBuilder, JobOffer, ParsedLinkedInData } from '../../../../../main/cover-letter';
 
 describe('CoverLetterBuilder', () => {
   let coverLetterBuilder: CoverLetterBuilder;

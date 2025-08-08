@@ -1,5 +1,5 @@
 import { ChatOpenAI } from '@langchain/openai';
-import { OpenAICache, ModelFactory, ChainFactory } from '../../../shared';
+import { ChainFactory, ModelFactory, OpenAICache } from '../../../shared';
 
 export class PromptRunner {
   private model: ChatOpenAI;

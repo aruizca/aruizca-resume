@@ -18,7 +18,7 @@ When generating the cover letter, please take into account the following prefere
   - If the job posting mentions "Node.js" separately, mention it separately, not combined with other technologies
   - Only reference technologies that are explicitly listed in the job requirements or responsibilities
   - Do not assume or infer technologies based on the candidate's resume - only use what's explicitly in the job posting
-- **Tone**: Maintain a professional, confident, and enthusiastic tone
+- **Tone**: Maintain a professional, confident, and enthusiastic tone, but not corny.
 - **Focus**: Emphasize practical experience, skills, and achievements over formal qualifications
 - **Language**: Use clear, concise language that demonstrates technical expertise without being overly technical
 - **Structure**: Ensure smooth flow between paragraphs and logical progression of ideas

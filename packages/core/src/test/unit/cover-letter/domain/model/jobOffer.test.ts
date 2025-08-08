@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { JobOffer } from '../../../../../main/cover-letter/domain';
+import { describe, expect, it } from 'vitest';
+import { JobOffer } from '../../../../../main/cover-letter';
 
 describe('JobOffer', () => {
   it('should create a valid JobOffer', () => {

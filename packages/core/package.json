@@ -6,8 +6,12 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "esbuild src/main/resume/service/resume.ts --bundle --platform=node --format=esm --outfile=dist/resume.js && esbuild src/main/cover-letter/service/cover-letter.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter.js",
-    "dev": "esbuild src/main/resume/service/resume.ts --bundle --platform=node --format=esm --outfile=dist/resume.js --watch",
+    "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:playwright --external:papaparse && esbuild src/main/resume/service/resume.ts --bundle --platform=node --format=esm --outfile=dist/resume.js && esbuild src/main/cover-letter/service/cover-letter.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter.js",
+    "build:lib": "esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:playwright --external:papaparse",
+    "build:lib:watch": "esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:playwright --external:papaparse --watch",
+    "build:types": "tsc",
+    "build:types:watch": "tsc --watch",
+    "dev": "concurrently \"npm run build:types:watch\" \"npm run build:lib:watch\" --names \"TYPES,LIB\" --prefix-colors \"blue,green\"",
     "test": "vitest run",
     "test:unit": "vitest run src/test/unit",
     "test:watch": "vitest",
@@ -28,6 +32,7 @@
   "devDependencies": {
     "@types/node": "^24.2.0",
     "@types/papaparse": "^5.3.16",
+    "concurrently": "^8.2.2",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0",
     "esbuild": "^0.21.5"

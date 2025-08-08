@@ -1,9 +1,9 @@
-import { ChatOpenAI } from '@langchain/openai';
-import { PromptTemplate } from '@langchain/core/prompts';
-import { JobOffer, ParsedLinkedInData } from '../../domain';
-import { ModelFactory, ChainFactory } from '../../../shared';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { PromptTemplate } from '@langchain/core/prompts';
+import { ChatOpenAI } from '@langchain/openai';
+import { ModelFactory } from '../../../shared';
+import { JobOffer, ParsedLinkedInData } from '../../domain';
 
 export interface CoverLetterPromptRunner {
   run(jobOffer: JobOffer, userProfile: ParsedLinkedInData): Promise<string>;
