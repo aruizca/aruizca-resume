@@ -1,8 +1,7 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { LangchainPromptRunner, ModelFactory } from '../../../shared';
 import { JobOffer, ParsedLinkedInData } from '../../domain';
+import { jobExtractionPrompt, coverLetterJsonPrompt } from '../../prompts';
 
 export interface CoverLetterPromptRunner {
   run(jobOffer: JobOffer, userProfile: ParsedLinkedInData): Promise<string>;
@@ -85,20 +84,11 @@ export class DefaultCoverLetterPromptRunner implements CoverLetterPromptRunner {
   }
 
   private createJsonPrompt(): PromptTemplate {
-    const promptTemplate = readFileSync(
-      join(process.cwd(), 'packages', 'core', 'src', 'main', 'cover-letter', 'prompts', 'coverLetterJsonPrompt.txt'),
-      'utf-8'
-    );
-    
-    return PromptTemplate.fromTemplate(promptTemplate);
+    return PromptTemplate.fromTemplate(coverLetterJsonPrompt);
   }
 
   private createJobExtractionPrompt(): PromptTemplate {
-    const promptTemplate = readFileSync(
-      join(process.cwd(), 'packages', 'core', 'src', 'main', 'cover-letter', 'prompts', 'jobExtractionPrompt.txt'),
-      'utf-8'
-    );
-    return PromptTemplate.fromTemplate(promptTemplate);
+    return PromptTemplate.fromTemplate(jobExtractionPrompt);
   }
 
   private truncateHtml(html: string): string {
