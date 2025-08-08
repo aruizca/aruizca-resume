@@ -1,7 +1,4 @@
 import { useState } from 'react';
-// TODO: Fix browser compatibility issues with core package
-// import { ResumeGenerator } from '@aruizca-resume/core';
-import { createMockJsonResume } from '../utils/mockData';
 
 export interface ResumeGenerationData {
   linkedinExportFile: File;
@@ -29,19 +26,43 @@ export const useResumeGeneration = (): UseResumeGenerationReturn => {
     setError(null);
     
     try {
-      console.log('🚀 Starting resume generation (mock for now)...');
+      console.log('🚀 Starting resume generation via API...');
       console.log(`📁 Processing LinkedIn export file: ${data.linkedinExportFile.name} (${(data.linkedinExportFile.size / 1024 / 1024).toFixed(2)} MB)`);
       
-      // TODO: Replace with real ResumeGenerator once browser compatibility is fixed
-      // Mock generation for now
-      const delay = data.useCache ? 3000 : 6000;
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('linkedinExport', data.linkedinExportFile);
+      formData.append('forceRefresh', (!data.useCache).toString()); // forceRefresh is opposite of useCache
       
-      await new Promise(resolve => setTimeout(resolve, delay));
+      // Call the API
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/resume/generate`, {
+        method: 'POST',
+        body: formData,
+      });
       
-      const mockJsonResume = createMockJsonResume(data.useCache);
-      setGeneratedResume(mockJsonResume);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
       
-      console.log('✅ Resume generation successful (mock)!');
+      const result = await response.json();
+      
+      if (result.success && result.resume) {
+        console.log('✅ Resume generation successful!');
+        setGeneratedResume(result.resume);
+        
+        if (result.performance) {
+          console.log('📊 Performance metrics:', {
+            parseTime: `${result.performance.parseTime}ms`,
+            llmTime: `${result.performance.llmTime}ms`,
+            validationTime: `${result.performance.validationTime}ms`,
+            totalTime: `${result.performance.totalTime}ms`
+          });
+        }
+      } else {
+        throw new Error(result.error || 'Resume generation failed');
+      }
       
     } catch (err) {
       console.error('❌ Resume generation failed:', err);
