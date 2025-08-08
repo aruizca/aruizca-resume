@@ -88,12 +88,12 @@ pnpm start
 #### For Web UI Development (with Hot Reload)
 ```bash
 # Start full development mode (recommended)
-pnpm start                    # Runs both core watch and web-ui dev server
+pnpm start:dev               # Runs both core watch and web-ui dev server
 
-# OR start components separately
-pnpm dev:full                 # Same as start - runs both in parallel
-pnpm dev:ui                   # Web UI only (port 3000)
-pnpm dev:core                 # Core package TypeScript watch only
+# OR start components separately  
+pnpm dev:full                # Same as start:dev - runs both in parallel
+pnpm dev:ui                  # Web UI only (port 3000)
+pnpm dev:core                # Core package TypeScript watch only
 ```
 
 **Features:**
@@ -111,11 +111,19 @@ pnpm resume                   # Generate resume
 pnpm cover-letter            # Generate cover letter
 ```
 
+#### For Production/Preview
+```bash
+# Production build and preview
+pnpm start                   # Builds both packages and serves production web UI
+pnpm build                   # Build all packages for production
+```
+
 #### Setup Steps
 1. **Initial Setup**: `pnpm install` (installs all workspace dependencies)
 2. **Environment**: Copy `env.sample` to `.env` and add your OpenAI API key  
-3. **Start Development**: `pnpm start` for web UI or `pnpm build` for CLI
+3. **Start Development**: `pnpm start:dev` for web UI development or `pnpm build` for CLI
 4. **Development**: Edit files and see changes automatically reflected
+5. **Production**: `pnpm start` to build and serve production version
 
 ## File Structure
 
