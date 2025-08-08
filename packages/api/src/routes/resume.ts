@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { ResumeGenerator } from '@aruizca-resume/core';
+import { ResumeGenerator, HtmlExporter, PdfExporter } from '@aruizca-resume/core';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Initialize resume generator
+// Initialize resume generator and exporters
 const resumeGenerator = new ResumeGenerator();
+const htmlExporter = new HtmlExporter();
+const pdfExporter = new PdfExporter();
 
 /**
  * POST /api/resume/generate
@@ -71,6 +73,64 @@ router.delete('/cache', async (req, res, next) => {
   try {
     await resumeGenerator.clearCache();
     res.json({ message: 'Cache cleared successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/resume/export/html
+ * Export a JSON resume to HTML format
+ */
+router.post('/export/html', async (req, res, next) => {
+  try {
+    const { resume } = req.body;
+    
+    if (!resume) {
+      return res.status(400).json({
+        error: 'No resume data provided',
+        message: 'Please provide a JSON resume in the request body'
+      });
+    }
+
+    console.log(`📄 Exporting resume to HTML...`);
+    
+    const html = await htmlExporter.export(resume);
+    const filename = `resume-${new Date().toISOString().split('T')[0]}.html`;
+    
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(html);
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/resume/export/pdf
+ * Export a JSON resume to PDF format
+ */
+router.post('/export/pdf', async (req, res, next) => {
+  try {
+    const { resume } = req.body;
+    
+    if (!resume) {
+      return res.status(400).json({
+        error: 'No resume data provided',
+        message: 'Please provide a JSON resume in the request body'
+      });
+    }
+
+    console.log(`📄 Exporting resume to PDF...`);
+    
+    const pdfBuffer = await pdfExporter.export(resume);
+    const filename = `resume-${new Date().toISOString().split('T')[0]}.pdf`;
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(pdfBuffer);
+    
   } catch (error) {
     next(error);
   }

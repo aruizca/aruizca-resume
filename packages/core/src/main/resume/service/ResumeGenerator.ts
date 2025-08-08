@@ -50,6 +50,15 @@ export class ResumeGenerator {
       );
       const parseTime = Date.now() - parseStart;
 
+      // Debug: Log parsed profile data to help troubleshoot missing email
+      console.log('🔍 DEBUG: Parsed LinkedIn profile data:');
+      if (parsedData.profile && parsedData.profile.length > 0) {
+        console.log('📄 Profile data structure:', Object.keys(parsedData.profile[0] || {}));
+        console.log('📄 Full profile data:', JSON.stringify(parsedData.profile[0], null, 2));
+      } else {
+        console.log('❌ No profile data found in LinkedIn export');
+      }
+
       // 2. Generate JSON Resume with LLM
       const llmStart = Date.now();
       const resume = await performanceMonitor.trackOperation(

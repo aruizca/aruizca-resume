@@ -25,6 +25,8 @@ interface ResumeDisplayProps {
 
 export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const [isExportingHtml, setIsExportingHtml] = useState(false)
+  const [isExportingPdf, setIsExportingPdf] = useState(false)
   const toast = useToast()
 
   const copyToClipboard = async () => {
@@ -87,22 +89,119 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
     }
   }
 
-  const validateJsonResume = (resume: any) => {
-    const requiredFields = ['basics']
-    const warnings = []
-    const errors = []
-
-    // Check required fields
-    requiredFields.forEach(field => {
-      if (!resume[field]) {
-        errors.push(`Missing required field: ${field}`)
+  const downloadHtml = async () => {
+    if (!jsonResume) return
+    
+    setIsExportingHtml(true)
+    
+    try {
+      const apiUrl = ''; // Use relative URLs for unified server
+      const response = await fetch(`${apiUrl}/api/resume/export/html`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ resume: jsonResume }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    })
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const filename = `resume-${new Date().toISOString().split('T')[0]}.html`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.href = url;
+      linkElement.download = filename;
+      linkElement.click();
+      
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: 'HTML download started',
+        description: `Your resume has been downloaded as ${filename}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+      
+    } catch (error) {
+      toast({
+        title: 'HTML export failed',
+        description: 'Failed to export HTML file. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    } finally {
+      setIsExportingHtml(false)
+    }
+  }
 
-    // Check basics sub-fields
-    if (resume.basics) {
-      if (!resume.basics.name) errors.push('Missing basics.name')
-      if (!resume.basics.email) errors.push('Missing basics.email')
+  const downloadPdf = async () => {
+    if (!jsonResume) return
+    
+    setIsExportingPdf(true)
+    
+    try {
+      const apiUrl = ''; // Use relative URLs for unified server
+      const response = await fetch(`${apiUrl}/api/resume/export/pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ resume: jsonResume }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const filename = `resume-${new Date().toISOString().split('T')[0]}.pdf`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.href = url;
+      linkElement.download = filename;
+      linkElement.click();
+      
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: 'PDF download started',
+        description: `Your resume has been downloaded as ${filename}`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+      
+    } catch (error) {
+      toast({
+        title: 'PDF export failed',
+        description: 'Failed to export PDF file. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    } finally {
+      setIsExportingPdf(false)
+    }
+  }
+
+  const validateJsonResume = (resume: any) => {
+    const warnings: string[] = []
+    const errors: string[] = []
+
+    // Check for basics section (recommended)
+    if (!resume.basics) {
+      warnings.push('Missing basics section (recommended)')
+    } else {
+      // Check for recommended basics fields
+      if (!resume.basics.name) warnings.push('Missing basics.name (recommended)')
+      if (!resume.basics.email) warnings.push('Missing basics.email (recommended)')
     }
 
     // Check optional but recommended fields
@@ -229,7 +328,7 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
       {/* Action Buttons and Validation Status */}
       <VStack spacing={4} align="stretch">
         <HStack spacing={4} justify="space-between">
-          <HStack spacing={3}>
+          <HStack spacing={3} flexWrap="wrap">
             <Button
               onClick={copyToClipboard}
               variant="outline"
@@ -246,6 +345,24 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
               loadingText="Downloading..."
             >
               💾 Download JSON
+            </Button>
+            <Button
+              onClick={downloadHtml}
+              colorScheme="blue"
+              size="sm"
+              isLoading={isExportingHtml}
+              loadingText="Exporting..."
+            >
+              📄 Download HTML
+            </Button>
+            <Button
+              onClick={downloadPdf}
+              colorScheme="red"
+              size="sm"
+              isLoading={isExportingPdf}
+              loadingText="Exporting..."
+            >
+              📑 Download PDF
             </Button>
           </HStack>
           

@@ -35,7 +35,7 @@ export const useResumeGeneration = (): UseResumeGenerationReturn => {
       formData.append('forceRefresh', (!data.useCache).toString()); // forceRefresh is opposite of useCache
       
       // Call the API (same origin when served together, or custom URL in development)
-      const apiUrl = process.env.REACT_APP_API_URL || '';
+      const apiUrl = ''; // Use relative URLs for unified server
       const response = await fetch(`${apiUrl}/api/resume/generate`, {
         method: 'POST',
         body: formData,

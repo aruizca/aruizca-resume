@@ -2,7 +2,6 @@ import {
   Alert,
   AlertIcon,
   Box,
-  Button,
   CloseButton,
   Heading,
   SimpleGrid,
@@ -10,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { useResumeGeneration } from '../hooks/useResumeGeneration';
 import { ResumeGenerationForm } from '../components/ResumeGenerationForm';
+import { ResumeDisplay } from '../components/ResumeDisplay';
 
 /**
  * Resume generation page component
@@ -67,39 +67,10 @@ export const ResumePage = () => {
         <Heading as="h2" size="lg" mb={6}>
           Generated JSON Resume
         </Heading>
-        {isGenerating ? (
-          <Box p={6} textAlign="center">
-            <Text color="gray.600">Processing your LinkedIn data...</Text>
-          </Box>
-        ) : generatedResume ? (
-          <Box>
-            <Button mb={4} colorScheme="brand" size="sm">
-              📋 Copy JSON
-            </Button>
-            <Box
-              bg="gray.900"
-              p={4}
-              borderRadius="md"
-              maxH="500px"
-              overflowY="auto"
-            >
-              <Text
-                as="pre"
-                fontSize="xs"
-                color="white"
-                whiteSpace="pre-wrap"
-              >
-                {JSON.stringify(generatedResume, null, 2)}
-              </Text>
-            </Box>
-          </Box>
-        ) : (
-          <Box p={6} bg="gray.50" borderRadius="md" textAlign="center">
-            <Text color="gray.600">
-              Your generated JSON Resume will appear here
-            </Text>
-          </Box>
-        )}
+        <ResumeDisplay 
+          jsonResume={generatedResume} 
+          isGenerating={isGenerating} 
+        />
       </Box>
     </SimpleGrid>
   );

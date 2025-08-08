@@ -28,14 +28,18 @@ export class LinkedInZipParser {
       const positionsCsv = await this.extractCsvFile(zipContents, 'Positions.csv');
       const educationCsv = await this.extractCsvFile(zipContents, 'Education.csv');
       const skillsCsv = await this.extractCsvFile(zipContents, 'Skills.csv');
+      const emailsCsv = await this.extractCsvFile(zipContents, 'Email Addresses.csv');
+      const phonesCsv = await this.extractCsvFile(zipContents, 'PhoneNumbers.csv');
 
       // Parse CSVs
       const profile = Papa.parse(profileCsv, { header: true }).data;
       const positions = Papa.parse(positionsCsv, { header: true }).data;
       const education = Papa.parse(educationCsv, { header: true }).data;
       const skills = Papa.parse(skillsCsv, { header: true }).data;
+      const emails = Papa.parse(emailsCsv, { header: true }).data;
+      const phones = Papa.parse(phonesCsv, { header: true }).data;
 
-      return { profile, positions, education, skills };
+      return { profile, positions, education, skills, emails, phones };
     } catch (error) {
       throw new Error(`Failed to parse LinkedIn export ZIP: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }

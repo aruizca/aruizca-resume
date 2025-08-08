@@ -20,7 +20,8 @@ app.use(helmet({
 }));
 
 // CORS only needed for development (when webapp is served separately)
-if (process.env.NODE_ENV === 'development') {
+// Enable CORS by default unless explicitly in production
+if (process.env.NODE_ENV !== 'production') {
   app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true
