@@ -34,8 +34,8 @@ export const useResumeGeneration = (): UseResumeGenerationReturn => {
       formData.append('linkedinExport', data.linkedinExportFile);
       formData.append('forceRefresh', (!data.useCache).toString()); // forceRefresh is opposite of useCache
       
-      // Call the API
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+      // Call the API (same origin when served together, or custom URL in development)
+      const apiUrl = process.env.REACT_APP_API_URL || '';
       const response = await fetch(`${apiUrl}/api/resume/generate`, {
         method: 'POST',
         body: formData,
