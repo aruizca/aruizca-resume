@@ -302,6 +302,17 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
     }
   }
 
+  /**
+   * Filter out Twitter and Stack Overflow profiles for preview (to match HTML/PDF exports)
+   */
+  const filterProfilesForPreview = (profiles: any[]) => {
+    if (!profiles) return profiles;
+    return profiles.filter((profile: any) => {
+      const network = profile.network?.toLowerCase();
+      return network !== 'twitter' && network !== 'stack overflow';
+    });
+  };
+
   const renderResumePreview = (resume: any) => {
     return (
       <VStack spacing={8} align="stretch">
@@ -339,10 +350,10 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
               )}
             </VStack>
 
-            {/* Social Profiles */}
-            {resume.basics.profiles && resume.basics.profiles.length > 0 && (
+            {/* Social Profiles - Filtered to match HTML/PDF exports */}
+            {resume.basics.profiles && filterProfilesForPreview(resume.basics.profiles).length > 0 && (
               <VStack spacing={1} align="start">
-                {resume.basics.profiles.map((profile: any, index: number) => (
+                {filterProfilesForPreview(resume.basics.profiles).map((profile: any, index: number) => (
                   <Text 
                     key={index} 
                     fontSize="sm" 
@@ -351,11 +362,10 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
                     href={profile.url} 
                     target="_blank"
                   >
-                    {profile.network === 'Twitter' && '🐦'} 
                     {profile.network === 'GitHub' && '🐙'} 
                     {profile.network === 'LinkedIn' && '💼'} 
                     {profile.network === 'Blog' && '📝'} 
-                    {!['Twitter', 'GitHub', 'LinkedIn', 'Blog'].includes(profile.network) && '🔗'} 
+                    {!['GitHub', 'LinkedIn', 'Blog'].includes(profile.network) && '🔗'} 
                     {' '}{profile.username || profile.url} ({profile.network})
                   </Text>
                 ))}
