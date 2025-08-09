@@ -30,6 +30,36 @@ export class ResumeGenerator {
   ) {}
 
   /**
+   * Extract email from parsed LinkedIn data for cache key
+   */
+  private extractEmailFromLinkedInData(parsedData: any): string | null {
+    try {
+      // Try to get email from emails array (primary email)
+      if (parsedData.emails && Array.isArray(parsedData.emails) && parsedData.emails.length > 0) {
+        const primaryEmail = parsedData.emails.find((emailEntry: any) => 
+          emailEntry['Email Address'] && emailEntry['Email Address'].toLowerCase().includes('@')
+        );
+        if (primaryEmail) {
+          return primaryEmail['Email Address'].toLowerCase().trim();
+        }
+      }
+
+      // Fallback: try to get from profile data if available
+      if (parsedData.profile && Array.isArray(parsedData.profile) && parsedData.profile.length > 0) {
+        const profile = parsedData.profile[0];
+        if (profile['Email Address']) {
+          return profile['Email Address'].toLowerCase().trim();
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.warn('⚠️ Could not extract email from LinkedIn data:', error);
+      return null;
+    }
+  }
+
+  /**
    * Generate a JSON resume from LinkedIn export ZIP data
    * @param linkedInZipData ZIP file data as Buffer, File, or ArrayBuffer
    * @param forceRefresh Whether to bypass cache for fresh AI content
@@ -59,16 +89,31 @@ export class ResumeGenerator {
         console.log('❌ No profile data found in LinkedIn export');
       }
 
-      // 2. Generate JSON Resume with LLM
+      // 2. Extract email for cache key
+      const userEmail = this.extractEmailFromLinkedInData(parsedData);
+      
+      // 3. Generate JSON Resume with LLM (using email-based cache if email available)
       const llmStart = Date.now();
-      const resume = await performanceMonitor.trackOperation(
-        'Generate JSON Resume (LLM)',
-        () => this.promptRunner.run(parsedData, forceRefresh),
-        { logToConsole: true }
-      );
+      let resume: Resume;
+      
+      if (userEmail) {
+        console.log(`📧 Using email-based cache for user: ${userEmail}`);
+        resume = await performanceMonitor.trackOperation(
+          'Generate JSON Resume (LLM)',
+          () => this.promptRunner.runWithEmailCache(parsedData, userEmail, forceRefresh),
+          { logToConsole: true }
+        );
+      } else {
+        console.log('⚠️ No email found, using general cache');
+        resume = await performanceMonitor.trackOperation(
+          'Generate JSON Resume (LLM)',
+          () => this.promptRunner.run(parsedData, forceRefresh),
+          { logToConsole: true }
+        );
+      }
       const llmTime = Date.now() - llmStart;
 
-      // 3. Validate against JSON Resume schema
+      // 4. Validate against JSON Resume schema
       const validationStart = Date.now();
       console.log('🔍 Validating resume against JSON Resume schema...');
       const validationResult = performanceMonitor.trackSyncOperation(

@@ -22,5 +22,22 @@ export class PromptRunner extends LangchainPromptRunner<any, Resume> {
     return await this.execute(parsedData, forceRefresh);
   }
 
+  /**
+   * Run with email-based cache key for user-specific caching
+   * @param parsedData LinkedIn parsed data
+   * @param userEmail Email address to use for cache key
+   * @param forceRefresh Whether to bypass cache
+   */
+  async runWithEmailCache(parsedData: any, userEmail: string, forceRefresh: boolean = false): Promise<Resume> {
+    // Create a modified input that includes the email for cache key generation
+    const inputWithEmail = {
+      ...parsedData,
+      __cache_email: userEmail // Special field for cache key
+    };
+    
+    console.log(`📧 Using email-based cache for: ${userEmail}`);
+    return await this.execute(inputWithEmail, forceRefresh);
+  }
+
   // getCacheStats() and clearCache() methods are inherited from LangchainPromptRunner
 } 
