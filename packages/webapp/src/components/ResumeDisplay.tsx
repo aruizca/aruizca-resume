@@ -15,8 +15,77 @@ import {
   VStack,
   Tab,
   TabPanel,
+  IconButton,
 } from '@chakra-ui/react'
+import { CopyIcon } from '@chakra-ui/icons'
 import { useState } from 'react'
+
+interface JsonCodeBlockProps {
+  data: object
+  maxHeight?: string
+}
+
+function JsonCodeBlock({ data, maxHeight = "600px" }: JsonCodeBlockProps) {
+  const toast = useToast()
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+      toast({
+        title: 'Copied to clipboard',
+        description: 'The JSON Resume has been copied to your clipboard.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+    } catch (error) {
+      toast({
+        title: 'Copy failed',
+        description: 'Failed to copy to clipboard. Please try again.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
+  }
+
+  return (
+    <Box
+      position="relative"
+      border="1px solid"
+      borderColor="gray.200"
+      borderRadius="md"
+      bg="gray.900"
+      minH="400px"
+      maxH={maxHeight}
+      overflowY="auto"
+    >
+      <IconButton
+        aria-label="Copy JSON to clipboard"
+        icon={<CopyIcon />}
+        size="sm"
+        position="absolute"
+        top={2}
+        right={2}
+        zIndex={1}
+        colorScheme="blue"
+        variant="solid"
+        onClick={copyToClipboard}
+      />
+      <Code
+        display="block"
+        whiteSpace="pre"
+        fontSize="xs"
+        color="white"
+        bg="transparent"
+        p={4}
+        pr={12} // Extra padding on right to avoid overlap with copy button
+      >
+        {JSON.stringify(data, null, 2)}
+      </Code>
+    </Box>
+  )
+}
 
 interface ResumeDisplayProps {
   jsonResume: object | null
@@ -366,36 +435,7 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
             </Button>
           </HStack>
           
-          {/* Validation Status */}
-          <HStack spacing={2}>
-            {validation.errors.length === 0 ? (
-              <Badge colorScheme="green">✓ Valid JSON Resume</Badge>
-            ) : (
-              <Badge colorScheme="red">⚠ Has Errors</Badge>
-            )}
-            {validation.warnings.length > 0 && (
-              <Badge colorScheme="yellow">⚠ {validation.warnings.length} Warning(s)</Badge>
-            )}
-          </HStack>
         </HStack>
-
-        {/* Validation Messages */}
-        {(validation.errors.length > 0 || validation.warnings.length > 0) && (
-          <VStack spacing={2} align="stretch">
-            {validation.errors.map((error, index) => (
-              <Alert key={`error-${index}`} status="error" size="sm">
-                <AlertIcon />
-                <Text fontSize="sm">{error}</Text>
-              </Alert>
-            ))}
-            {validation.warnings.map((warning, index) => (
-              <Alert key={`warning-${index}`} status="warning" size="sm">
-                <AlertIcon />
-                <Text fontSize="sm">{warning}</Text>
-              </Alert>
-            ))}
-          </VStack>
-        )}
       </VStack>
 
       {/* Resume Content */}
@@ -406,27 +446,42 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
         </TabList>
         <TabPanels>
           <TabPanel>
-            <Box
-              border="1px solid"
-              borderColor="gray.200"
-              borderRadius="md"
-              p={4}
-              bg="gray.900"
-              minH="400px"
-              maxH="600px"
-              overflowY="auto"
-            >
-              <Code
-                display="block"
-                whiteSpace="pre"
-                fontSize="xs"
-                color="white"
-                bg="transparent"
-                p={0}
-              >
-                {formatJsonForDisplay(jsonResume)}
-              </Code>
-            </Box>
+            <VStack spacing={4} align="stretch">
+              {/* Validation Status in JSON Tab */}
+              <HStack spacing={4} justify="space-between">
+                <Text fontWeight="bold" fontSize="md">JSON Resume Data</Text>
+                <HStack spacing={2}>
+                  {validation.errors.length === 0 ? (
+                    <Badge colorScheme="green">✓ Valid JSON Resume</Badge>
+                  ) : (
+                    <Badge colorScheme="red">⚠ Has Errors</Badge>
+                  )}
+                  {validation.warnings.length > 0 && (
+                    <Badge colorScheme="yellow">⚠ {validation.warnings.length} Warning(s)</Badge>
+                  )}
+                </HStack>
+              </HStack>
+
+              {/* Validation Messages */}
+              {(validation.errors.length > 0 || validation.warnings.length > 0) && (
+                <VStack spacing={2} align="stretch">
+                  {validation.errors.map((error, index) => (
+                    <Alert key={`error-${index}`} status="error" size="sm">
+                      <AlertIcon />
+                      <Text fontSize="sm">{error}</Text>
+                    </Alert>
+                  ))}
+                  {validation.warnings.map((warning, index) => (
+                    <Alert key={`warning-${index}`} status="warning" size="sm">
+                      <AlertIcon />
+                      <Text fontSize="sm">{warning}</Text>
+                    </Alert>
+                  ))}
+                </VStack>
+              )}
+
+              <JsonCodeBlock data={jsonResume} />
+            </VStack>
           </TabPanel>
           <TabPanel>
             <Box
