@@ -18,6 +18,7 @@ import {
   IconButton,
 } from '@chakra-ui/react'
 import { CopyIcon } from '@chakra-ui/icons'
+import { FaFilePdf, FaFileCode, FaFileAlt } from 'react-icons/fa'
 import { useState } from 'react'
 
 interface JsonCodeBlockProps {
@@ -399,21 +400,14 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
         <HStack spacing={4} justify="space-between">
           <HStack spacing={3} flexWrap="wrap">
             <Button
-              onClick={copyToClipboard}
-              variant="outline"
-              colorScheme="brand"
-              size="sm"
-            >
-              📋 Copy JSON
-            </Button>
-            <Button
               onClick={downloadJson}
               colorScheme="brand"
               size="sm"
               isLoading={isDownloading}
               loadingText="Downloading..."
+              leftIcon={<FaFileAlt />}
             >
-              💾 Download JSON
+              Download JSON
             </Button>
             <Button
               onClick={downloadHtml}
@@ -421,8 +415,9 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
               size="sm"
               isLoading={isExportingHtml}
               loadingText="Exporting..."
+              leftIcon={<FaFileCode />}
             >
-              📄 Download HTML
+              Download HTML
             </Button>
             <Button
               onClick={downloadPdf}
@@ -430,8 +425,9 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
               size="sm"
               isLoading={isExportingPdf}
               loadingText="Exporting..."
+              leftIcon={<FaFilePdf />}
             >
-              📑 Download PDF
+              Download PDF
             </Button>
           </HStack>
           
