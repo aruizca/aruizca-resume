@@ -131,7 +131,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
     <form onSubmit={handleSubmit}>
       <VStack spacing={6} align="stretch">
         {/* JSON Resume Upload */}
-        <FormControl isRequired isInvalid={!!uploadError}>
+        <FormControl isInvalid={!!uploadError}>
           <FormLabel>JSON Resume File</FormLabel>
           <Box
             border="2px dashed"
