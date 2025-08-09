@@ -35,21 +35,54 @@ export const useCoverLetterGeneration = (): UseCoverLetterGenerationReturn => {
     setIsGenerating(true);
     setFormData(data);
     
-    // Mock generation for now (Iteration 1)
-    const delay = data.useCache ? 2000 : 4000; // Longer delay when not using cache
-    
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        const mockCoverLetter = createMockCoverLetter(
-          data.useCache || true,
-          data.wordCount,
-          data.additionalConsiderations
-        );
-        setGeneratedCoverLetter(mockCoverLetter);
-        setIsGenerating(false);
-        resolve();
-      }, delay);
-    });
+    try {
+      // Read the resume file as JSON
+      if (!data.resumeFile) {
+        throw new Error('Resume file is required');
+      }
+      
+      const resumeText = await data.resumeFile.text();
+      const resumeJson = JSON.parse(resumeText);
+      
+      // Call the real API
+      const apiUrl = ''; // Use relative URLs for unified server
+      const response = await fetch(`${apiUrl}/api/cover-letter/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resume: resumeJson,
+          jobUrl: data.jobUrl,
+          forceRefresh: !data.useCache
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      
+      if (result.success && result.coverLetter) {
+        setGeneratedCoverLetter(result.coverLetter.content || result.coverLetter);
+      } else {
+        throw new Error(result.error || 'Cover letter generation failed');
+      }
+      
+    } catch (error) {
+      console.error('Cover letter generation failed:', error);
+      // Fall back to mock data in case of error during development
+      const mockCoverLetter = createMockCoverLetter(
+        data.useCache || true,
+        data.wordCount,
+        `Error occurred: ${error instanceof Error ? error.message : 'Unknown error'}. Showing mock data.`
+      );
+      setGeneratedCoverLetter(mockCoverLetter);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return {

@@ -27,8 +27,8 @@ router.post('/generate', async (req, res, next) => {
 
     // Generate cover letter using the core service
     const result = await coverLetterGenerator.generateFromResumeAndUrl(
-      jobUrl,
       resume,
+      jobUrl,
       useForceRefresh
     );
 
