@@ -10,6 +10,8 @@ const resumeGenerator = new ResumeGenerator();
 const htmlExporter = new HtmlExporter();
 const pdfExporter = new PdfExporter();
 
+
+
 /**
  * POST /api/resume/generate
  * Generate a JSON resume from LinkedIn export ZIP file
@@ -81,6 +83,7 @@ router.delete('/cache', async (req, res, next) => {
 /**
  * POST /api/resume/export/html
  * Export a JSON resume to HTML format
+ * Note: Twitter and Stack Overflow profiles are automatically filtered by HtmlExporter
  */
 router.post('/export/html', async (req, res, next) => {
   try {
@@ -93,7 +96,7 @@ router.post('/export/html', async (req, res, next) => {
       });
     }
 
-    console.log(`📄 Exporting resume to HTML...`);
+    console.log(`📄 Exporting resume to HTML (profiles filtered by HtmlExporter)...`);
     
     const html = await htmlExporter.export(resume);
     const filename = `resume-${new Date().toISOString().split('T')[0]}.html`;
@@ -110,6 +113,7 @@ router.post('/export/html', async (req, res, next) => {
 /**
  * POST /api/resume/export/pdf
  * Export a JSON resume to PDF format
+ * Note: PDF is generated from HTML, so profile filtering is handled by HtmlExporter
  */
 router.post('/export/pdf', async (req, res, next) => {
   try {
@@ -122,7 +126,7 @@ router.post('/export/pdf', async (req, res, next) => {
       });
     }
 
-    console.log(`📄 Exporting resume to PDF...`);
+    console.log(`📄 Exporting resume to PDF (profiles filtered via HtmlExporter)...`);
     
     const pdfBuffer = await pdfExporter.export(resume);
     const filename = `resume-${new Date().toISOString().split('T')[0]}.pdf`;
