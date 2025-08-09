@@ -307,7 +307,7 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
       <VStack spacing={8} align="stretch">
         {/* Header/Masthead */}
         {resume.basics && (
-          <Box textAlign="center" bg="gray.50" p={6} borderRadius="lg" mb={4}>
+          <Box bg="gray.50" p={6} borderRadius="lg" mb={4}>
             <Text fontSize="3xl" fontWeight="bold" mb={2}>
               {resume.basics.name || 'Name not provided'}
             </Text>
@@ -315,13 +315,13 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
               {resume.basics.label || 'Professional Title'}
             </Text>
             {resume.basics.summary && (
-              <Text fontSize="md" color="gray.700" mb={4} maxW="600px" mx="auto">
+              <Text fontSize="md" color="gray.700" mb={4}>
                 {resume.basics.summary}
               </Text>
             )}
             
             {/* Contact Information */}
-            <HStack spacing={4} justify="center" flexWrap="wrap">
+            <VStack spacing={2} align="start" mb={3}>
               {resume.basics.location && (
                 <Text fontSize="sm" color="gray.600">
                   📍 {resume.basics.location.city}, {resume.basics.location.countryCode}
@@ -337,11 +337,11 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
                   📞 {resume.basics.phone}
                 </Text>
               )}
-            </HStack>
+            </VStack>
 
             {/* Social Profiles */}
             {resume.basics.profiles && resume.basics.profiles.length > 0 && (
-              <HStack spacing={4} justify="center" flexWrap="wrap" mt={3}>
+              <VStack spacing={1} align="start">
                 {resume.basics.profiles.map((profile: any, index: number) => (
                   <Text 
                     key={index} 
@@ -359,7 +359,7 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
                     {' '}{profile.username || profile.url} ({profile.network})
                   </Text>
                 ))}
-              </HStack>
+              </VStack>
             )}
           </Box>
         )}
