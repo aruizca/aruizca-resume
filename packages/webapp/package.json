@@ -12,13 +12,14 @@
   },
   "dependencies": {
     "@aruizca-resume/core": "workspace:*",
-    "@chakra-ui/react": "^2.8.2",
     "@chakra-ui/icons": "^2.1.1",
+    "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.0",
     "framer-motion": "^10.16.16",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
     "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
@@ -29,4 +30,4 @@
     "vite": "^6.0.7",
     "vitest": "^2.1.8"
   }
-} 
+}

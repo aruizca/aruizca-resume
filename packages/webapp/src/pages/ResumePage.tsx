@@ -1,12 +1,11 @@
 import {
-  Alert,
-  AlertIcon,
   Box,
-  CloseButton,
   Heading,
   SimpleGrid,
-  Text
+  Text,
+  useToast
 } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { useResumeGeneration } from '../hooks/useResumeGeneration';
 import { ResumeGenerationForm } from '../components/ResumeGenerationForm';
 import { ResumeDisplay } from '../components/ResumeDisplay';
@@ -16,6 +15,21 @@ import { ResumeDisplay } from '../components/ResumeDisplay';
  */
 export const ResumePage = () => {
   const { generatedResume, isGenerating, error, handleResumeSubmit, clearError } = useResumeGeneration();
+  const toast = useToast();
+
+  // Show error toast when error occurs
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: 'Resume Generation Failed',
+        description: error,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+      clearError(); // Clear after showing toast
+    }
+  }, [error, toast, clearError]);
 
   return (
     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
@@ -32,22 +46,7 @@ export const ResumePage = () => {
           LinkedIn Data Upload
         </Heading>
         
-        {/* Error Alert */}
-        {error && (
-          <Alert status="error" mb={6} borderRadius="md">
-            <AlertIcon />
-            <Box flex="1">
-              <Text fontSize="sm">{error}</Text>
-            </Box>
-            <CloseButton
-              alignSelf="flex-start"
-              position="relative"
-              right={-1}
-              top={-1}
-              onClick={clearError}
-            />
-          </Alert>
-        )}
+
         
         <ResumeGenerationForm
           onSubmit={handleResumeSubmit}

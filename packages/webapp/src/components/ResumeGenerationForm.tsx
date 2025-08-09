@@ -145,19 +145,19 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
                 <strong>How to get your LinkedIn data:</strong>
               </Text>
               <Text fontSize="sm" color="gray.600">
-                1. Go to LinkedIn → Settings & Privacy → Data Privacy → Get a copy of your data
+                1. Go to LinkedIn → Settings & Privacy → Data Privacy → <strong>Download my data</strong>
               </Text>
               <Text fontSize="sm" color="gray.600">
-                2. Select "Want something in particular? Select the data files you're most interested in"
+                2. Select the <strong>first option</strong>: "Download larger data archive..."
               </Text>
               <Text fontSize="sm" color="gray.600">
-                3. Check: Profile, Connections, Experience, Education, Skills, Certifications
+                3. Click "Request archive" and wait for the email with download link
               </Text>
               <Text fontSize="sm" color="gray.600">
-                4. Click "Request archive" and wait for the email with download link
+                4. Download the ZIP file from the email and upload it here
               </Text>
-              <Text fontSize="sm" color="blue.600" as="a" href="https://www.linkedin.com/help/linkedin/answer/50191" target="_blank">
-                📖 Detailed instructions on LinkedIn Help →
+              <Text fontSize="sm" color="blue.600" as="a" href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank">
+                📖 Direct link to LinkedIn download page →
               </Text>
             </VStack>
           </FormHelperText>

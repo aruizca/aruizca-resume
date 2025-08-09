@@ -13,9 +13,8 @@ import {
   Text,
   Textarea,
   VStack,
-  Alert,
-  AlertIcon,
   Checkbox,
+  useToast,
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import type { CoverLetterFormData } from '../App'
@@ -35,6 +34,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
   })
   
   const [dragActive, setDragActive] = useState(false)
+  const toast = useToast()
   const [uploadError, setUploadError] = useState<string>('')
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,13 +47,25 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
 
     // Validate file type
     if (file.type !== 'application/json') {
-      setUploadError('Please upload a valid JSON file')
+      toast({
+        title: 'Invalid File Type',
+        description: 'Please upload a valid JSON file',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
       return
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setUploadError('File size must be less than 5MB')
+      toast({
+        title: 'File Too Large',
+        description: 'File size must be less than 5MB',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      })
       return
     }
 
@@ -83,6 +95,13 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!formData.resumeFile || !formData.jobUrl.trim()) {
+      toast({
+        title: 'Missing Required Fields',
+        description: 'Please upload a resume file and provide a job URL',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      })
       return
     }
     onSubmit(formData)
@@ -144,12 +163,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
               JSON Resume schema
             </Text>
           </FormHelperText>
-          {uploadError && (
-            <Alert status="error" mt={2}>
-              <AlertIcon />
-              {uploadError}
-            </Alert>
-          )}
+
         </FormControl>
 
         {/* Job URL */}

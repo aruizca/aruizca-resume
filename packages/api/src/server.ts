@@ -39,7 +39,7 @@ app.get('/health', (req, res) => {
 app.use('/api/resume', resumeRouter);
 app.use('/api/cover-letter', coverLetterRouter);
 
-// Serve static files from webapp build
+// Serve static files from webapp build  
 const webappDistPath = path.resolve(__dirname, '../../webapp/dist');
 app.use(express.static(webappDistPath));
 
