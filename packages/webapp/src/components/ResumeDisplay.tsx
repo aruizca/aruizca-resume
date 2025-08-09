@@ -670,24 +670,10 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
       {/* Resume Content */}
       <Tabs variant="enclosed" colorScheme="brand">
         <TabList>
-          <Tab>👁️ Preview</Tab>
           <Tab>🔧 JSON Source</Tab>
+          <Tab>👁️ Preview</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
-            <Box
-              border="1px solid"
-              borderColor="gray.200"
-              borderRadius="md"
-              p={6}
-              bg="white"
-              minH="400px"
-              maxH="800px"
-              overflowY="auto"
-            >
-              {renderResumePreview(jsonResume)}
-            </Box>
-          </TabPanel>
           <TabPanel>
             <VStack spacing={4} align="stretch">
               {/* Validation Status in JSON Tab */}
@@ -725,6 +711,20 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
 
               <JsonCodeBlock data={jsonResume} />
             </VStack>
+          </TabPanel>
+          <TabPanel>
+            <Box
+              border="1px solid"
+              borderColor="gray.200"
+              borderRadius="md"
+              p={6}
+              bg="white"
+              minH="400px"
+              maxH="800px"
+              overflowY="auto"
+            >
+              {renderResumePreview(jsonResume)}
+            </Box>
           </TabPanel>
         </TabPanels>
       </Tabs>
