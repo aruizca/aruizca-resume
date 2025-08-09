@@ -292,24 +292,74 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
     return JSON.stringify(obj, null, 2)
   }
 
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return ''
+    try {
+      const date = new Date(dateStr)
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
+    } catch {
+      return dateStr
+    }
+  }
+
   const renderResumePreview = (resume: any) => {
     return (
-      <VStack spacing={4} align="stretch">
-        {/* Basic Info */}
+      <VStack spacing={8} align="stretch">
+        {/* Header/Masthead */}
         {resume.basics && (
-          <Box>
-            <Text fontWeight="bold" fontSize="lg" mb={2}>
+          <Box textAlign="center" bg="gray.50" p={6} borderRadius="lg" mb={4}>
+            <Text fontSize="3xl" fontWeight="bold" mb={2}>
               {resume.basics.name || 'Name not provided'}
             </Text>
-            <Text color="gray.600">{resume.basics.email}</Text>
-            {resume.basics.phone && <Text color="gray.600">{resume.basics.phone}</Text>}
-            {resume.basics.website && (
-              <Text color="brand.500" as="a" href={resume.basics.website} target="_blank">
-                {resume.basics.website}
+            <Text fontSize="xl" color="gray.600" mb={4}>
+              {resume.basics.label || 'Professional Title'}
+            </Text>
+            {resume.basics.summary && (
+              <Text fontSize="md" color="gray.700" mb={4} maxW="600px" mx="auto">
+                {resume.basics.summary}
               </Text>
             )}
-            {resume.basics.summary && (
-              <Text mt={2} fontSize="sm">{resume.basics.summary}</Text>
+            
+            {/* Contact Information */}
+            <HStack spacing={4} justify="center" flexWrap="wrap">
+              {resume.basics.location && (
+                <Text fontSize="sm" color="gray.600">
+                  📍 {resume.basics.location.city}, {resume.basics.location.countryCode}
+                </Text>
+              )}
+              {resume.basics.email && (
+                <Text fontSize="sm" color="blue.600" as="a" href={`mailto:${resume.basics.email}`}>
+                  ✉️ {resume.basics.email}
+                </Text>
+              )}
+              {resume.basics.phone && (
+                <Text fontSize="sm" color="blue.600" as="a" href={`tel:${resume.basics.phone}`}>
+                  📞 {resume.basics.phone}
+                </Text>
+              )}
+            </HStack>
+
+            {/* Social Profiles */}
+            {resume.basics.profiles && resume.basics.profiles.length > 0 && (
+              <HStack spacing={4} justify="center" flexWrap="wrap" mt={3}>
+                {resume.basics.profiles.map((profile: any, index: number) => (
+                  <Text 
+                    key={index} 
+                    fontSize="sm" 
+                    color="blue.600" 
+                    as="a" 
+                    href={profile.url} 
+                    target="_blank"
+                  >
+                    {profile.network === 'Twitter' && '🐦'} 
+                    {profile.network === 'GitHub' && '🐙'} 
+                    {profile.network === 'LinkedIn' && '💼'} 
+                    {profile.network === 'Blog' && '📝'} 
+                    {!['Twitter', 'GitHub', 'LinkedIn', 'Blog'].includes(profile.network) && '🔗'} 
+                    {' '}{profile.username || profile.url} ({profile.network})
+                  </Text>
+                ))}
+              </HStack>
             )}
           </Box>
         )}
@@ -317,46 +367,229 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
         {/* Work Experience */}
         {resume.work && resume.work.length > 0 && (
           <Box>
-            <Text fontWeight="bold" mb={2}>Work Experience</Text>
-            {resume.work.map((job: any, index: number) => (
-              <Box key={index} mb={3} p={3} bg="gray.50" borderRadius="md">
-                <Text fontWeight="medium">{job.position} at {job.company}</Text>
-                <Text fontSize="sm" color="gray.600">
-                  {job.startDate} - {job.endDate || 'Present'}
-                </Text>
-                {job.summary && <Text fontSize="sm" mt={1}>{job.summary}</Text>}
-              </Box>
-            ))}
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color="gray.700">
+              Work Experience
+            </Text>
+            <VStack spacing={6} align="stretch">
+              {resume.work.map((job: any, index: number) => (
+                <Box key={index} borderLeft="4px solid" borderColor="blue.500" pl={4}>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                    {job.company}
+                  </Text>
+                  <Text fontSize="md" fontWeight="medium" color="blue.600" mb={1}>
+                    {job.position}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600" mb={2}>
+                    {formatDate(job.startDate)} – {job.endDate ? formatDate(job.endDate) : 'Present'}
+                    {job.location && ` • ${job.location}`}
+                  </Text>
+                  {job.summary && (
+                    <Text fontSize="sm" color="gray.700" mb={2}>
+                      {job.summary}
+                    </Text>
+                  )}
+                  {job.highlights && job.highlights.length > 0 && (
+                    <Box pl={4}>
+                      {job.highlights.map((highlight: string, hIndex: number) => (
+                        <Text key={hIndex} fontSize="sm" color="gray.700" mb={1}>
+                          • {highlight}
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </VStack>
           </Box>
         )}
 
         {/* Education */}
         {resume.education && resume.education.length > 0 && (
           <Box>
-            <Text fontWeight="bold" mb={2}>Education</Text>
-            {resume.education.map((edu: any, index: number) => (
-              <Box key={index} mb={2} p={3} bg="gray.50" borderRadius="md">
-                <Text fontWeight="medium">{edu.studyType} in {edu.area}</Text>
-                <Text fontSize="sm" color="gray.600">{edu.institution}</Text>
-                <Text fontSize="sm" color="gray.600">
-                  {edu.startDate} - {edu.endDate}
-                </Text>
-              </Box>
-            ))}
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color="gray.700">
+              Education
+            </Text>
+            <VStack spacing={4} align="stretch">
+              {resume.education.map((edu: any, index: number) => (
+                <Box key={index} borderLeft="4px solid" borderColor="green.500" pl={4}>
+                  <Text fontSize="lg" fontWeight="bold" color="gray.800">
+                    {edu.institution}
+                  </Text>
+                  <Text fontSize="md" fontWeight="medium" color="green.600" mb={1}>
+                    {edu.studyType} {edu.area && `in ${edu.area}`}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    {formatDate(edu.startDate)} – {formatDate(edu.endDate)}
+                  </Text>
+                  {edu.gpa && (
+                    <Text fontSize="sm" color="gray.700" mt={1}>
+                      GPA: {edu.gpa}
+                    </Text>
+                  )}
+                  {edu.courses && edu.courses.length > 0 && (
+                    <Box mt={2}>
+                      <Text fontSize="sm" fontWeight="medium" color="gray.700">Relevant Coursework:</Text>
+                      <Text fontSize="sm" color="gray.600">
+                        {edu.courses.join(', ')}
+                      </Text>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </VStack>
           </Box>
         )}
 
         {/* Skills */}
         {resume.skills && resume.skills.length > 0 && (
           <Box>
-            <Text fontWeight="bold" mb={2}>Skills</Text>
-            <HStack spacing={2} flexWrap="wrap">
-              {resume.skills.map((skill: any, index: number) => (
-                <Badge key={index} colorScheme="brand" variant="subtle">
-                  {skill.name} {skill.level && `(${skill.level})`}
-                </Badge>
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color="gray.700">
+              Skills
+            </Text>
+            <VStack spacing={4} align="stretch">
+              {resume.skills.map((skillGroup: any, index: number) => (
+                <Box key={index}>
+                  <Text fontSize="lg" fontWeight="medium" color="gray.800" mb={2}>
+                    {skillGroup.name}
+                  </Text>
+                  <HStack spacing={2} flexWrap="wrap">
+                    {skillGroup.keywords && skillGroup.keywords.map((keyword: string, kIndex: number) => (
+                      <Badge 
+                        key={kIndex} 
+                        colorScheme="blue" 
+                        variant="subtle" 
+                        fontSize="xs"
+                      >
+                        {keyword}
+                      </Badge>
+                    ))}
+                  </HStack>
+                  {skillGroup.level && (
+                    <Text fontSize="sm" color="gray.600" mt={1}>
+                      Level: {skillGroup.level}
+                    </Text>
+                  )}
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+        )}
+
+        {/* Languages */}
+        {resume.languages && resume.languages.length > 0 && (
+          <Box>
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color="gray.700">
+              Languages
+            </Text>
+            <HStack spacing={6} flexWrap="wrap">
+              {resume.languages.map((lang: any, index: number) => (
+                <Box key={index} textAlign="center">
+                  <Text fontSize="md" fontWeight="medium" color="gray.800">
+                    {lang.language}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    {lang.fluency}
+                  </Text>
+                </Box>
               ))}
             </HStack>
+          </Box>
+        )}
+
+        {/* Awards */}
+        {resume.awards && resume.awards.length > 0 && (
+          <Box>
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color="gray.700">
+              Awards
+            </Text>
+            <VStack spacing={3} align="stretch">
+              {resume.awards.map((award: any, index: number) => (
+                <Box key={index} borderLeft="4px solid" borderColor="yellow.500" pl={4}>
+                  <Text fontSize="md" fontWeight="medium" color="gray.800">
+                    {award.title}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    {award.awarder} • {formatDate(award.date)}
+                  </Text>
+                  {award.summary && (
+                    <Text fontSize="sm" color="gray.700" mt={1}>
+                      {award.summary}
+                    </Text>
+                  )}
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+        )}
+
+        {/* Publications */}
+        {resume.publications && resume.publications.length > 0 && (
+          <Box>
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color="gray.700">
+              Publications
+            </Text>
+            <VStack spacing={3} align="stretch">
+              {resume.publications.map((pub: any, index: number) => (
+                <Box key={index} borderLeft="4px solid" borderColor="purple.500" pl={4}>
+                  <Text fontSize="md" fontWeight="medium" color="gray.800">
+                    {pub.name}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600">
+                    {pub.publisher} • {formatDate(pub.releaseDate)}
+                  </Text>
+                  {pub.summary && (
+                    <Text fontSize="sm" color="gray.700" mt={1}>
+                      {pub.summary}
+                    </Text>
+                  )}
+                  {pub.website && (
+                    <Text fontSize="sm" color="blue.600" as="a" href={pub.website} target="_blank" mt={1}>
+                      🔗 View Publication
+                    </Text>
+                  )}
+                </Box>
+              ))}
+            </VStack>
+          </Box>
+        )}
+
+        {/* Projects */}
+        {resume.projects && resume.projects.length > 0 && (
+          <Box>
+            <Text fontSize="2xl" fontWeight="bold" mb={4} color="gray.700">
+              Projects
+            </Text>
+            <VStack spacing={4} align="stretch">
+              {resume.projects.map((project: any, index: number) => (
+                <Box key={index} borderLeft="4px solid" borderColor="orange.500" pl={4}>
+                  <Text fontSize="md" fontWeight="medium" color="gray.800">
+                    {project.name}
+                  </Text>
+                  <Text fontSize="sm" color="gray.600" mb={1}>
+                    {formatDate(project.startDate)} – {project.endDate ? formatDate(project.endDate) : 'Ongoing'}
+                  </Text>
+                  {project.description && (
+                    <Text fontSize="sm" color="gray.700" mb={2}>
+                      {project.description}
+                    </Text>
+                  )}
+                  {project.highlights && project.highlights.length > 0 && (
+                    <Box pl={4}>
+                      {project.highlights.map((highlight: string, hIndex: number) => (
+                        <Text key={hIndex} fontSize="sm" color="gray.700" mb={1}>
+                          • {highlight}
+                        </Text>
+                      ))}
+                    </Box>
+                  )}
+                  {project.url && (
+                    <Text fontSize="sm" color="blue.600" as="a" href={project.url} target="_blank" mt={1}>
+                      🔗 View Project
+                    </Text>
+                  )}
+                </Box>
+              ))}
+            </VStack>
           </Box>
         )}
       </VStack>
@@ -437,10 +670,24 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
       {/* Resume Content */}
       <Tabs variant="enclosed" colorScheme="brand">
         <TabList>
-          <Tab>🔧 JSON Source</Tab>
           <Tab>👁️ Preview</Tab>
+          <Tab>🔧 JSON Source</Tab>
         </TabList>
         <TabPanels>
+          <TabPanel>
+            <Box
+              border="1px solid"
+              borderColor="gray.200"
+              borderRadius="md"
+              p={6}
+              bg="white"
+              minH="400px"
+              maxH="800px"
+              overflowY="auto"
+            >
+              {renderResumePreview(jsonResume)}
+            </Box>
+          </TabPanel>
           <TabPanel>
             <VStack spacing={4} align="stretch">
               {/* Validation Status in JSON Tab */}
@@ -478,20 +725,6 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
 
               <JsonCodeBlock data={jsonResume} />
             </VStack>
-          </TabPanel>
-          <TabPanel>
-            <Box
-              border="1px solid"
-              borderColor="gray.200"
-              borderRadius="md"
-              p={6}
-              bg="white"
-              minH="400px"
-              maxH="600px"
-              overflowY="auto"
-            >
-              {renderResumePreview(jsonResume)}
-            </Box>
           </TabPanel>
         </TabPanels>
       </Tabs>
