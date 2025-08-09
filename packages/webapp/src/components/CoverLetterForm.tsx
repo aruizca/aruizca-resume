@@ -94,16 +94,34 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.resumeFile || !formData.jobUrl.trim()) {
+    
+    // Clear any previous upload errors
+    setUploadError('')
+    
+    // Validate required fields
+    if (!formData.resumeFile) {
+      setUploadError('Resume file is required')
       toast({
-        title: 'Missing Required Fields',
-        description: 'Please upload a resume file and provide a job URL',
+        title: 'Missing resume file',
+        description: 'Please upload a JSON resume file',
         status: 'warning',
         duration: 4000,
         isClosable: true,
       })
       return
     }
+    
+    if (!formData.jobUrl.trim()) {
+      toast({
+        title: 'Missing job URL',
+        description: 'Please provide a job posting URL',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      })
+      return
+    }
+    
     onSubmit(formData)
   }
 
@@ -113,15 +131,15 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
     <form onSubmit={handleSubmit}>
       <VStack spacing={6} align="stretch">
         {/* JSON Resume Upload */}
-        <FormControl isRequired>
+        <FormControl isRequired isInvalid={!!uploadError}>
           <FormLabel>JSON Resume File</FormLabel>
           <Box
             border="2px dashed"
-            borderColor={dragActive ? "brand.500" : "gray.300"}
+            borderColor={dragActive ? "brand.500" : uploadError ? "red.300" : "gray.300"}
             borderRadius="md"
             p={6}
             textAlign="center"
-            bg={dragActive ? "brand.50" : "gray.50"}
+            bg={dragActive ? "brand.50" : uploadError ? "red.50" : "gray.50"}
             cursor="pointer"
             transition="all 0.2s"
             onDragEnter={handleDrag}
@@ -136,6 +154,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
               accept=".json"
               onChange={handleFileChange}
               display="none"
+              aria-hidden="true"
             />
             {formData.resumeFile ? (
               <VStack spacing={2}>
@@ -163,7 +182,11 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
               JSON Resume schema
             </Text>
           </FormHelperText>
-
+          {uploadError && (
+            <Text color="red.500" fontSize="sm" mt={2}>
+              {uploadError}
+            </Text>
+          )}
         </FormControl>
 
         {/* Job URL */}
