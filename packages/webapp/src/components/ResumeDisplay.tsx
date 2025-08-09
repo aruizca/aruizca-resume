@@ -401,24 +401,10 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
       {/* Resume Content */}
       <Tabs variant="enclosed" colorScheme="brand">
         <TabList>
-          <Tab>👁️ Preview</Tab>
           <Tab>🔧 JSON Source</Tab>
+          <Tab>👁️ Preview</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
-            <Box
-              border="1px solid"
-              borderColor="gray.200"
-              borderRadius="md"
-              p={6}
-              bg="white"
-              minH="400px"
-              maxH="600px"
-              overflowY="auto"
-            >
-              {renderResumePreview(jsonResume)}
-            </Box>
-          </TabPanel>
           <TabPanel>
             <Box
               border="1px solid"
@@ -440,6 +426,20 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
               >
                 {formatJsonForDisplay(jsonResume)}
               </Code>
+            </Box>
+          </TabPanel>
+          <TabPanel>
+            <Box
+              border="1px solid"
+              borderColor="gray.200"
+              borderRadius="md"
+              p={6}
+              bg="white"
+              minH="400px"
+              maxH="600px"
+              overflowY="auto"
+            >
+              {renderResumePreview(jsonResume)}
             </Box>
           </TabPanel>
         </TabPanels>
