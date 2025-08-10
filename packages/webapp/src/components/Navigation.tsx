@@ -37,7 +37,7 @@ export function Navigation({ activeMode, onModeChange }: NavigationProps) {
             onChange={(index) => onModeChange(index === 0 ? 'resume' : 'cover-letter')}
             variant="enclosed"
             colorScheme="brand"
-            align="center"
+            align="start"
           >
             <TabList>
               <Tab py={4} px={8} fontSize="lg" fontWeight="medium">
