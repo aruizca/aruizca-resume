@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { ResumeGenerator, ExporterFactory } from '@aruizca-resume/core';
 import { validateResumeRequest } from '../middleware/validation.js';
+import { ResumeHtmlExporter, ResumePdfExporter } from '@aruizca-resume/core';
 
 const router = express.Router();
 
@@ -130,6 +131,73 @@ router.get('/formats', (req, res) => {
       { id: 'pdf', name: 'PDF', description: 'Printable resume in PDF format' }
     ]
   });
+});
+
+/**
+ * POST /api/resume/export/html
+ * Export a resume to HTML format using the core exporter
+ */
+router.post('/export/html', async (req, res, next) => {
+  try {
+    const { resume } = req.body;
+
+    if (!resume) {
+      return res.status(400).json({
+        success: false,
+        error: 'Resume data is required'
+      });
+    }
+
+    console.log(`📄 Exporting resume to HTML...`);
+
+    // Use the core HTML exporter
+    const htmlExporter = new ResumeHtmlExporter();
+    const htmlContent = await htmlExporter.export(resume);
+
+    // Set response headers for HTML download
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="resume-${new Date().toISOString().split('T')[0]}.html"`);
+    
+    res.send(htmlContent);
+
+  } catch (error: any) {
+    console.error('❌ HTML export error:', error);
+    next(error);
+  }
+});
+
+/**
+ * POST /api/resume/export/pdf
+ * Export a resume to PDF format using the core exporter
+ */
+router.post('/export/pdf', async (req, res, next) => {
+  try {
+    const { resume, pdfOptions = {} } = req.body;
+
+    if (!resume) {
+      return res.status(400).json({
+        success: false,
+        error: 'Resume data is required'
+      });
+    }
+
+    console.log(`📄 Exporting resume to PDF...`);
+
+    // Use the core PDF exporter with optional PDF options
+    const pdfExporter = new ResumePdfExporter();
+    const pdfBuffer = await pdfExporter.export(resume, pdfOptions);
+
+    // Set response headers for PDF download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="resume-${new Date().toISOString().split('T')[0]}.pdf"`);
+    res.setHeader('Content-Length', pdfBuffer.length.toString());
+    
+    res.send(pdfBuffer);
+
+  } catch (error: any) {
+    console.error('❌ PDF export error:', error);
+    next(error);
+  }
 });
 
 export { router as resumeRouter };

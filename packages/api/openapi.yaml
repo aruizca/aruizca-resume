@@ -1,0 +1,1097 @@
+openapi: 3.0.3
+info:
+  title: Aruizca Resume Generator API
+  description: |
+    A comprehensive API for generating professional resumes and cover letters from LinkedIn exports.
+    
+    ## Features
+    - **Resume Generation**: Convert LinkedIn export ZIP files to structured JSON resumes
+    - **Cover Letter Generation**: Create personalized cover letters from resumes and job postings
+    - **Multiple Export Formats**: Support for JSON, HTML, and PDF outputs
+    - **Job Posting Analysis**: Extract job information from URLs or HTML content
+    - **Caching**: Intelligent caching for improved performance
+    
+    ## Architecture
+    Built with Domain-Driven Design (DDD) and Hexagonal Architecture patterns, providing a clean separation of concerns and excellent testability.
+    
+    ## Technologies
+    - Node.js + TypeScript + ESM
+    - OpenAI GPT-4 for AI-powered content generation
+    - Express.js for REST API
+    - Playwright for PDF generation
+    - JSON Resume schema compliance
+  version: 1.0.0
+  contact:
+    name: Aruizca Resume Generator
+    url: https://github.com/aruizca/aruizca-resume
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3001
+    description: Development server
+  - url: https://api.aruizca-resume.com
+    description: Production server (example)
+
+tags:
+  - name: Resume
+    description: Resume generation and export operations
+  - name: Cover Letter
+    description: Cover letter generation and export operations
+  - name: Health
+    description: System health and status endpoints
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check endpoint
+      description: Returns the current health status of the API server
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-01-15T10:30:00.000Z"
+
+  /api/resume/formats:
+    get:
+      tags:
+        - Resume
+      summary: Get available export formats
+      description: Retrieve a list of all available export formats for resumes
+      responses:
+        '200':
+          description: List of available export formats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  formats:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExportFormat'
+
+  /api/resume/generate:
+    post:
+      tags:
+        - Resume
+      summary: Generate resume from LinkedIn export
+      description: |
+        Generate a structured resume from a LinkedIn export ZIP file.
+        
+        The API will:
+        1. Process the uploaded ZIP file
+        2. Extract LinkedIn profile information
+        3. Generate a structured JSON resume
+        4. Return the resume data with performance metrics
+        
+        **File Requirements:**
+        - Must be a ZIP file
+        - Maximum size: 50MB
+        - Should contain LinkedIn export data
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                linkedinExport:
+                  type: string
+                  format: binary
+                  description: LinkedIn export ZIP file
+                forceRefresh:
+                  type: string
+                  enum: ['true', 'false']
+                  description: Force refresh of cached data (default: false)
+              required:
+                - linkedinExport
+      responses:
+        '200':
+          description: Resume generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeGenerationResponse'
+        '400':
+          description: Bad request - missing file or invalid data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error during generation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/resume/export/html:
+    post:
+      tags:
+        - Resume
+      summary: Export resume to HTML format
+      description: |
+        Convert a JSON resume to HTML format for web display or printing.
+        
+        The HTML output uses the jsonresume-theme-even-crewshin theme for professional formatting.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume:
+                  $ref: '#/components/schemas/Resume'
+                  description: The resume object to export
+              required:
+                - resume
+      responses:
+        '200':
+          description: HTML file generated successfully
+          content:
+            text/html:
+              schema:
+                type: string
+          headers:
+            Content-Disposition:
+              description: Filename for download
+              schema:
+                type: string
+                example: 'attachment; filename="resume-2024-01-15.html"'
+        '400':
+          description: Bad request - missing resume data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: HTML export failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/resume/export/pdf:
+    post:
+      tags:
+        - Resume
+      summary: Export resume to PDF format
+      description: |
+        Convert a JSON resume to PDF format for printing or sharing.
+        
+        The PDF is generated using Playwright for high-quality output with customizable options.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume:
+                  $ref: '#/components/schemas/Resume'
+                  description: The resume object to export
+                pdfOptions:
+                  $ref: '#/components/schemas/PdfOptions'
+                  description: Optional PDF generation options
+              required:
+                - resume
+      responses:
+        '200':
+          description: PDF file generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Filename for download
+              schema:
+                type: string
+                example: 'attachment; filename="resume-2024-01-15.pdf"'
+            Content-Length:
+              description: Size of the PDF file in bytes
+              schema:
+                type: string
+        '400':
+          description: Bad request - missing resume data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: PDF export failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/cover-letter/generate:
+    post:
+      tags:
+        - Cover Letter
+      summary: Generate cover letter from resume and job URL
+      description: |
+        Generate a personalized cover letter by analyzing a resume and scraping a job posting URL.
+        
+        The API will:
+        1. Scrape the job posting from the provided URL
+        2. Extract key job requirements and company information
+        3. Analyze the resume for relevant skills and experience
+        4. Generate a tailored cover letter using AI
+        
+        **Features:**
+        - Customizable word count
+        - Additional considerations for personalization
+        - Intelligent caching for improved performance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume:
+                  $ref: '#/components/schemas/Resume'
+                  description: The resume object to use as a base
+                jobUrl:
+                  type: string
+                  format: uri
+                  description: URL of the job posting to analyze
+                forceRefresh:
+                  type: boolean
+                  default: false
+                  description: Force refresh of cached job data
+                wordCount:
+                  type: integer
+                  minimum: 100
+                  maximum: 1000
+                  default: 300
+                  description: Target word count for the cover letter
+                additionalConsiderations:
+                  type: string
+                  maxLength: 500
+                  description: Additional context or considerations for personalization
+              required:
+                - resume
+                - jobUrl
+      responses:
+        '200':
+          description: Cover letter generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoverLetterGenerationResponse'
+        '400':
+          description: Bad request - missing required parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Cover letter generation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/cover-letter/extract-job:
+    post:
+      tags:
+        - Cover Letter
+      summary: Extract job information from HTML content
+      description: |
+        Extract structured job information from HTML content without generating a cover letter.
+        
+        Useful for:
+        - Pre-analyzing job postings
+        - Extracting job data for other purposes
+        - Debugging job scraping issues
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                htmlContent:
+                  type: string
+                  description: HTML content of the job posting
+                originalUrl:
+                  type: string
+                  format: uri
+                  description: Original URL where the HTML was sourced from
+              required:
+                - htmlContent
+      responses:
+        '200':
+          description: Job information extracted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobOffer:
+                    $ref: '#/components/schemas/JobOffer'
+        '400':
+          description: Bad request - missing HTML content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Job extraction failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/cover-letter/generate-from-job-offer:
+    post:
+      tags:
+        - Cover Letter
+      summary: Generate cover letter from resume and job offer object
+      description: |
+        Generate a personalized cover letter using a pre-extracted job offer object.
+        
+        This endpoint bypasses URL scraping and uses the provided job offer data directly.
+        Useful when you already have the job information extracted or want to use custom job data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resume:
+                  $ref: '#/components/schemas/Resume'
+                  description: The resume object to use as a base
+                jobOffer:
+                  $ref: '#/components/schemas/JobOffer'
+                  description: The job offer object to target
+                wordCount:
+                  type: integer
+                  minimum: 100
+                  maximum: 1000
+                  default: 300
+                  description: Target word count for the cover letter
+                additionalConsiderations:
+                  type: string
+                  maxLength: 500
+                  description: Additional context or considerations for personalization
+              required:
+                - resume
+                - jobOffer
+      responses:
+        '200':
+          description: Cover letter generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoverLetterGenerationResponse'
+        '400':
+          description: Bad request - missing required parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Cover letter generation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/cover-letter/export/html:
+    post:
+      tags:
+        - Cover Letter
+      summary: Export cover letter to HTML format
+      description: |
+        Convert a cover letter object to HTML format for web display or printing.
+        
+        The HTML output is optimized for readability and professional appearance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coverLetter:
+                  $ref: '#/components/schemas/CoverLetter'
+                  description: The cover letter object to export
+              required:
+                - coverLetter
+      responses:
+        '200':
+          description: HTML file generated successfully
+          content:
+            text/html:
+              schema:
+                type: string
+          headers:
+            Content-Disposition:
+              description: Filename for download
+              schema:
+                type: string
+                example: 'attachment; filename="cover-letter-2024-01-15.html"'
+        '400':
+          description: Bad request - missing cover letter data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: HTML export failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/cover-letter/export/pdf:
+    post:
+      tags:
+        - Cover Letter
+      summary: Export cover letter to PDF format
+      description: |
+        Convert a cover letter object to PDF format for printing or sharing.
+        
+        The PDF is generated using Playwright for high-quality output with customizable options.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coverLetter:
+                  $ref: '#/components/schemas/CoverLetter'
+                  description: The cover letter object to export
+                pdfOptions:
+                  $ref: '#/components/schemas/PdfOptions'
+                  description: Optional PDF generation options
+              required:
+                - coverLetter
+      responses:
+        '200':
+          description: PDF file generated successfully
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              description: Filename for download
+              schema:
+                type: string
+                example: 'attachment; filename="cover-letter-2024-01-15.pdf"'
+        '400':
+          description: Bad request - missing cover letter data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: PDF export failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/cover-letter/cache/stats:
+    get:
+      tags:
+        - Cover Letter
+      summary: Get cache statistics
+      description: |
+        Retrieve statistics about the cover letter generation cache.
+        
+        Provides insights into:
+        - Cache hit/miss rates
+        - Memory usage
+        - Performance metrics
+      responses:
+        '200':
+          description: Cache statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CacheStats'
+        '500':
+          description: Failed to retrieve cache statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/cover-letter/cache:
+    delete:
+      tags:
+        - Cover Letter
+      summary: Clear cache
+      description: |
+        Clear the cover letter generation cache.
+        
+        **Note:** This endpoint is currently not implemented for the cover letter generator.
+      responses:
+        '200':
+          description: Cache clearing response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Cover letter cache clearing not implemented"
+
+components:
+  schemas:
+    Resume:
+      type: object
+      description: A structured resume following the JSON Resume schema
+      properties:
+        basics:
+          $ref: '#/components/schemas/Basics'
+        work:
+          type: array
+          items:
+            $ref: '#/components/schemas/Work'
+        volunteer:
+          type: array
+          items:
+            $ref: '#/components/schemas/Volunteer'
+        education:
+          type: array
+          items:
+            $ref: '#/components/schemas/Education'
+        awards:
+          type: array
+          items:
+            $ref: '#/components/schemas/Award'
+        publications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Publication'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+        interests:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interest'
+        references:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reference'
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+        meta:
+          $ref: '#/components/schemas/Meta'
+      additionalProperties: true
+
+    Basics:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+        label:
+          type: string
+          example: "Software Engineer"
+        image:
+          type: string
+          example: "https://example.com/photo.jpg"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        phone:
+          type: string
+          example: "+1-555-123-4567"
+        url:
+          type: string
+          format: uri
+          example: "https://johndoe.com"
+        summary:
+          type: string
+          example: "Experienced software engineer with expertise in web development..."
+        location:
+          $ref: '#/components/schemas/Location'
+        profiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Profile'
+
+    Location:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "123 Main St"
+        postalCode:
+          type: string
+          example: "12345"
+        city:
+          type: string
+          example: "New York"
+        countryCode:
+          type: string
+          example: "US"
+        region:
+          type: string
+          example: "NY"
+
+    Profile:
+      type: object
+      properties:
+        network:
+          type: string
+          example: "LinkedIn"
+        username:
+          type: string
+          example: "johndoe"
+        url:
+          type: string
+          format: uri
+          example: "https://linkedin.com/in/johndoe"
+
+    Work:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Tech Company Inc."
+        position:
+          type: string
+          example: "Senior Software Engineer"
+        url:
+          type: string
+          format: uri
+          example: "https://techcompany.com"
+        startDate:
+          type: string
+          format: date
+          example: "2020-01-01"
+        endDate:
+          type: string
+          format: date
+          example: "2023-12-31"
+        summary:
+          type: string
+          example: "Led development of web applications..."
+        highlights:
+          type: array
+          items:
+            type: string
+          example: ["Improved performance by 40%", "Led team of 5 developers"]
+
+    Education:
+      type: object
+      properties:
+        institution:
+          type: string
+          example: "University of Technology"
+        url:
+          type: string
+          format: uri
+          example: "https://university.edu"
+        area:
+          type: string
+          example: "Computer Science"
+        studyType:
+          type: string
+          example: "Bachelor's"
+        startDate:
+          type: string
+          format: date
+          example: "2016-09-01"
+        endDate:
+          type: string
+          format: date
+          example: "2020-05-31"
+        score:
+          type: string
+          example: "3.8 GPA"
+        courses:
+          type: array
+          items:
+            type: string
+          example: ["Data Structures", "Algorithms", "Web Development"]
+
+    Skill:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "JavaScript"
+        level:
+          type: string
+          example: "Advanced"
+        keywords:
+          type: array
+          items:
+            type: string
+          example: ["ES6+", "React", "Node.js"]
+
+    CoverLetter:
+      type: object
+      description: A generated cover letter object
+      properties:
+        id:
+          type: string
+          example: "cl_123456789"
+        content:
+          type: string
+          example: "Dear Hiring Manager, I am writing to express my interest..."
+        jobTitle:
+          type: string
+          example: "Senior Software Engineer"
+        companyName:
+          type: string
+          example: "Tech Company Inc."
+        wordCount:
+          type: integer
+          example: 300
+        generatedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000Z"
+        metadata:
+          type: object
+          additionalProperties: true
+
+    JobOffer:
+      type: object
+      description: Extracted job offer information
+      properties:
+        id:
+          type: string
+          example: "job_123456789"
+        title:
+          type: string
+          example: "Senior Software Engineer"
+        company:
+          type: string
+          example: "Tech Company Inc."
+        location:
+          type: string
+          example: "New York, NY"
+        description:
+          type: string
+          example: "We are looking for a talented software engineer..."
+        requirements:
+          type: array
+          items:
+            type: string
+          example: ["5+ years experience", "JavaScript expertise", "React knowledge"]
+        benefits:
+          type: array
+          items:
+            type: string
+          example: ["Health insurance", "401k", "Remote work"]
+        salary:
+          type: string
+          example: "$120,000 - $150,000"
+        url:
+          type: string
+          format: uri
+          example: "https://jobs.example.com/123"
+        extractedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000Z"
+
+    ExportFormat:
+      type: object
+      properties:
+        id:
+          type: string
+          enum: [json, html, pdf]
+          example: "html"
+        name:
+          type: string
+          example: "HTML"
+        description:
+          type: string
+          example: "Formatted resume in HTML format"
+
+    PdfOptions:
+      type: object
+      description: Options for PDF generation
+      properties:
+        format:
+          type: string
+          enum: [A4, Letter, Legal]
+          default: "A4"
+          example: "A4"
+        margin:
+          type: object
+          properties:
+            top:
+              type: string
+              example: "1in"
+            right:
+              type: string
+              example: "1in"
+            bottom:
+              type: string
+              example: "1in"
+            left:
+              type: string
+              example: "1in"
+        printBackground:
+          type: boolean
+          default: true
+          example: true
+        preferCSSPageSize:
+          type: boolean
+          default: false
+          example: false
+
+    ResumeGenerationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        resume:
+          $ref: '#/components/schemas/Resume'
+        performance:
+          $ref: '#/components/schemas/PerformanceMetrics'
+
+    CoverLetterGenerationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        coverLetter:
+          $ref: '#/components/schemas/CoverLetter'
+        performance:
+          $ref: '#/components/schemas/PerformanceMetrics'
+
+    PerformanceMetrics:
+      type: object
+      properties:
+        generationTime:
+          type: number
+          description: Time taken for generation in milliseconds
+          example: 2500
+        cacheHit:
+          type: boolean
+          description: Whether the result was served from cache
+          example: false
+        openaiCalls:
+          type: integer
+          description: Number of OpenAI API calls made
+          example: 3
+        totalTokens:
+          type: integer
+          description: Total tokens consumed
+          example: 1500
+
+    CacheStats:
+      type: object
+      properties:
+        totalRequests:
+          type: integer
+          description: Total number of requests processed
+          example: 150
+        cacheHits:
+          type: integer
+          description: Number of requests served from cache
+          example: 45
+        cacheMisses:
+          type: integer
+          description: Number of requests that required generation
+          example: 105
+        hitRate:
+          type: number
+          description: Cache hit rate as a percentage
+          example: 30.0
+        memoryUsage:
+          type: object
+          properties:
+            used:
+              type: string
+              example: "45.2 MB"
+            total:
+              type: string
+              example: "128.0 MB"
+            percentage:
+              type: number
+              example: 35.3
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Error type or category
+          example: "Validation Error"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Resume data is required"
+        details:
+          type: string
+          description: Additional error details (development only)
+          example: "Error stack trace..."
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication (if implemented)
+
+security:
+  - ApiKeyAuth: []
+
+# Additional schema definitions for JSON Resume compatibility
+# These are referenced above but defined here for completeness
+    Volunteer:
+      type: object
+      properties:
+        organization:
+          type: string
+        position:
+          type: string
+        url:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        summary:
+          type: string
+        highlights:
+          type: array
+          items:
+            type: string
+
+    Award:
+      type: object
+      properties:
+        title:
+          type: string
+        date:
+          type: string
+        awarder:
+          type: string
+        summary:
+          type: string
+
+    Publication:
+      type: object
+      properties:
+        name:
+          type: string
+        publisher:
+          type: string
+        releaseDate:
+          type: string
+        url:
+          type: string
+        summary:
+          type: string
+
+    Language:
+      type: object
+      properties:
+        language:
+          type: string
+        fluency:
+          type: string
+
+    Interest:
+      type: object
+      properties:
+        name:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+
+    Reference:
+      type: object
+      properties:
+        name:
+          type: string
+        reference:
+          type: string
+
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        highlights:
+          type: array
+          items:
+            type: string
+        keywords:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        url:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        entity:
+          type: string
+        type:
+          type: string
+
+    Meta:
+      type: object
+      properties:
+        theme:
+          type: string
+        version:
+          type: string
+        canonical:
+          type: string
+        lastModified:
+          type: string
+        format:
+          type: string
+        url:
+          type: string
