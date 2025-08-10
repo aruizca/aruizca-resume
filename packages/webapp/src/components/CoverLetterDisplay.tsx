@@ -134,61 +134,56 @@ export function CoverLetterDisplay({
     setIsDownloading(true)
     
     try {
-      // Create a simple HTML document for PDF generation
-      const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Cover Letter</title>
-          <style>
-            body { 
-              font-family: system-ui, -apple-system, sans-serif; 
-              line-height: 1.6; 
-              max-width: 800px; 
-              margin: 0 auto; 
-              padding: 40px 20px; 
-            }
-            h1, h2, h3 { color: #333; }
-            p { margin-bottom: 1rem; text-align: justify; }
-          </style>
-        </head>
-        <body>
-          ${renderMarkdownAsHtml(coverLetter)}
-        </body>
-        </html>
-      `
+      console.log('📄 Requesting PDF generation from API...');
       
-      // Create a blob and trigger download
-      const blob = new Blob([htmlContent], { type: 'text/html' })
-      const url = window.URL.createObjectURL(blob)
-      const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.html`
+      const response = await fetch('/api/cover-letter/export/pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: coverLetter
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Get the PDF blob
+      const pdfBlob = await response.blob();
       
-      const linkElement = document.createElement('a')
-      linkElement.href = url
-      linkElement.download = filename
-      linkElement.click()
+      // Create download link
+      const url = window.URL.createObjectURL(pdfBlob);
+      const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.pdf`;
       
-      window.URL.revokeObjectURL(url)
+      const linkElement = document.createElement('a');
+      linkElement.href = url;
+      linkElement.download = filename;
+      linkElement.click();
+      
+      window.URL.revokeObjectURL(url);
       
       toast({
-        title: 'Download started',
-        description: `Cover letter downloaded as ${filename}`,
+        title: 'PDF downloaded successfully',
+        description: `Cover letter saved as ${filename}`,
         status: 'success',
         duration: 3000,
         isClosable: true,
-      })
+      });
       
     } catch (error) {
+      console.error('PDF download failed:', error);
       toast({
-        title: 'Download failed',
-        description: 'Failed to download cover letter. Please try again.',
+        title: 'PDF generation failed',
+        description: `Failed to generate PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
         status: 'error',
-        duration: 3000,
+        duration: 4000,
         isClosable: true,
-      })
+      });
     } finally {
-      setIsDownloading(false)
+      setIsDownloading(false);
     }
   }
 
