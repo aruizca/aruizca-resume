@@ -243,16 +243,9 @@ export function CoverLetterDisplay({
           </HStack>
           
           {/* Word Count Badge */}
-          <HStack spacing={2}>
-            <Badge colorScheme="blue" variant="subtle" fontSize="sm" px={3} py={1}>
-              📝 {actualWordCount} words
-            </Badge>
-            {wordCount && (
-              <Text fontSize="sm" color="gray.600">
-                Target: {wordCount}
-              </Text>
-            )}
-          </HStack>
+          <Badge colorScheme="blue" variant="subtle" fontSize="sm" px={3} py={1}>
+            📝 {actualWordCount} words
+          </Badge>
         </HStack>
       </VStack>
 
