@@ -54,7 +54,9 @@ export const useCoverLetterGeneration = (): UseCoverLetterGenerationReturn => {
         body: JSON.stringify({
           resume: resumeJson,
           jobUrl: data.jobUrl,
-          forceRefresh: !data.useCache
+          forceRefresh: !data.useCache,
+          wordCount: data.wordCount,
+          additionalConsiderations: data.additionalConsiderations
         }),
       });
       

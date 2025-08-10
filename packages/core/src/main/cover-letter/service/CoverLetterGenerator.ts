@@ -32,12 +32,17 @@ export class CoverLetterGenerator {
    * @param resume The JSON resume object
    * @param jobOfferUrl URL of the job posting to scrape
    * @param forceRefresh Whether to bypass cache for fresh content
+   * @param options Additional options for cover letter generation
    * @returns Cover letter generation result
    */
   async generateFromResumeAndUrl(
     resume: Resume, 
     jobOfferUrl: string,
-    forceRefresh: boolean = false
+    forceRefresh: boolean = false,
+    options?: {
+      wordCount?: number;
+      additionalConsiderations?: string;
+    }
   ): Promise<CoverLetterGenerationResult> {
     const startTime = Date.now();
     
@@ -62,7 +67,12 @@ export class CoverLetterGenerator {
       const llmStart = Date.now();
       const resumeJson = JSON.stringify(resume, null, 2);
       const jobOfferJson = JSON.stringify(scrapingResult.jobOffer, null, 2);
-      const coverLetterContent = await this.promptRunner.runWithJson(jobOfferJson, resumeJson);
+      const coverLetterContent = await this.promptRunner.runWithJson(
+        jobOfferJson, 
+        resumeJson, 
+        options?.wordCount, 
+        options?.additionalConsiderations
+      );
       const llmTime = Date.now() - llmStart;
 
       // 3. Build final cover letter object
@@ -106,11 +116,16 @@ export class CoverLetterGenerator {
    * Generate a cover letter from a JSON resume and job offer data
    * @param resume The JSON resume object
    * @param jobOffer The job offer data object
+   * @param options Additional options for cover letter generation
    * @returns Cover letter generation result
    */
   async generateFromResumeAndJobOffer(
     resume: Resume,
-    jobOffer: JobOffer
+    jobOffer: JobOffer,
+    options?: {
+      wordCount?: number;
+      additionalConsiderations?: string;
+    }
   ): Promise<CoverLetterGenerationResult> {
     const startTime = Date.now();
     
@@ -122,7 +137,12 @@ export class CoverLetterGenerator {
       const llmStart = Date.now();
       const resumeJson = JSON.stringify(resume, null, 2);
       const jobOfferJson = JSON.stringify(jobOffer, null, 2);
-      const coverLetterContent = await this.promptRunner.runWithJson(jobOfferJson, resumeJson);
+      const coverLetterContent = await this.promptRunner.runWithJson(
+        jobOfferJson, 
+        resumeJson, 
+        options?.wordCount, 
+        options?.additionalConsiderations
+      );
       const llmTime = Date.now() - llmStart;
 
       // 2. Build final cover letter object

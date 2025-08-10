@@ -32,6 +32,9 @@ importers:
       multer:
         specifier: ^1.4.5-lts.1
         version: 1.4.5-lts.2
+      playwright:
+        specifier: ^1.54.2
+        version: 1.54.2
     devDependencies:
       '@types/cors':
         specifier: ^2.8.17
@@ -78,9 +81,6 @@ importers:
       papaparse:
         specifier: ^5.5.3
         version: 5.5.3
-      playwright:
-        specifier: ^1.54.2
-        version: 1.54.2
     devDependencies:
       '@types/node':
         specifier: ^24.2.0

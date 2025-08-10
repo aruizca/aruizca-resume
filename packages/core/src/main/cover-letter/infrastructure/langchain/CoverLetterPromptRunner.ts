@@ -12,6 +12,8 @@ export interface CoverLetterPromptRunner {
 interface CoverLetterInput {
   jobPostingJson: string;
   resumeJson: string;
+  wordCount?: number;
+  additionalConsiderations?: string;
 }
 
 export class DefaultCoverLetterPromptRunner implements CoverLetterPromptRunner {
@@ -25,7 +27,9 @@ export class DefaultCoverLetterPromptRunner implements CoverLetterPromptRunner {
       promptFactory: () => this.createJsonPrompt(),
       inputTransformer: (input) => ({
         jobPostingJson: input.jobPostingJson,
-        resumeJson: input.resumeJson
+        resumeJson: input.resumeJson,
+        wordCount: input.wordCount || 300,
+        additionalConsiderations: input.additionalConsiderations || 'None'
       }),
       outputTransformer: (result) => {
         // Handle both string and object responses
@@ -62,8 +66,18 @@ export class DefaultCoverLetterPromptRunner implements CoverLetterPromptRunner {
     return await this.runWithJson(jobPostingJson, resumeJson);
   }
 
-  async runWithJson(jobPostingJson: string, resumeJson: string): Promise<string> {
-    return await this.coverLetterRunner.execute({ jobPostingJson, resumeJson });
+  async runWithJson(
+    jobPostingJson: string, 
+    resumeJson: string, 
+    wordCount?: number, 
+    additionalConsiderations?: string
+  ): Promise<string> {
+    return await this.coverLetterRunner.execute({ 
+      jobPostingJson, 
+      resumeJson, 
+      wordCount, 
+      additionalConsiderations 
+    });
   }
 
   async extractJobInfoFromHtml(html: string): Promise<JobOffer> {

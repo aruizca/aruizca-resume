@@ -31,23 +31,24 @@ export function Navigation({ activeMode, onModeChange }: NavigationProps) {
             </Text>
           </Box>
 
-          {/* Navigation Tabs */}
-          <Tabs 
-            index={activeMode === 'resume' ? 0 : 1}
-            onChange={(index) => onModeChange(index === 0 ? 'resume' : 'cover-letter')}
-            variant="enclosed"
-            colorScheme="brand"
-            align="start"
-          >
-            <TabList>
-              <Tab py={4} px={8} fontSize="lg" fontWeight="medium">
-                📄 Generate JSON Resume
-              </Tab>
-              <Tab py={4} px={8} fontSize="lg" fontWeight="medium">
-                ✉️ Generate Cover Letter
-              </Tab>
-            </TabList>
-          </Tabs>
+          {/* Navigation Tabs - Left Aligned */}
+          <Box>
+            <Tabs 
+              index={activeMode === 'resume' ? 0 : 1}
+              onChange={(index) => onModeChange(index === 0 ? 'resume' : 'cover-letter')}
+              variant="enclosed"
+              colorScheme="brand"
+            >
+              <TabList justifyContent="flex-start">
+                <Tab py={4} px={8} fontSize="lg" fontWeight="medium">
+                  📄 Generate JSON Resume
+                </Tab>
+                <Tab py={4} px={8} fontSize="lg" fontWeight="medium">
+                  ✉️ Generate Cover Letter
+                </Tab>
+              </TabList>
+            </Tabs>
+          </Box>
         </VStack>
       </Container>
     </Box>

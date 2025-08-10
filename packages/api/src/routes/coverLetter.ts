@@ -13,7 +13,7 @@ const coverLetterGenerator = new CoverLetterGenerator();
  */
 router.post('/generate', async (req, res, next) => {
   try {
-    const { resume, jobUrl, forceRefresh } = req.body;
+    const { resume, jobUrl, forceRefresh, wordCount, additionalConsiderations } = req.body;
 
     if (!resume || !jobUrl) {
       return res.status(400).json({
@@ -24,13 +24,14 @@ router.post('/generate', async (req, res, next) => {
 
     const useForceRefresh = forceRefresh === 'true' || forceRefresh === true;
 
-    console.log(`📝 Generating cover letter for job: ${jobUrl}`);
+    console.log(`📝 Generating cover letter for job: ${jobUrl} (wordCount: ${wordCount}, additionalConsiderations: ${additionalConsiderations ? 'provided' : 'none'})`);
 
-    // Generate cover letter using the core service
+    // Generate cover letter using the core service with all parameters
     const result = await coverLetterGenerator.generateFromResumeAndUrl(
       resume,
       jobUrl,
-      useForceRefresh
+      useForceRefresh,
+      { wordCount, additionalConsiderations }
     );
 
     if (result.success && result.coverLetter) {
@@ -68,6 +69,47 @@ router.post('/extract-job', async (req, res, next) => {
     const url = originalUrl || 'https://unknown-job-url.com';
     const jobOffer = await coverLetterGenerator.extractJobOfferFromHtml(htmlContent, url);
     res.json({ jobOffer });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/cover-letter/generate-from-job-offer
+ * Generate a cover letter from resume and job offer object (bypasses URL scraping)
+ */
+router.post('/generate-from-job-offer', async (req, res, next) => {
+  try {
+    const { resume, jobOffer, wordCount, additionalConsiderations } = req.body;
+
+    if (!resume || !jobOffer) {
+      return res.status(400).json({
+        error: 'Missing required parameters',
+        message: 'Please provide both resume and jobOffer'
+      });
+    }
+
+    console.log(`📝 Generating cover letter from job offer (wordCount: ${wordCount}, additionalConsiderations: ${additionalConsiderations ? 'provided' : 'none'})`);
+
+    // Generate cover letter using the core service with all parameters
+    const result = await coverLetterGenerator.generateFromResumeAndJobOffer(
+      resume,
+      jobOffer,
+      { wordCount, additionalConsiderations }
+    );
+
+    if (result.success && result.coverLetter) {
+      res.json({
+        success: true,
+        coverLetter: result.coverLetter,
+        performance: result.performance
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error || 'Cover letter generation failed'
+      });
+    }
   } catch (error) {
     next(error);
   }

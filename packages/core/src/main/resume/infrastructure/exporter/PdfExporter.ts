@@ -1,5 +1,5 @@
 import { writeFile, mkdir, readFile } from 'fs/promises';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { tmpdir } from 'os';
@@ -84,7 +84,9 @@ export class PdfExporter implements IPdfExporter {
   private async generatePdfWithStandaloneScript(htmlPath: string, pdfPath: string): Promise<void> {
     // Use the standalone playwright-pdf.js script to avoid bundling issues
     // The script is located in packages/core/src/main/shared/infrastructure/pdf/
-    const scriptPath = join(process.cwd(), 'packages', 'core', 'src', 'main', 'shared', 'infrastructure', 'pdf', 'playwright-pdf.js');
+    // We need to find the project root by looking for the package.json or pnpm-workspace.yaml
+    const projectRoot = await this.findProjectRoot();
+    const scriptPath = join(projectRoot, 'packages', 'core', 'src', 'main', 'shared', 'infrastructure', 'pdf', 'playwright-pdf.js');
     const command = `node "${scriptPath}" "${htmlPath}"`;
     
     const { stdout, stderr } = await execAsync(command);
@@ -92,6 +94,51 @@ export class PdfExporter implements IPdfExporter {
     if (stderr && !stderr.includes('✅ PDF generated successfully')) {
       console.warn(`⚠️  Playwright warnings: ${stderr}`);
     }
+  }
+
+  /**
+   * Find the project root directory by looking for workspace configuration files
+   */
+  private async findProjectRoot(): Promise<string> {
+    let currentDir = process.cwd();
+    
+    // Walk up the directory tree to find the project root
+    while (currentDir !== dirname(currentDir)) {
+      try {
+        // Check if this directory contains workspace configuration files
+        const workspaceFile = join(currentDir, 'pnpm-workspace.yaml');
+        const packageJsonFile = join(currentDir, 'package.json');
+        
+        const fs = await import('fs/promises');
+        
+        try {
+          await fs.access(workspaceFile);
+          // Found workspace file, this is likely the project root
+          return currentDir;
+        } catch {
+          try {
+            await fs.access(packageJsonFile);
+            // Found package.json, check if it's our project
+            const packageJsonContent = await fs.readFile(packageJsonFile, 'utf-8');
+            const packageJson = JSON.parse(packageJsonContent);
+            if (packageJson.name === 'aruizca-resume') {
+              return currentDir;
+            }
+          } catch {
+            // Continue searching
+          }
+        }
+        
+        currentDir = dirname(currentDir);
+      } catch (error) {
+        // If we can't read the directory, move up
+        currentDir = dirname(currentDir);
+      }
+    }
+    
+    // Fallback to current working directory if we can't find the project root
+    console.warn('⚠️  Could not find project root, using current working directory');
+    return process.cwd();
   }
   
   private cleanHtmlForPdf(html: string): string {

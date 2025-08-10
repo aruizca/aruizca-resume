@@ -9,6 +9,8 @@ export const coverLetterJsonPrompt = `You are a professional cover letter writer
 ## Specific Considerations and Preferences:
 When generating the cover letter, please take into account the following preferences and considerations:
 
+- **Word Count**: The cover letter should be approximately {wordCount} words
+- **Additional Considerations**: {additionalConsiderations}
 - **Methodology References**: Use "Agile methodologies" in a generic way instead of mentioning "Scrum" specifically
 - **Certifications**: Do not mention any certifications, certifications, or formal credentials
 - **Company Names**: Do not mention specific company names where I worked, with maybe the exception of the current company I am working for.
