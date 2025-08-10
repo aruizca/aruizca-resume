@@ -1,17 +1,23 @@
 import { Router } from 'express';
-import { CoverLetterGenerator } from '@aruizca-resume/core';
-import { chromium } from 'playwright';
+import { 
+  CoverLetterGenerator, 
+  CoverLetterHtmlExporter, 
+  CoverLetterPdfExporter
+} from '@aruizca-resume/core';
+import { validateCoverLetterRequest } from '../middleware/validation.js';
 
 const router = Router();
 
-// Initialize cover letter generator
+// Initialize cover letter generator and exporters
 const coverLetterGenerator = new CoverLetterGenerator();
+const htmlExporter = new CoverLetterHtmlExporter();
+const pdfExporter = new CoverLetterPdfExporter();
 
 /**
  * POST /api/cover-letter/generate
  * Generate a cover letter from resume and job URL
  */
-router.post('/generate', async (req, res, next) => {
+router.post('/generate', validateCoverLetterRequest, async (req, res, next) => {
   try {
     const { resume, jobUrl, forceRefresh, wordCount, additionalConsiderations } = req.body;
 
@@ -116,112 +122,79 @@ router.post('/generate-from-job-offer', async (req, res, next) => {
 });
 
 /**
+ * POST /api/cover-letter/export/html
+ * Export a cover letter to HTML format using the core exporter
+ */
+router.post('/export/html', async (req, res, next) => {
+  try {
+    const { coverLetter } = req.body;
+    
+    if (!coverLetter) {
+      return res.status(400).json({
+        error: 'No cover letter provided',
+        message: 'Please provide coverLetter object in the request body'
+      });
+    }
+
+    console.log(`📄 Exporting cover letter to HTML...`);
+
+    try {
+      // Use the core HTML exporter
+      const html = await htmlExporter.export(coverLetter);
+      
+      const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.html`;
+      
+      res.setHeader('Content-Type', 'text/html');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(html);
+      
+    } catch (exportError) {
+      console.error('HTML export error:', exportError);
+      res.status(500).json({
+        error: 'HTML export failed',
+        message: exportError instanceof Error ? exportError.message : 'Unknown export error'
+      });
+    }
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * POST /api/cover-letter/export/pdf
- * Export a cover letter (markdown content) to PDF format
+ * Export a cover letter to PDF format using the core exporter
  */
 router.post('/export/pdf', async (req, res, next) => {
   try {
-    const { content } = req.body;
+    const { coverLetter, pdfOptions } = req.body;
     
-    if (!content) {
+    if (!coverLetter) {
       return res.status(400).json({
-        error: 'No cover letter content provided',
-        message: 'Please provide markdown content in the request body'
+        error: 'No cover letter provided',
+        message: 'Please provide coverLetter object in the request body'
       });
     }
 
     console.log(`📄 Exporting cover letter to PDF...`);
 
-    // Convert markdown to HTML
-    const markdownToHtml = (markdown: string) => {
-      return markdown
-        // Remove markdown code block syntax
-        .replace(/```[a-z]*\n?/g, '')
-        .replace(/```/g, '')
-        // Headers
-        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-        // Bold
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        // Italic  
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        // Convert double line breaks to paragraphs
-        .replace(/\n\n/g, '</p><p>')
-        // Convert single line breaks to spaces (for professional formatting)
-        .replace(/\n/g, ' ')
-        // Wrap in paragraph tags
-        .replace(/^(.*)$/, '<p>$1</p>')
-        // Clean up empty paragraphs
-        .replace(/<p><\/p>/g, '');
-    };
-
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Cover Letter</title>
-        <style>
-          body { 
-            font-family: system-ui, -apple-system, sans-serif; 
-            line-height: 1.6; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 40px 20px; 
-            color: #333;
-          }
-          h1, h2, h3 { 
-            color: #333; 
-            margin-top: 1.5em;
-            margin-bottom: 0.5em;
-          }
-          h1 { 
-            font-size: 1.5rem; 
-            border-bottom: 2px solid #333;
-            padding-bottom: 0.5em;
-          }
-          h2 { font-size: 1.25rem; }
-          h3 { font-size: 1.1rem; }
-          p { 
-            margin-bottom: 1rem; 
-            text-align: justify; 
-          }
-          strong { font-weight: bold; }
-          em { font-style: italic; }
-        </style>
-      </head>
-      <body>
-        ${markdownToHtml(content)}
-      </body>
-      </html>
-    `;
-
-    // Generate PDF using Playwright
-    const browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();
-    
-    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
-    
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      margin: {
-        top: '0.5in',
-        right: '0.5in',
-        bottom: '0.5in',
-        left: '0.5in'
-      },
-      printBackground: true,
-      preferCSSPageSize: false
-    });
-    
-    await browser.close();
-
-    const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.pdf`;
-    
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(pdfBuffer);
+    try {
+      // Use the core PDF exporter with optional PDF options
+      const pdfBuffer = await pdfExporter.export(coverLetter, pdfOptions);
+      
+      const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.pdf`;
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(pdfBuffer);
+      
+    } catch (exportError) {
+      console.error('PDF export error:', exportError);
+      res.status(500).json({
+        error: 'PDF export failed',
+        message: exportError instanceof Error ? exportError.message : 'Unknown export error'
+      });
+    }
     
   } catch (error) {
     next(error);

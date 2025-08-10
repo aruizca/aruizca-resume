@@ -6,8 +6,8 @@
   "main": "dist/index.js",
   "types": "dist/main/index.d.ts",
   "scripts": {
-    "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:playwright --external:papaparse && esbuild src/main/resume/service/resume-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/resume.js && esbuild src/main/cover-letter/service/cover-letter-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter.js",
-    "build:lib": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:playwright --external:papaparse",
+    "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi && esbuild src/main/resume/service/resume-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/resume.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi && esbuild src/main/cover-letter/service/cover-letter-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi",
+    "build:lib": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse",
     "test": "vitest run",
     "test:unit": "vitest run src/test/unit",
     "test:watch": "vitest",

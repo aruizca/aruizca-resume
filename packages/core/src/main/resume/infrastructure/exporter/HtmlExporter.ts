@@ -1,11 +1,11 @@
 import { Resume } from '../../domain';
-import { IHtmlExporter } from '../../domain/services/IJsonResumeExporter';
+import { IResumeHtmlExporter } from '../../domain/services/IJsonResumeExporter';
 import * as theme from 'jsonresume-theme-even';
 
 /**
  * HTML exporter that exports JSON Resume to HTML format
  */
-export class HtmlExporter implements IHtmlExporter {
+export class ResumeHtmlExporter implements IResumeHtmlExporter {
   /**
    * Filter out Twitter and Stack Overflow profiles from resume for HTML export
    * @param resume The resume to filter

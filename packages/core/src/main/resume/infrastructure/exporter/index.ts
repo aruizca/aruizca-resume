@@ -1,2 +1,2 @@
-export * from './HtmlExporter';
-export * from './PdfExporter';
+export { ResumeHtmlExporter } from './HtmlExporter';
+export { ResumePdfExporter } from './PdfExporter';

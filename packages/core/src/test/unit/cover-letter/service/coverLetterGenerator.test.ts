@@ -86,7 +86,9 @@ describe('CoverLetterGenerator', () => {
       expect(mockJobOfferScraper.scrape).toHaveBeenCalledWith('https://example.com/job', false);
       expect(mockPromptRunner.runWithJson).toHaveBeenCalledWith(
         JSON.stringify(mockJobOffer, null, 2),
-        JSON.stringify(mockResume, null, 2)
+        JSON.stringify(mockResume, null, 2),
+        undefined,
+        undefined
       );
       expect(mockCoverLetterBuilder.build).toHaveBeenCalledWith(
         mockJobOffer,
@@ -169,7 +171,9 @@ describe('CoverLetterGenerator', () => {
       expect(mockJobOfferScraper.scrape).not.toHaveBeenCalled();
       expect(mockPromptRunner.runWithJson).toHaveBeenCalledWith(
         JSON.stringify(mockJobOffer, null, 2),
-        JSON.stringify(mockResume, null, 2)
+        JSON.stringify(mockResume, null, 2),
+        undefined,
+        undefined
       );
       expect(mockCoverLetterBuilder.build).toHaveBeenCalledWith(
         mockJobOffer,

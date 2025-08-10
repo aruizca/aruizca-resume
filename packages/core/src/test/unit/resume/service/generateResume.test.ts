@@ -13,13 +13,13 @@ vi.mock('../../../../main', () => ({
   ResumeGenerator: vi.fn().mockImplementation(() => ({
     run: vi.fn().mockImplementation(async (linkedInDir: string, outputDir: string) => {
       // Import the mocked dependencies
-      const { LinkedInZipParser, PromptRunner, HtmlExporter, PdfExporter } = await import('../../../../main');
+      const { LinkedInZipParser, PromptRunner, ResumeHtmlExporter, ResumePdfExporter } = await import('../../../../main');
       
       // Create instances and call the pipeline
       const linkedInParser = new (LinkedInZipParser as any)();
       const promptRunner = new (PromptRunner as any)();
-      const htmlExporter = new (HtmlExporter as any)();
-      const pdfExporter = new (PdfExporter as any)();
+      const htmlExporter = new (ResumeHtmlExporter as any)();
+      const pdfExporter = new (ResumePdfExporter as any)();
       
       const parsedData = await linkedInParser.parse(linkedInDir);
       const resume = await promptRunner.run(parsedData);
@@ -42,8 +42,8 @@ vi.mock('../../../../main', () => ({
   })),
   LinkedInZipParser: vi.fn(),
   PromptRunner: vi.fn(),
-  HtmlExporter: vi.fn(),
-  PdfExporter: vi.fn()
+  ResumeHtmlExporter: vi.fn(),
+  ResumePdfExporter: vi.fn()
 }));
 
 describe('ResumeGenerator', () => {
@@ -75,14 +75,14 @@ describe('ResumeGenerator', () => {
     };
 
     // Import the mocked modules
-    const { ResumeGenerator, LinkedInZipParser, PromptRunner, HtmlExporter, PdfExporter } = await import('../../../../main');
+    const { ResumeGenerator, LinkedInZipParser, PromptRunner, ResumeHtmlExporter, ResumePdfExporter } = await import('../../../../main');
     
     // Mock the constructors
     (LinkedInZipParser as any).mockImplementation(() => mockLinkedInParser);
     (PromptRunner as any).mockImplementation(() => mockPromptRunner);
 
-    (HtmlExporter as any).mockImplementation(() => mockHtmlRenderer);
-    (PdfExporter as any).mockImplementation(() => mockPdfExporter);
+    (ResumeHtmlExporter as any).mockImplementation(() => mockHtmlRenderer);
+    (ResumePdfExporter as any).mockImplementation(() => mockPdfExporter);
 
     generateResume = new (ResumeGenerator as any)();
   });

@@ -1,7 +1,7 @@
 import { readFile, mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { ResumeGenerator, LinkedInExportFinder } from '../index';
-import { HtmlExporter, PdfExporter } from '../infrastructure/exporter';
+import { ResumeHtmlExporter, ResumePdfExporter } from '../infrastructure/exporter';
 import { validateEnvironment, validateLinkedInExportDirectory, validateOutputDirectory, validateCommandLineArgs, resolveErrorMessage } from '../../shared';
 import { Resume } from '../domain';
 
@@ -23,8 +23,8 @@ async function main() {
     
     const linkedInExportFinder = new LinkedInExportFinder();
     const resumeGenerator = new ResumeGenerator();
-    const htmlExporter = new HtmlExporter();
-    const pdfExporter = new PdfExporter();
+    const htmlExporter = new ResumeHtmlExporter();
+    const pdfExporter = new ResumePdfExporter();
     
     // Find LinkedIn export ZIP file
     let zipFilePath: string;

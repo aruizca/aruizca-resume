@@ -1,152 +1,135 @@
-import { Router } from 'express';
+import express from 'express';
 import multer from 'multer';
-import { ResumeGenerator, HtmlExporter, PdfExporter } from '@aruizca-resume/core';
+import path from 'path';
+import fs from 'fs';
+import { ResumeGenerator, ExporterFactory } from '@aruizca-resume/core';
+import { validateResumeRequest } from '../middleware/validation.js';
 
-const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
+const router = express.Router();
 
-// Initialize resume generator and exporters
-const resumeGenerator = new ResumeGenerator();
-const htmlExporter = new HtmlExporter();
-const pdfExporter = new PdfExporter();
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Store uploaded files in a temp directory
+    const tempDir = path.join(process.cwd(), 'temp');
+    // Create temp directory if it doesn't exist
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+    cb(null, tempDir);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with timestamp
+    const timestamp = Date.now();
+    const originalName = file.originalname.replace(/\.zip$/, '');
+    cb(null, `${originalName}-${timestamp}.zip`);
+  }
+});
 
+const upload = multer({ 
+  storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Only accept zip files
+    if (file.mimetype.includes('zip') || file.originalname.endsWith('.zip')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only ZIP files are allowed'));
+    }
+  }
+});
 
+// Get exporter factory instance
+const exporterFactory = ExporterFactory.getInstance();
 
 /**
  * POST /api/resume/generate
- * Generate a JSON resume from LinkedIn export ZIP file
+ * Generate a resume from LinkedIn export file
  */
-router.post('/generate', upload.single('linkedinExport'), async (req, res, next) => {
+router.post('/generate', upload.single('linkedinExport'), validateResumeRequest, async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ 
-        error: 'No LinkedIn export file provided',
-        message: 'Please upload a LinkedIn export ZIP file' 
+      return res.status(400).json({
+        success: false,
+        error: 'No file uploaded'
       });
     }
 
     const { forceRefresh } = req.body;
     const useForceRefresh = forceRefresh === 'true' || forceRefresh === true;
-
-    console.log(`📁 Processing LinkedIn export: ${req.file.originalname} (${(req.file.size / 1024 / 1024).toFixed(2)} MB)`);
     
+    console.log(`🚀 Starting resume generation for file: ${req.file.originalname}`);
+    console.log(`📁 File path: ${req.file.path}`);
+    console.log(`🔄 Force refresh: ${useForceRefresh}`);
+
+    // Read the file into a buffer
+    const fileBuffer = fs.readFileSync(req.file.path);
+
     // Generate resume using the core service
-    const result = await resumeGenerator.generateFromZip(
-      req.file.buffer,
-      useForceRefresh
-    );
+    const resumeGenerator = new ResumeGenerator();
+    const result = await resumeGenerator.generateFromZip(fileBuffer, useForceRefresh);
 
-    if (result.success && result.resume) {
-      res.json({
-        success: true,
-        resume: result.resume,
-        performance: result.performance,
-        validationResult: result.validationResult
-      });
-    } else {
-      res.status(500).json({
+    if (!result.success || !result.resume) {
+      return res.status(500).json({
         success: false,
-        error: result.error || 'Resume generation failed'
-      });
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * GET /api/resume/cache/stats
- * Get cache statistics
- */
-router.get('/cache/stats', async (req, res, next) => {
-  try {
-    const stats = await resumeGenerator.getCacheStats();
-    res.json(stats);
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * DELETE /api/resume/cache
- * Clear the cache
- */
-router.delete('/cache', async (req, res, next) => {
-  try {
-    await resumeGenerator.clearCache();
-    res.json({ message: 'Cache cleared successfully' });
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * POST /api/resume/export/html
- * Export a JSON resume to HTML format
- * Note: Twitter and Stack Overflow profiles are automatically filtered by HtmlExporter
- */
-router.post('/export/html', async (req, res, next) => {
-  try {
-    const { resume } = req.body;
-    
-    if (!resume) {
-      return res.status(400).json({
-        error: 'No resume data provided',
-        message: 'Please provide a JSON resume in the request body'
+        error: 'Failed to generate resume',
+        message: result.error || 'Resume generation failed'
       });
     }
 
-    console.log(`📄 Exporting resume to HTML (profiles filtered by HtmlExporter)...`);
-    
-    const html = await htmlExporter.export(resume);
-    const filename = `resume-${new Date().toISOString().split('T')[0]}.html`;
-    
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(html);
-    
-  } catch (error) {
-    next(error);
-  }
-});
+    console.log('✅ Resume generation successful!');
 
-/**
- * POST /api/resume/export/pdf
- * Export a JSON resume to PDF format
- */
-router.post('/export/pdf', async (req, res, next) => {
-  try {
-    const { resume } = req.body;
-    
-    if (!resume) {
-      return res.status(400).json({
-        error: 'No resume data provided',
-        message: 'Please provide a JSON resume in the request body'
-      });
+    // Clean up the uploaded file
+    try {
+      fs.unlinkSync(req.file.path);
+      console.log(`🗑️ Cleaned up temporary file: ${req.file.path}`);
+    } catch (cleanupError) {
+      console.warn(`⚠️ Failed to clean up temporary file: ${req.file.path}`, cleanupError);
     }
 
-    console.log(`📄 Exporting resume to PDF...`);
+    // Return the JSON resume data
+    res.json({
+      success: true,
+      resume: result.resume,
+      performance: result.performance
+    });
+
+  } catch (error: any) {
+    console.error('❌ Resume generation error:', error);
     
-    const pdfBuffer = await pdfExporter.export(resume);
-    const filename = `resume-${new Date().toISOString().split('T')[0]}.pdf`;
+    // Clean up the uploaded file on error
+    if (req.file) {
+      try {
+        fs.unlinkSync(req.file.path);
+        console.log(`🗑️ Cleaned up temporary file after error: ${req.file.path}`);
+      } catch (cleanupError) {
+        console.warn(`⚠️ Failed to clean up temporary file after error: ${req.file.path}`, cleanupError);
+      }
+    }
     
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.send(pdfBuffer);
-    
-  } catch (error) {
-    next(error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to generate resume',
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
 /**
- * GET /api/resume/performance
- * Get performance statistics
+ * GET /api/resume/formats
+ * Get available export formats
  */
-router.get('/performance', (req, res) => {
-  const stats = resumeGenerator.getPerformanceStats();
-  const summary = resumeGenerator.getPerformanceSummary();
-  res.json({ stats, summary });
+router.get('/formats', (req, res) => {
+  res.json({
+    formats: [
+      { id: 'json', name: 'JSON Resume', description: 'Structured resume data in JSON format' },
+      { id: 'html', name: 'HTML', description: 'Formatted resume in HTML format' },
+      { id: 'pdf', name: 'PDF', description: 'Printable resume in PDF format' }
+    ]
+  });
 });
 
 export { router as resumeRouter };

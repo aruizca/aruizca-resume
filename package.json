@@ -16,8 +16,7 @@
     "resume": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js",
     "resume:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js --force-refresh",
     "cover-letter": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter.js",
-    "cover-letter:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter.js --force-refresh",
-    "pdf": "node packages/core/src/main/shared/infrastructure/pdf/playwright-pdf.js"
+    "cover-letter:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter.js --force-refresh"
   },
   "devDependencies": {
     "turbo": "^2.5.5",

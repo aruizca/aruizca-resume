@@ -1,2 +1,1 @@
-// PDF generation infrastructure
-// This module contains shared PDF generation utilities 
+export { PlaywrightPdfGenerator, type PdfOptions } from './PlaywrightPdfGenerator'; 
