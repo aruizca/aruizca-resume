@@ -43,6 +43,14 @@
 - **Iteration 3**: ⏭️ Future - Real-time refinement and advanced features
 - **Overall Web UI**: 🔄 40% Complete (expanded scope)
 
+### ✅ Major Achievement: API Export Endpoints Working
+**Resume export to HTML and PDF is now fully functional via API endpoints:**
+- **HTML Export**: `POST /api/resume/export/html` - Direct integration with core ResumeHtmlExporter
+- **PDF Export**: `POST /api/resume/export/pdf` - Direct integration with core ResumePdfExporter
+- **File Downloads**: Proper Content-Disposition headers for browser downloads
+- **OpenAPI Documentation**: Comprehensive API specification added
+- **Core Integration**: Seamless connection between API layer and core export functionality
+
 ## Recent Decisions
 1. **Expanded Scope**: Added JSON Resume generation to Milestone 4 alongside cover letter generation
 2. **Web UI Tech Stack**: React 18 + TypeScript + Vite + Chakra UI v2 for modern development
@@ -58,10 +66,11 @@
 1. **Iteration 2**: Integrate web UI with core package for both resume and cover letter generation
 2. **Resume Backend**: Connect ResumeForm with existing LinkedInParser and ResumeBuilder
 3. **Cover Letter Backend**: Connect CoverLetterForm with existing GenerateCoverLetter service
-4. **PDF Export**: Implement real PDF generation using existing core infrastructure
-5. **File Processing**: Real LinkedIn CSV parsing and JSON Resume generation
-6. **Testing**: Add comprehensive testing for web UI components and integration
-7. **Deployment**: Prepare web UI for production deployment
+4. **✅ PDF Export**: **COMPLETE** - Resume PDF export working via API endpoints
+5. **✅ HTML Export**: **COMPLETE** - Resume HTML export working via API endpoints
+6. **File Processing**: Real LinkedIn CSV parsing and JSON Resume generation
+7. **Testing**: Add comprehensive testing for web UI components and integration
+8. **Deployment**: Prepare web UI for production deployment
 
 ## Known Issues
 - None currently identified

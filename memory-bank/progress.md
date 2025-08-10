@@ -36,6 +36,7 @@
 - ✅ AI-powered resume generation with OpenAI
 - ✅ HTML rendering with JSON Resume theme
 - ✅ PDF export with Playwright
+- ✅ **HTML and PDF export endpoints working via API**
 - ✅ Comprehensive error handling and recovery
 - ✅ Performance monitoring and caching
 - ✅ JSON Resume schema validation
@@ -49,6 +50,14 @@
 - ✅ **Standalone Script**: `pnpm run cover-letter` with JSON resume and job URL inputs
 - ✅ **Error Handling**: Comprehensive error handling throughout
 - ✅ **Testing**: Full test coverage for all scenarios
+
+### API Export Functionality (New!)
+- ✅ **HTML Export Endpoint**: `POST /api/resume/export/html` working successfully
+- ✅ **PDF Export Endpoint**: `POST /api/resume/export/pdf` working successfully
+- ✅ **Core Integration**: Direct integration with ResumeHtmlExporter and ResumePdfExporter
+- ✅ **File Downloads**: Proper Content-Disposition headers for file downloads
+- ✅ **OpenAPI Spec**: Comprehensive API documentation with OpenAPI 3.0.3
+- ✅ **Error Handling**: Proper error responses and validation
 
 ### Web UI (Milestone 4 - Iteration 1)
 - ✅ **React 18 + TypeScript**: Modern React setup with strict TypeScript configuration
