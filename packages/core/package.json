@@ -6,9 +6,9 @@
   "main": "dist/index.js",
   "types": "dist/main/index.d.ts",
   "scripts": {
-    "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi && esbuild src/main/resume/service/resume-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/resume.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi && esbuild src/main/cover-letter/service/cover-letter-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi",
+    "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi",
     "build:lib": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse",
-    "build:watch": "tsc && concurrently \"esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch\" \"esbuild src/main/resume/service/resume-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/resume.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch\" \"esbuild src/main/cover-letter/service/cover-letter-generation-script.ts --bundle --platform=node --format=esm --outfile=dist/cover-letter.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch\"",
+    "build:watch": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch",
     "dev": "npm run build:watch",
     "test": "vitest run",
     "test:unit": "vitest run src/test/unit",
@@ -31,7 +31,6 @@
   "devDependencies": {
     "@types/node": "^24.2.0",
     "@types/papaparse": "^5.3.16",
-    "concurrently": "^8.2.2",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0",
     "esbuild": "^0.21.5"
