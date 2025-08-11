@@ -1,6 +1,6 @@
 # AI-Powered Resume Generator
 
-A local-first, CLI-based resume generator that transforms LinkedIn export data into professional resumes using AI. Built with Node.js + TypeScript + ESM, following DDD and Hexagonal Architecture principles.
+A modern, web-based resume and cover letter generator that transforms LinkedIn export data into professional documents using AI. Built with Node.js + TypeScript + ESM + React, following DDD and Hexagonal Architecture principles.
 
 ## 🏗️ Monorepo Structure
 
@@ -10,7 +10,8 @@ This project is organized as a **Turborepo monorepo** with the following package
 aruizca-resume/
 ├── packages/
 │   ├── core/           # Resume and cover letter generation
-│   └── web-ui/         # Web interface (Milestone 4)
+│   ├── api/            # REST API endpoints
+│   └── webapp/         # React-based web interface
 ├── turbo.json          # Turborepo configuration
 └── pnpm-workspace.yaml # pnpm workspace configuration
 ```
@@ -18,7 +19,8 @@ aruizca-resume/
 ### 📦 Packages
 
 - **`@aruizca-resume/core`**: Core functionality for resume and cover letter generation
-- **`@aruizca-resume/web-ui`**: Web UI for cover letter generation (coming in Milestone 4)
+- **`@aruizca-resume/api`**: REST API for resume and cover letter generation
+- **`@aruizca-resume/webapp`**: Modern React web interface for user interaction
 
 ## Features
 
@@ -26,8 +28,9 @@ aruizca-resume/
 - **AI-Powered**: Uses OpenAI (ChatGPT 4o) for structured content generation
 - **Multiple Formats**: Generates JSON Resume, HTML, and PDF outputs
 - **Professional Themes**: Uses `jsonresume-theme-even-crewshin` for rendering
-- **Date-Stamped Output**: Files named with generation date (`resume-yyyymmdd.*`)
-- **Extensible Architecture**: Ready for future UI and cover letter features
+- **Web Interface**: Modern React-based UI for easy interaction
+- **REST API**: Programmatic access to all functionality
+- **Extensible Architecture**: Ready for future enhancements
 - **Monorepo**: Organized with Turborepo for scalability
 
 ## Quick Start
@@ -51,43 +54,49 @@ cp env.sample .env
 # Edit .env and add your OpenAI API key
 ```
 
-3. **Prepare LinkedIn export**:
-- Export your data from LinkedIn (Settings → Data Privacy → Get a copy)
-- Extract the ZIP to `linkedin-export/extracted/`
-
-4. **Generate resume**:
+3. **Start development servers**:
 ```bash
-pnpm start
+# Start all services in parallel
+pnpm dev
+
+# Or start individual services
+pnpm dev:webapp    # React web interface
+pnpm dev:api       # REST API server
+pnpm dev:core      # Core package in watch mode
 ```
 
-The script will automatically use the newest LinkedIn export in the `linkedin-export/` folder. You can also specify a custom path:
+4. **Access the application**:
+- **Web UI**: http://localhost:5173 (React app)
+- **API**: http://localhost:3001 (REST endpoints)
+- **API Docs**: http://localhost:3001/api-docs (Swagger UI)
+
+### Web Interface Usage
+
+1. **Resume Generation**:
+   - Upload LinkedIn export ZIP file
+   - Configure personal information
+   - Generate professional resume
+   - Export to JSON, HTML, or PDF
+
+2. **Cover Letter Generation**:
+   - Upload resume or use generated one
+   - Provide job posting URL
+   - Generate personalized cover letter
+   - Export to HTML or PDF
+
+### API Usage
+
+The REST API provides programmatic access to all functionality:
+
 ```bash
-pnpm start /path/to/custom/extracted/directory
-```
+# Generate resume from LinkedIn export
+curl -X POST http://localhost:3001/api/resume/generate \
+  -F "linkedinExport=@linkedin-export.zip"
 
-**Performance Features:**
-- **OpenAI Caching**: Responses are cached for 8 hours to reduce API costs
-- **Force Refresh**: Use `--force-refresh` to bypass cache and get fresh AI responses
-```bash
-pnpm start --force-refresh
-```
-
-5. **Generate PDF from existing HTML** (faster alternative):
-```bash
-pnpm pdf output/resume-20250805.html
-```
-
-This skips LinkedIn parsing and AI generation, using only the PDF export pipeline.
-
-### Cover Letter Generation
-
-Generate personalized cover letters using your JSON resume and a job posting URL:
-
-```bash
 # Generate cover letter
-pnpm cover-letter ./resume/resume-20250807.json https://example.com/job-posting
-
-# The cover letter will be saved to: output/cover-letter-20250807.md
+curl -X POST http://localhost:3001/api/cover-letter/generate \
+  -H "Content-Type: application/json" \
+  -d '{"resume": {...}, "jobUrl": "https://example.com/job"}'
 ```
 
 ## Development
@@ -98,119 +107,23 @@ pnpm cover-letter ./resume/resume-20250807.json https://example.com/job-posting
 # Build all packages
 pnpm build
 
-# Run tests across all packages
-pnpm test
-
-# Development mode (watch for changes)
+# Development mode (all packages)
 pnpm dev
 
-# Clean all build artifacts
+# Individual package development
+pnpm dev:core      # Core package
+pnpm dev:webapp    # Web app
+pnpm dev:api       # API server
+
+# Testing
+pnpm test          # Run all tests
+pnpm test:watch    # Watch mode for tests
+
+# Clean build artifacts
 pnpm clean
-
-# Lint all packages
-pnpm lint
-```
-
-### Package-Specific Commands
-
-```bash
-# Core package only
-pnpm --filter @aruizca-resume/core build
-pnpm --filter @aruizca-resume/core test
-
-# Web UI package only
-pnpm --filter @aruizca-resume/web-ui build
-pnpm --filter @aruizca-resume/web-ui dev
 ```
 
 ### Environment Variables
 ```bash
 OPENAI_API_KEY=your-openai-api-key-here
 ```
-
-### Output Files
-- `output/resume-yyyymmdd.json` - JSON Resume format
-- `output/resume-yyyymmdd.html` - Rendered HTML
-- `output/resume-yyyymmdd.pdf` - PDF export
-
-## Architecture
-
-### Core Package (`@aruizca-resume/core`)
-```
-packages/core/
-├── src/
-│   ├── main/
-│   │   ├── resume-generator.ts      # CLI entry point
-│   │   ├── cover-letter-generator.ts # Cover letter CLI
-│   │   ├── resume-generator/        # Resume generation context
-│   │   ├── cover-letter-generator/  # Cover letter generation context
-│   │   └── shared/                  # Shared utilities
-│   └── test/                        # Unit tests
-└── dist/                            # Build output
-```
-
-### Web UI Package (`@aruizca-resume/web-ui`)
-```
-packages/web-ui/
-├── src/                             # Web UI source code
-├── public/                          # Static assets
-└── dist/                            # Build output
-```
-
-## Current Status
-
-### ✅ Completed
-- Project setup with DDD + Hexagonal Architecture
-- OpenAI API integration (ChatGPT 4o)
-- HTML rendering with JSON Resume theme
-- Date-stamped file naming
-- AI-powered skill categorization
-- Cover letter generation with job scraping
-- Monorepo setup with Turborepo
-- pnpm workspace configuration
-
-### 🔄 In Progress
-- Web UI development (Milestone 4)
-
-### 📋 Planned
-- Web UI for cover letter generation
-- Advanced customization options
-- Multiple theme support
-
-## CI/CD
-
-### GitHub Actions
-
-This project uses GitHub Actions for automated testing and quality assurance:
-
-- **Test Pipeline**: Runs on every push and pull request
-  - Unit tests across Node.js 18.x and 20.x
-  - TypeScript compilation checks
-  - Build verification
-  - Unused dependency detection
-
-- **Security Scanning**: Weekly security audits and vulnerability checks
-
-- **Dependency Management**: Weekly dependency updates and unused dependency detection
-
-## Dependencies
-
-### Core
-- **Node.js + TypeScript + ESM**: Modern JavaScript development
-- **esbuild**: Fast TypeScript bundler
-- **OpenAI API**: ChatGPT 4o for content generation
-- **Turborepo**: Monorepo build system
-- **pnpm**: Package manager
-
-### Data Processing
-- **papaparse**: CSV parsing for LinkedIn exports
-- **adm-zip**: ZIP file extraction
-- **cheerio**: HTML parsing
-
-### Output Generation
-- **jsonresume-theme-even-crewshin**: Professional HTML theme
-- **Playwright**: PDF export (implemented)
-
-## License
-
-MIT 

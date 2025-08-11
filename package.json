@@ -16,11 +16,7 @@
     "start": "pnpm build && pnpm --filter @aruizca-resume/api run start",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "clean": "turbo run clean",
-    "resume": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js",
-    "resume:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/resume.js --force-refresh",
-    "cover-letter": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter.js",
-    "cover-letter:fresh": "pnpm --filter @aruizca-resume/core run build && node --env-file=.env packages/core/dist/cover-letter.js --force-refresh"
+    "clean": "turbo run clean"
   },
   "devDependencies": {
     "turbo": "^2.5.5",
