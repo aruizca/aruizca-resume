@@ -14,7 +14,6 @@
   "dependencies": {
     "@aruizca-resume/core": "workspace:*",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "multer": "^1.4.5-lts.1"

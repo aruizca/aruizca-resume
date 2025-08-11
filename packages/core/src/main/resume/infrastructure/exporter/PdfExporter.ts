@@ -82,9 +82,20 @@ export class ResumePdfExporter implements IResumePdfExporter {
             } 
           }
           
-
+          /* Set specific font sizes for h1 and h2 */
+          h1 {
+            font-size: 2.3em !important;
+          }
           
-
+          h2 {
+            font-size: 2em !important;
+          }
+          
+          /* Reduce header padding for more compact layout */
+          .masthead {
+            padding-top: 1.5em !important;
+            padding-bottom: 1.5em !important;
+          }
         `
       });
       
@@ -95,6 +106,11 @@ export class ResumePdfExporter implements IResumePdfExporter {
           function reduceFontSizes() {
             const elements = document.querySelectorAll('*');
             elements.forEach(function(el) {
+              // Skip h1 and h2 elements to preserve CSS font-size rules
+              if (el.tagName === 'H1' || el.tagName === 'H2') {
+                return;
+              }
+              
               const computedStyle = window.getComputedStyle(el);
               const currentSize = parseFloat(computedStyle.fontSize);
               if (currentSize && !isNaN(currentSize)) {
