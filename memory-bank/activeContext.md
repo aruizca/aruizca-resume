@@ -43,13 +43,22 @@
 - **Iteration 3**: ⏭️ Future - Real-time refinement and advanced features
 - **Overall Web UI**: 🔄 40% Complete (expanded scope)
 
-### ✅ Major Achievement: API Export Endpoints Working
+### ✅ Major Achievement: API Export Endpoints Working + PDF Improvements Restored
 **Resume export to HTML and PDF is now fully functional via API endpoints:**
 - **HTML Export**: `POST /api/resume/export/html` - Direct integration with core ResumeHtmlExporter
 - **PDF Export**: `POST /api/resume/export/pdf` - Direct integration with core ResumePdfExporter
 - **File Downloads**: Proper Content-Disposition headers for browser downloads
 - **OpenAPI Documentation**: Comprehensive API specification added
 - **Core Integration**: Seamless connection between API layer and core export functionality
+
+### ✅ PDF Layout Improvements Successfully Restored
+**All previous PDF export improvements have been restored and enhanced:**
+- **Full-Width First Section**: Profile/Masthead section now uses entire available width
+- **Page Numbers**: Professional footer with page numbers (X / Y format)
+- **A4 Viewport Sizing**: Proper page dimensions for consistent PDF output
+- **Font Optimizations**: Optimized font sizes and spacing for better readability
+- **Custom HTML Exporter**: Replaced problematic jsonresume-theme-even with clean custom HTML
+- **Professional Styling**: Clean, modern design with proper two-column layout
 
 ## Recent Decisions
 1. **Expanded Scope**: Added JSON Resume generation to Milestone 4 alongside cover letter generation

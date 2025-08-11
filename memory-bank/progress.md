@@ -58,6 +58,8 @@
 - ✅ **File Downloads**: Proper Content-Disposition headers for file downloads
 - ✅ **OpenAPI Spec**: Comprehensive API documentation with OpenAPI 3.0.3
 - ✅ **Error Handling**: Proper error responses and validation
+- ✅ **PDF Layout Improvements Restored**: Full-width first section, page numbers, A4 sizing
+- ✅ **Custom HTML Exporter**: Replaced problematic theme dependency with clean custom HTML
 
 ### Web UI (Milestone 4 - Iteration 1)
 - ✅ **React 18 + TypeScript**: Modern React setup with strict TypeScript configuration
