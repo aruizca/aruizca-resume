@@ -9,7 +9,6 @@
     "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi",
     "build:lib": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse",
     "build:watch": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch",
-    "dev": "npm run build:watch",
     "test": "vitest run",
     "test:unit": "vitest run src/test/unit",
     "test:watch": "vitest",

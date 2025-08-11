@@ -9,6 +9,7 @@
     "setup": "pnpm install && pnpm install --filter=\"./packages/*\"",
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
+    "watch": "turbo watch build:watch dev",
     "dev:core": "pnpm --filter @aruizca-resume/core run build:watch",
     "dev:webapp": "pnpm --filter @aruizca-resume/webapp run dev",
     "dev:api": "pnpm --filter @aruizca-resume/api run dev",
@@ -19,7 +20,6 @@
     "clean": "turbo run clean"
   },
   "devDependencies": {
-    "turbo": "^2.5.5",
-    "concurrently": "^8.2.2"
+    "turbo": "^2.5.5"
   }
 }
