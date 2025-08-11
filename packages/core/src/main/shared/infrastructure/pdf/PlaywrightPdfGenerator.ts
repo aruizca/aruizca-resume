@@ -15,6 +15,7 @@ export interface PdfOptions {
     left?: string;
   };
   printBackground?: boolean;
+  displayHeaderFooter?: boolean;
 }
 
 /**
@@ -91,6 +92,22 @@ export class PlaywrightPdfGenerator {
       // Load HTML content
       await page.setContent(await readFile(htmlPath, 'utf-8'));
       
+      // Apply minimal CSS for better PDF layout
+      await page.addStyleTag({
+        content: `
+          /* Minimal PDF layout improvements */
+          .masthead, .profile, .basics {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+          
+          body {
+            max-width: 96.5% !important;
+            margin: 0 auto !important;
+          }
+        `
+      });
+      
       // Generate PDF with options
       console.log(`📄 Generating PDF from HTML...`);
       const pdfBuffer = await page.pdf({
@@ -101,7 +118,21 @@ export class PlaywrightPdfGenerator {
           right: options?.margin?.right || '0.5in',
           bottom: options?.margin?.bottom || '0.5in',
           left: options?.margin?.left || '0.5in'
-        }
+        },
+        displayHeaderFooter: options?.displayHeaderFooter ?? true,
+        headerTemplate: '<span></span>', // Clean header
+        footerTemplate: `
+          <div style="
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 10px;
+            color: #666;
+            text-align: right;
+            padding: 0 20px;
+            width: 100%;
+          ">
+            <span class="pageNumber"></span> / <span class="totalPages"></span>
+          </div>
+        `
       });
       
       // Write PDF to file
