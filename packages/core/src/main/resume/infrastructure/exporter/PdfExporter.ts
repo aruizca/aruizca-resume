@@ -1,25 +1,16 @@
 import { Resume } from '../../domain';
 import { IResumePdfExporter } from '../../domain/services/IJsonResumeExporter';
 import { ResumeHtmlExporter } from './HtmlExporter';
-import { PlaywrightPdfGenerator, PdfOptions } from '../../../shared';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
-import { tmpdir } from 'os';
 
 /**
  * Resume-specific PDF exporter with custom layout optimizations
- * Reuses ResumeHtmlExporter and applies PDF customizations before PDF generation
+ * Uses the HtmlExporter (jsonresume-theme-even) and applies CSS overrides for A4 printing
  */
 export class ResumePdfExporter implements IResumePdfExporter {
-  private pdfGenerator: PlaywrightPdfGenerator;
   private htmlExporter: ResumeHtmlExporter;
 
-  constructor(
-    htmlExporter = new ResumeHtmlExporter(),
-    pdfGenerator?: PlaywrightPdfGenerator
-  ) {
-    this.htmlExporter = htmlExporter;
-    this.pdfGenerator = pdfGenerator || new PlaywrightPdfGenerator();
+  constructor() {
+    this.htmlExporter = new ResumeHtmlExporter();
   }
 
   /**
@@ -28,53 +19,25 @@ export class ResumePdfExporter implements IResumePdfExporter {
    * @param options Optional PDF generation options
    * @returns PDF as Buffer
    */
-  async export(resume: Resume, options?: PdfOptions): Promise<Buffer> {
-    // First export to HTML using the existing HTML exporter
-    const html = await this.htmlExporter.export(resume);
-
-    // Apply PDF-specific customizations to the HTML
-    const pdfOptimizedHtml = this.applyPdfCustomizations(html);
-
-    // Debug: Save the customized HTML to a file for inspection
+  async export(resume: Resume, options?: any): Promise<Buffer> {
     try {
-      const tempDir = tmpdir();
-      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      const debugHtmlPath = join(tempDir, `debug-resume-pdf-${dateStr}.html`);
-      await writeFile(debugHtmlPath, pdfOptimizedHtml);
-      console.log(`🔍 Debug HTML saved to: ${debugHtmlPath}`);
+      // Get HTML from the HTML exporter (using jsonresume-theme-even)
+      const html = await this.htmlExporter.export(resume);
+      
+      // Apply the working customizations directly in the resume PDF exporter
+      // This is the approach that was working on August 9th
+      return await this.generateResumePdf(html, options);
+      
     } catch (error) {
-      console.warn('⚠️ Could not save debug HTML:', error);
+      throw new Error(`Resume PDF generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-
-    // Create PDF options with resume-specific header/footer templates
-    const resumePdfOptions: PdfOptions = {
-      ...options,
-      displayHeaderFooter: true,
-      headerTemplate: '<span></span>', // Clean header
-      footerTemplate: `
-        <div style="
-          font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
-          font-size: 10px;
-          color: #666;
-          text-align: right;
-          padding: 0 20px;
-          width: 100%;
-        ">
-          <span class="pageNumber"></span> / <span class="totalPages"></span>
-        </div>
-      `
-    };
-
-    // Apply the working customizations directly in the resume PDF exporter
-    // This is the approach that was working on August 9th
-    return await this.generateResumePdf(pdfOptimizedHtml, resumePdfOptions);
   }
 
   /**
    * Generate PDF with resume-specific customizations applied at the Playwright level
-   * This bypasses CSS specificity issues by applying styles directly in the browser context
+   * This applies CSS overrides to the theme-generated HTML for A4 printing
    */
-  private async generateResumePdf(html: string, options: PdfOptions): Promise<Buffer> {
+  private async generateResumePdf(html: string, options: any): Promise<Buffer> {
     const { chromium } = await import('playwright');
     let browser: any;
     
@@ -91,25 +54,92 @@ export class ResumePdfExporter implements IResumePdfExporter {
       // Load HTML content
       await page.setContent(html);
       
-      // Apply minimal PDF customizations since HTML is now clean and simple
+      // Apply minimal CSS overrides - similar to working JavaScript script
       await page.addStyleTag({
         content: `
-          /* Minimal PDF optimizations for clean HTML */
-          @media print {
-            body {
-              margin: 0 !important;
-              padding: 0.5in !important;
-            }
-            
-            .page-break {
-              page-break-before: always !important;
-            }
+          /* PDF Layout Optimizations - minimal overrides like working script */
+          @media print { 
+            body { 
+              grid-template-columns: [full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end] !important; 
+              max-width: 95% !important; 
+              overflow-x: hidden !important; 
+            } 
+            h3 { 
+              grid-column: side !important; 
+            } 
+            section { 
+              grid-column: content !important; 
+            } 
+            .masthead { 
+              grid-column: full !important; 
+            } 
+            .masthead > * { 
+              grid-column: main !important; 
+            } 
+            * { 
+              max-width: 95% !important; 
+              box-sizing: border-box !important; 
+            } 
           }
+          
+
+          
+
         `
       });
       
+      // Programmatically reduce font sizes - exactly as in working JavaScript file
+      await page.evaluate(`
+        (function() {
+          // Function to reduce font size by 0.8px (less aggressive)
+          function reduceFontSizes() {
+            const elements = document.querySelectorAll('*');
+            elements.forEach(function(el) {
+              const computedStyle = window.getComputedStyle(el);
+              const currentSize = parseFloat(computedStyle.fontSize);
+              if (currentSize && !isNaN(currentSize)) {
+                const newSize = Math.max(currentSize - 0.8, 10); // Minimum 10px for readability
+                el.style.fontSize = newSize + 'px';
+              }
+            });
+          }
+          
+          // Function to adjust column widths for CSS Grid layout
+          function adjustColumnWidths() {
+            // Target the body element which has the grid layout
+            const body = document.querySelector('body');
+            if (body) {
+              // Override the grid template columns to achieve 15%/85% split
+              body.style.gridTemplateColumns = '[full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end]';
+              
+              // Also add CSS to ensure the grid areas work correctly and header spans both columns, and respect page dimensions
+              const style = document.createElement('style');
+              style.textContent = '@media print { body { grid-template-columns: [full-start] 1fr [main-start side-start] 15% [side-end content-start] 85% [main-end content-end] 1fr [full-end] !important; max-width: 95% !important; overflow-x: hidden !important; } h3 { grid-column: side !important; } section { grid-column: content !important; } .masthead { grid-column: full !important; } .masthead > * { grid-column: main !important; } * { max-width: 95% !important; box-sizing: border-box !important; } }';
+              document.head.appendChild(style);
+            }
+          }
+          
+          // Run when DOM is loaded
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+              reduceFontSizes();
+              adjustColumnWidths();
+            });
+          } else {
+            reduceFontSizes();
+            adjustColumnWidths();
+          }
+          
+          // Also run after a short delay to ensure all styles are applied
+          setTimeout(function() {
+            reduceFontSizes();
+            adjustColumnWidths();
+          }, 100);
+        })();
+      `);
+      
       // Generate PDF with resume-specific options
-      console.log(`📄 Generating PDF with resume customizations...`);
+      console.log(`📄 Generating PDF with layout optimizations...`);
       const pdfBuffer = await page.pdf({
         format: options?.format || 'A4',
         printBackground: options?.printBackground ?? true,
@@ -119,10 +149,10 @@ export class ResumePdfExporter implements IResumePdfExporter {
           bottom: options?.margin?.bottom || '0.5in',
           left: options?.margin?.left || '0.5in'
         },
-        displayHeaderFooter: options?.displayHeaderFooter ?? true,
-        headerTemplate: options?.headerTemplate || '<span></span>',
-        footerTemplate: options?.footerTemplate || '<span></span>',
-        preferCSSPageSize: false
+        displayHeaderFooter: true,
+        headerTemplate: '<span></span>', // Clean header
+        footerTemplate: this.getFooterTemplate(),
+        preferCSSPageSize: true
       });
       
       console.log(`✅ Resume PDF generated successfully with customizations`);
@@ -139,20 +169,21 @@ export class ResumePdfExporter implements IResumePdfExporter {
   }
 
   /**
-   * Apply PDF-specific customizations to the HTML content
-   * @param html The HTML content from ResumeHtmlExporter
-   * @returns HTML with PDF customizations applied
+   * Get the footer template for PDF pages
+   * @returns Footer template HTML string
    */
-  private applyPdfCustomizations(html: string): string {
-    // Remove any script tags that might interfere with PDF generation
-    let optimizedHtml = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-
-    // Remove or modify the title to prevent it from appearing in PDF metadata
-    optimizedHtml = optimizedHtml.replace(/<title>.*?<\/title>/gi, '<title></title>');
-
-    // No CSS customizations here - they are applied in the Playwright context
-    // where they can properly override the theme's CSS
-
-    return optimizedHtml;
+  private getFooterTemplate(): string {
+    return `
+      <div style="
+        font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 10px;
+        color: #666;
+        text-align: right;
+        padding: 0 20px;
+        width: 100%;
+      ">
+        <span class="pageNumber"></span> / <span class="totalPages"></span>
+      </div>
+    `;
   }
 }

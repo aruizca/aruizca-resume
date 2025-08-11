@@ -19,7 +19,7 @@ export class ExporterFactory {
   private constructor() {
     this.pdfGenerator = new PlaywrightPdfGenerator();
     this.resumeHtmlExporter = new ResumeHtmlExporter();
-    this.resumePdfExporter = new ResumePdfExporter(this.resumeHtmlExporter, this.pdfGenerator);
+    this.resumePdfExporter = new ResumePdfExporter();
     this.coverLetterHtmlExporter = new CoverLetterHtmlExporter();
     this.coverLetterPdfExporter = new CoverLetterPdfExporter(this.coverLetterHtmlExporter, this.pdfGenerator);
   }

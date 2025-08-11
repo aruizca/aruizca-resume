@@ -112,4 +112,9 @@
 - None currently identified
 
 ## Blockers
-- None currently identified 
+- None currently identified
+
+## Development Policies
+1. **No Commits Without Explicit Request**: Changes should never be committed without explicit user approval
+2. **Shared vs Specific Changes**: PDF layout improvements should be implemented in specific exporters, not in shared utilities
+3. **Separation of Concerns**: HTML export uses themes, PDF export applies custom styling 
