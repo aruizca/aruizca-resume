@@ -7,7 +7,16 @@ export class PromptRunner extends LangchainPromptRunner<any, Resume> {
       modelFactory: () => ModelFactory.createResumeModel(),
       promptFactory: () => PromptFactory.createResumePrompt(),
       inputTransformer: (parsedData) => ({
-        linkedinData: JSON.stringify(parsedData, null, 2)
+        linkedinData: JSON.stringify({
+          profile: parsedData.profile,
+          positions: parsedData.positions,
+          education: parsedData.education,
+          skills: parsedData.skills,
+          primaryEmail: parsedData.primaryEmail,
+          primaryPhone: parsedData.primaryPhone,
+          linkedInProfileUrl: parsedData.linkedInProfileUrl,
+          githubUrl: parsedData.githubUrl
+        }, null, 2)
       }),
       outputTransformer: (result) => result as Resume,
       outputParser: 'json',

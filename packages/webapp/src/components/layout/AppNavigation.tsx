@@ -24,7 +24,7 @@ export const AppNavigation = ({
       index={currentTabIndex}
       onChange={onTabChange}
     >
-      <TabList mb={8} justifyContent="center">
+      <TabList mb={8} justifyContent="flex-start">
         <Tab py={4} px={8} fontSize="lg" fontWeight="medium">
           📄 Generate JSON Resume
         </Tab>
