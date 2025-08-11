@@ -134,15 +134,81 @@ export function CoverLetterDisplay({
     setIsDownloading(true)
     
     try {
-      console.log('📄 Requesting PDF generation from API...');
+      console.log('📄 Generating PDF from preview content...');
       
-      const response = await fetch('/api/cover-letter/export/pdf', {
+      // Generate the same HTML that's shown in the preview
+      const renderedHtml = renderMarkdownAsHtml(coverLetter);
+      
+      // Create a complete HTML document with the same styling as the preview
+      const fullHtml = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Letter</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 1in;
+            background: white;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        h2 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+            color: #333;
+        }
+        h3 {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+            color: #333;
+        }
+        strong {
+            font-weight: bold;
+            color: #333;
+        }
+        em {
+            font-style: italic;
+        }
+        p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        @media print {
+            body {
+                margin: 0;
+                padding: 0.5in;
+            }
+        }
+    </style>
+</head>
+<body>
+    ${renderedHtml}
+</body>
+</html>`;
+      
+      // Send the rendered HTML to a new endpoint that converts HTML directly to PDF
+      const response = await fetch('/api/cover-letter/export/html-to-pdf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: coverLetter
+          html: fullHtml
         }),
       });
 

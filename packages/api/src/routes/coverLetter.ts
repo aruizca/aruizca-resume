@@ -8,10 +8,32 @@ import { validateCoverLetterRequest } from '../middleware/validation.js';
 
 const router = Router();
 
-// Initialize cover letter generator and exporters
-const coverLetterGenerator = new CoverLetterGenerator();
-const htmlExporter = new CoverLetterHtmlExporter();
-const pdfExporter = new CoverLetterPdfExporter();
+// Lazy initialization of cover letter generator and exporters
+let coverLetterGenerator: CoverLetterGenerator | null = null;
+let htmlExporter: CoverLetterHtmlExporter | null = null;
+let pdfExporter: CoverLetterPdfExporter | null = null;
+
+// Initialize services lazily when first needed
+function getCoverLetterGenerator(): CoverLetterGenerator {
+  if (!coverLetterGenerator) {
+    coverLetterGenerator = new CoverLetterGenerator();
+  }
+  return coverLetterGenerator;
+}
+
+function getHtmlExporter(): CoverLetterHtmlExporter {
+  if (!htmlExporter) {
+    htmlExporter = new CoverLetterHtmlExporter();
+  }
+  return htmlExporter;
+}
+
+function getPdfExporter(): CoverLetterPdfExporter {
+  if (!pdfExporter) {
+    pdfExporter = new CoverLetterPdfExporter();
+  }
+  return pdfExporter;
+}
 
 /**
  * POST /api/cover-letter/generate
@@ -33,7 +55,7 @@ router.post('/generate', validateCoverLetterRequest, async (req, res, next) => {
     console.log(`📝 Generating cover letter for job: ${jobUrl} (wordCount: ${wordCount}, additionalConsiderations: ${additionalConsiderations ? 'provided' : 'none'})`);
 
     // Generate cover letter using the core service with all parameters
-    const result = await coverLetterGenerator.generateFromResumeAndUrl(
+    const result = await getCoverLetterGenerator().generateFromResumeAndUrl(
       resume,
       jobUrl,
       useForceRefresh,
@@ -73,7 +95,7 @@ router.post('/extract-job', async (req, res, next) => {
     }
 
     const url = originalUrl || 'https://unknown-job-url.com';
-    const jobOffer = await coverLetterGenerator.extractJobOfferFromHtml(htmlContent, url);
+    const jobOffer = await getCoverLetterGenerator().extractJobOfferFromHtml(htmlContent, url);
     res.json({ jobOffer });
   } catch (error) {
     next(error);
@@ -98,7 +120,7 @@ router.post('/generate-from-job-offer', async (req, res, next) => {
     console.log(`📝 Generating cover letter from job offer (wordCount: ${wordCount}, additionalConsiderations: ${additionalConsiderations ? 'provided' : 'none'})`);
 
     // Generate cover letter using the core service with all parameters
-    const result = await coverLetterGenerator.generateFromResumeAndJobOffer(
+    const result = await getCoverLetterGenerator().generateFromResumeAndJobOffer(
       resume,
       jobOffer,
       { wordCount, additionalConsiderations }
@@ -140,7 +162,7 @@ router.post('/export/html', async (req, res, next) => {
 
     try {
       // Use the core HTML exporter
-      const html = await htmlExporter.export(coverLetter);
+      const html = await getHtmlExporter().export(coverLetter);
       
       const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.html`;
       
@@ -153,6 +175,49 @@ router.post('/export/html', async (req, res, next) => {
       res.status(500).json({
         error: 'HTML export failed',
         message: exportError instanceof Error ? exportError.message : 'Unknown export error'
+      });
+    }
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/cover-letter/export/html-to-pdf
+ * Export HTML content directly to PDF format (bypasses business letter template)
+ */
+router.post('/export/html-to-pdf', async (req, res, next) => {
+  try {
+    const { html } = req.body;
+    
+    if (!html) {
+      return res.status(400).json({
+        error: 'No HTML content provided',
+        message: 'Please provide html content in the request body'
+      });
+    }
+
+    console.log(`📄 Converting HTML directly to PDF...`);
+
+    try {
+      // Use the shared PlaywrightPdfGenerator directly to convert HTML to PDF
+      const { PlaywrightPdfGenerator } = await import('@aruizca-resume/core');
+      const pdfGenerator = new PlaywrightPdfGenerator();
+      
+      const pdfBuffer = await pdfGenerator.generateFromHtml(html, undefined, 'cover-letter-preview');
+      
+      const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.pdf`;
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(pdfBuffer);
+      
+    } catch (exportError) {
+      console.error('HTML to PDF conversion error:', exportError);
+      res.status(500).json({
+        error: 'PDF conversion failed',
+        message: exportError instanceof Error ? exportError.message : 'Unknown conversion error'
       });
     }
     
@@ -180,7 +245,7 @@ router.post('/export/pdf', async (req, res, next) => {
 
     try {
       // Use the core PDF exporter with optional PDF options
-      const pdfBuffer = await pdfExporter.export(coverLetter, pdfOptions);
+      const pdfBuffer = await getPdfExporter().export(coverLetter, pdfOptions);
       
       const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.pdf`;
       
@@ -207,7 +272,7 @@ router.post('/export/pdf', async (req, res, next) => {
  */
 router.get('/cache/stats', async (req, res, next) => {
   try {
-    const stats = await coverLetterGenerator.getCacheStats();
+    const stats = await getCoverLetterGenerator().getCacheStats();
     res.json(stats);
   } catch (error) {
     next(error);

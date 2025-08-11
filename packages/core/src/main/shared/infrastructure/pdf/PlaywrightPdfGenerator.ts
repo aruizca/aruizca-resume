@@ -93,8 +93,8 @@ export class PlaywrightPdfGenerator {
       
       // Load HTML content
       await page.setContent(await readFile(htmlPath, 'utf-8'));
-      
-      // Generate PDF with options (no custom styling - completely generic)
+
+      // Generate PDF with enhanced options
       console.log(`📄 Generating PDF from HTML...`);
       const pdfBuffer = await page.pdf({
         format: options?.format || 'A4',

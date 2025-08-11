@@ -1,6 +1,15 @@
+import { config } from 'dotenv';
+import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
+// Load environment variables from root .env file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = resolve(__dirname, '../../..');
+config({ path: resolve(rootDir, '.env') });
+
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import cors from 'cors';
 import helmet from 'helmet';
 import { resumeRouter } from './routes/resume.js';
@@ -11,8 +20,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Get current directory (for ESM)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(helmet({

@@ -109,11 +109,7 @@ export class CoverLetterHtmlExporter implements ICoverLetterHtmlExporter {
         </div>
         
         <div class="date">
-            <p>${coverLetter.generatedAt.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            })}</p>
+            <p>${this.formatDate(coverLetter.generatedAt)}</p>
         </div>
         
         <div class="recipient">
@@ -138,7 +134,7 @@ export class CoverLetterHtmlExporter implements ICoverLetterHtmlExporter {
     </div>
     
     <div class="metadata">
-        <p><strong>Generated:</strong> ${coverLetter.generatedAt.toLocaleString()}</p>
+        <p><strong>Generated:</strong> ${this.formatDateTime(coverLetter.generatedAt)}</p>
         <p><strong>Word Count:</strong> ${metadata.wordCount}</p>
         <p><strong>Tone:</strong> ${metadata.tone}</p>
         <p><strong>Focus Areas:</strong> ${metadata.focusAreas.join(', ')}</p>
@@ -175,6 +171,36 @@ export class CoverLetterHtmlExporter implements ICoverLetterHtmlExporter {
       }
     }
     return 'Your Name';
+  }
+
+  /**
+   * Format date for display, handling both Date objects and ISO strings
+   */
+  private formatDate(date: Date | string): string {
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      return dateObj.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    } catch (error) {
+      console.warn('Error formatting date:', error);
+      return 'Date not available';
+    }
+  }
+
+  /**
+   * Format date and time for display, handling both Date objects and ISO strings
+   */
+  private formatDateTime(date: Date | string): string {
+    try {
+      const dateObj = typeof date === 'string' ? new Date(date) : date;
+      return dateObj.toLocaleString('en-US');
+    } catch (error) {
+      console.warn('Error formatting date and time:', error);
+      return 'Date and time not available';
+    }
   }
 
   /**
