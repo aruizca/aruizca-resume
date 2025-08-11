@@ -255,3 +255,12 @@ interface Resume {
 - **Automatic Dependencies**: Turborepo handles build order automatically
 - **Persistent Tasks**: Long-running watch tasks with proper configuration
 - **Standardized Commands**: Consistent watch behavior across all packages
+
+### **GitFlow Workflow**
+- **Feature Branch Strategy**: Each enhancement task gets dedicated feature branch
+- **Branch Naming Convention**: `feature/milestoneX-taskY-description`
+- **Pull Request Process**: Create PR for each completed task, require user review
+- **Merge Strategy**: User-controlled merge after review and approval
+- **Branch Cleanup**: Delete local and remote feature branches after merge
+- **Main Branch Protection**: Always push updated main to origin after merge
+- **Task Isolation**: Each task is completely isolated in its own branch and PR

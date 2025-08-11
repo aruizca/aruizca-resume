@@ -13,6 +13,20 @@
 - All code changes must be explicitly approved before committing
 - This ensures code quality and prevents unintended deployments
 
+### **GitFlow Workflow Policy**
+- **Feature Branch Workflow**: Each task gets its own feature branch (`feature/milestone5-taskX-description`)
+- **Pull Request Process**: Create PR for each completed task, never auto-merge
+- **User Review Required**: All PRs must be reviewed and approved by user before merging
+- **Branch Cleanup**: After merge, delete both local and remote feature branches
+- **Main Branch Updates**: Push updated main branch to origin after successful merge
+- **Task Isolation**: Each enhancement task is isolated in its own branch and PR
+
+### **Pull Request Workflow**
+- **Never merge PRs automatically** - always wait for user review and approval
+- **Leave PRs open** for proper code review process
+- **User makes final decision** on when to merge
+- **Maintain proper review workflow** for code quality and collaboration
+
 ### **Separation of Concerns**
 - **Memory Bank Updates**: Proactively update project context files
 - **Code Changes**: Only implement when explicitly requested
@@ -81,6 +95,7 @@
 - **Milestone 4 Complete**: All planned iterations finished successfully
 - **Milestone 5 Established**: Enhancement phase with 8 major tasks
 - **Priority Order**: CLI Cleanup → Turborepo Watch → Cover Letter → Dependencies → Logging → OAuth → Deployment → OpenAPI
+- **PR Workflow Correction**: Established proper pull request review process - never auto-merge, always wait for user approval
 
 ### **Open Questions**
 - **Implementation Timeline**: 6-8 weeks estimated for all tasks
