@@ -5,6 +5,9 @@
   "description": "AI-powered resume and cover letter generator",
   "private": true,
   "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "setup": "pnpm install && pnpm install --filter=\"./packages/*\"",
     "build": "turbo run build",

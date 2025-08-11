@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Core resume and cover letter generation functionality",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "main": "dist/index.js",
   "types": "dist/main/index.d.ts",
   "scripts": {

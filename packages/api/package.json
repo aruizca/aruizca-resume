@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "description": "API server for resume and cover letter generation",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
