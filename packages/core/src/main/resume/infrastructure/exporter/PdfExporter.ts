@@ -82,7 +82,7 @@ export class ResumePdfExporter implements IResumePdfExporter {
             } 
           }
           
-          /* Set specific font sizes for h1 and h2 */
+          /* Set specific font sizes for h1 h2 h3 */
           h1 {
             font-size: 2.3em !important;
           }
@@ -90,12 +90,35 @@ export class ResumePdfExporter implements IResumePdfExporter {
           h2 {
             font-size: 2em !important;
           }
+
+          h3 {
+            font-size: 1.9em !important;
+          }
+
+          h4 {
+            font-size: 1.7em !important;
+          }
           
           /* Reduce header padding for more compact layout */
           .masthead {
             padding-top: 1.5em !important;
             padding-bottom: 1.5em !important;
           }
+          
+          /* Ensure job descriptions use full available width */
+          .timeline p {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-right: 0 !important;
+            padding-right: 0 !important;
+          }
+          
+          /* Ensure work experience content uses full column width */
+          .stack article {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+        
         `
       });
       
