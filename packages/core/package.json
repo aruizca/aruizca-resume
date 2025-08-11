@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi",
     "build:lib": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse",
-    "build:watch": "node watch.js",
+    "build:watch": "esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch",
     "test": "vitest run",
     "test:unit": "vitest run src/test/unit",
     "test:watch": "vitest",
@@ -30,7 +30,6 @@
   "devDependencies": {
     "@types/node": "^24.2.0",
     "@types/papaparse": "^5.3.16",
-    "chokidar": "^4.0.3",
     "esbuild": "^0.25.8",
     "nodemon": "^3.1.10",
     "typescript": "^5.0.0",
