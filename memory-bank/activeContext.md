@@ -12,6 +12,7 @@
 - **Never commit changes without explicit request**
 - All code changes must be explicitly approved before committing
 - This ensures code quality and prevents unintended deployments
+- **No automatic commits** - wait for explicit user approval before any git operations
 
 ### **GitFlow Workflow Policy**
 - **Feature Branch Workflow**: Each task gets its own feature branch (`feature/milestone5-taskX-description`)

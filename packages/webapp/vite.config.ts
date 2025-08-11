@@ -23,7 +23,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    // Include workspace dependencies for HMR
-    include: ['@aruizca-resume/core'],
+    // No external dependencies needed for HMR
   },
 })

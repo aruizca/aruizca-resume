@@ -32,6 +32,8 @@ aruizca-resume/
 - **REST API**: Programmatic access to all functionality
 - **Extensible Architecture**: Ready for future enhancements
 - **Monorepo**: Organized with Turborepo for scalability
+- **Intelligent Development**: Turborepo watch mode for optimal file watching
+- **Hybrid Architecture**: Full-stack server + development server for flexibility
 
 ## Quick Start
 
@@ -56,19 +58,128 @@ cp env.sample .env
 
 3. **Start development servers**:
 ```bash
-# Start all services in parallel
-pnpm dev
+# Start all services with intelligent file watching
+pnpm watch
 
 # Or start individual services
 pnpm dev:webapp    # React web interface
 pnpm dev:api       # REST API server
 pnpm dev:core      # Core package in watch mode
+
+# Traditional parallel development (without file watching)
+pnpm dev
 ```
 
 4. **Access the application**:
-- **Web UI**: http://localhost:5173 (React app)
-- **API**: http://localhost:3001 (REST endpoints)
-- **API Docs**: http://localhost:3001/api-docs (Swagger UI)
+- **Full-Stack Server**: http://localhost:3001 (API + Webapp)
+- **Development Server**: http://localhost:3000 (Webapp only, hot-reload)
+- **API Endpoints**: http://localhost:3001/api/* (REST API)
+- **Health Check**: http://localhost:3001/health
+
+## 🚀 Development Workflow
+
+### **Intelligent File Watching with Turborepo**
+
+The project uses **Turborepo's built-in watch mode** for optimal development experience:
+
+```bash
+# Single command watches all packages intelligently
+pnpm watch
+```
+
+**What happens automatically:**
+- **Core Package**: Rebuilds library when source files change
+- **API Package**: Restarts server when source files change  
+- **Webapp Package**: Rebuilds frontend when source files change
+- **Dependency Management**: Turborepo handles build order automatically
+- **Single Process**: One file watcher instead of multiple processes
+
+**Benefits:**
+- ✅ **Faster Development**: No manual rebuilds or restarts
+- ✅ **Intelligent Watching**: Only rebuilds what's necessary
+- ✅ **Port Management**: Automatic port allocation and conflict resolution
+- ✅ **Error Recovery**: Automatic restart on build failures
+- ✅ **Resource Efficient**: Single process instead of multiple watchers
+
+### **Development Commands**
+
+| Command | Description | Use Case |
+|---------|-------------|----------|
+| `pnpm watch` | **Recommended**: Intelligent file watching for all packages | Daily development |
+| `pnpm dev` | Parallel development without file watching | One-time builds |
+| `pnpm dev:core` | Watch only core package | Library development |
+| `pnpm dev:webapp` | Watch only webapp package | Frontend development |
+| `pnpm dev:api` | Watch only API package | Backend development |
+
+## 🏗️ Server Architecture
+
+### **Full-Stack vs Development Servers**
+
+The project uses a **hybrid architecture** that provides both development flexibility and production readiness:
+
+#### **Port 3001 - Full-Stack Server (Production Ready)**
+```bash
+# Start the full-stack server
+pnpm dev:api
+```
+
+**What it serves:**
+- ✅ **API Endpoints**: `/api/resume/*`, `/api/cover-letter/*`
+- ✅ **Webapp**: Static files from webapp build
+- ✅ **Health Check**: `/health` endpoint
+- ✅ **SPA Fallback**: Serves React app for all non-API routes
+
+**Use Cases:**
+- **Production deployment** (single server)
+- **Full application testing** (API + frontend)
+- **Integration testing** (end-to-end workflows)
+- **Demo environments** (complete application)
+
+#### **Port 3000 - Development Server (Development Only)**
+```bash
+# Start the development server
+pnpm dev:webapp
+```
+
+**What it serves:**
+- ✅ **Webapp**: Hot-reload development server
+- ✅ **Fast Refresh**: Vite HMR for rapid development
+- ✅ **Source Maps**: Full debugging capabilities
+- ❌ **No API**: Frontend only
+
+**Use Cases:**
+- **Frontend development** (React component work)
+- **UI/UX iteration** (rapid visual changes)
+- **Hot-reload testing** (immediate feedback)
+
+### **Architecture Benefits**
+
+| Aspect | Full-Stack (3001) | Development (3000) |
+|--------|-------------------|-------------------|
+| **Completeness** | ✅ API + Webapp | ❌ Webapp only |
+| **Development Speed** | ❌ Slower (full rebuild) | ✅ Fast (hot-reload) |
+| **Production Ready** | ✅ Yes | ❌ No |
+| **API Testing** | ✅ Full access | ❌ No access |
+| **Deployment** | ✅ Single server | ❌ Separate servers |
+
+### **Recommended Development Workflow**
+
+1. **Start with full-stack server**:
+   ```bash
+   pnpm watch  # Watches all packages intelligently
+   ```
+
+2. **Access the application**:
+   - **Full app**: http://localhost:3001 (API + Webapp)
+   - **API testing**: http://localhost:3001/api/*
+
+3. **For frontend-only work**:
+   - Use http://localhost:3000 for hot-reload development
+   - Use http://localhost:3001 for full integration testing
+
+4. **Production deployment**:
+   - Use only port 3001 (full-stack server)
+   - Configure reverse proxy if needed
 
 ### Web Interface Usage
 
