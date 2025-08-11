@@ -233,3 +233,25 @@ interface Resume {
 3. **Multiple Themes**: Theme selection and customization
 4. **Cloud Storage**: Remote file storage and sharing
 5. **Collaboration**: Multi-user editing and versioning
+
+## 🔧 **Build & Development Patterns**
+
+### **Monorepo Structure**
+- **Turborepo**: Monorepo orchestration and build optimization
+- **Package Isolation**: Each package has its own dependencies and build process
+- **Shared Dependencies**: Common dependencies managed at root level
+- **Cross-Package References**: Internal package references use workspace protocol
+
+### **Dependency Management**
+- **Fixed Version Policy**: All dependencies use exact versions (no ranges like `^`)
+- **Build Reproducibility**: Consistent builds across all environments
+- **Update Strategy**: Manual, planned updates with comprehensive testing
+- **Security First**: Regular security audits and controlled updates
+- **Rollback Procedures**: Established procedures for reverting problematic updates
+
+### **File Watching & Development**
+- **Turborepo Watch Mode**: Single `turbo watch` command for all packages
+- **Single-Instance Watching**: One process manages all file watching
+- **Automatic Dependencies**: Turborepo handles build order automatically
+- **Persistent Tasks**: Long-running watch tasks with proper configuration
+- **Standardized Commands**: Consistent watch behavior across all packages
