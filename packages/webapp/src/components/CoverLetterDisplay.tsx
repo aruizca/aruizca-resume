@@ -21,6 +21,7 @@ import { CopyIcon } from '@chakra-ui/icons'
 import { FaFilePdf, FaFileAlt } from 'react-icons/fa'
 import { useState } from 'react'
 import { config } from '../config'
+import { marked } from 'marked'
 
 interface CoverLetterCodeBlockProps {
   content: string
@@ -103,29 +104,18 @@ export function CoverLetterDisplay({
   const [isDownloading, setIsDownloading] = useState(false)
   const toast = useToast()
 
-  // Convert markdown to clean HTML for professional display
+  // Convert markdown to HTML using the marked library
   const renderMarkdownAsHtml = (markdown: string) => {
     if (!markdown) return ''
     
-    return markdown
-      // Headers
-      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-      // Bold
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Italic  
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      // Links - convert [text](url) to <a href="url">text</a>
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-      // Convert double line breaks to paragraphs
-      .replace(/\n\n/g, '</p><p>')
-      // Convert single line breaks to spaces (for professional formatting)
-      .replace(/\n/g, ' ')
-      // Wrap in paragraph tags
-      .replace(/^(.*)$/, '<p>$1</p>')
-      // Clean up empty paragraphs
-      .replace(/<p><\/p>/g, '')
+    // Configure marked options for proper HTML output
+    marked.setOptions({
+      breaks: true,        // Convert line breaks to <br>
+      gfm: true,          // GitHub Flavored Markdown
+    })
+    
+    // Parse markdown to HTML
+    return marked(markdown)
   }
 
 
