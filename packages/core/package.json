@@ -10,6 +10,7 @@
   "types": "dist/main/index.d.ts",
   "scripts": {
     "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi",
+    "build:check": "tsc --noEmit",
     "build:lib": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse",
     "build:watch": "esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch",
     "test": "vitest run",
