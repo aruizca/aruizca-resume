@@ -1,10 +1,10 @@
 import { config } from 'dotenv';
-import { resolve } from 'path';
+import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 // Load environment variables from root .env file
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 const rootDir = resolve(__dirname, '../../..');
 config({ path: resolve(rootDir, '.env') });
 
