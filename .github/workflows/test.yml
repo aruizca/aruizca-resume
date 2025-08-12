@@ -45,9 +45,9 @@ jobs:
 
     - name: Check for TypeScript errors
       run: |
-        cd packages/core && pnpm exec tsc --noEmit
-        cd ../api && pnpm exec tsc --noEmit
-        cd ../webapp && pnpm exec tsc --noEmit
+        cd packages/core && pnpm exec tsc --noEmit --project tsconfig.json
+        cd ../api && pnpm exec tsc --noEmit --project tsconfig.json
+        cd ../webapp && pnpm exec tsc --noEmit --project tsconfig.json
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -85,9 +85,9 @@ jobs:
 
     - name: Check TypeScript compilation
       run: |
-        cd packages/core && pnpm exec tsc --noEmit
-        cd ../api && pnpm exec tsc --noEmit
-        cd ../webapp && pnpm exec tsc --noEmit
+        cd packages/core && pnpm exec tsc --noEmit --project tsconfig.json
+        cd ../api && pnpm exec tsc --noEmit --project tsconfig.json
+        cd ../webapp && pnpm exec tsc --noEmit --project tsconfig.json
 
     - name: Check for unused dependencies
       run: npx depcheck --ignores="@types/*,vitest" || true
