@@ -19,9 +19,8 @@ import {
 } from '@chakra-ui/react'
 import { CopyIcon } from '@chakra-ui/icons'
 import { FaFilePdf, FaFileAlt } from 'react-icons/fa'
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { config } from '../config'
-import { marked } from 'marked'
 
 interface CoverLetterCodeBlockProps {
   content: string
@@ -102,21 +101,85 @@ export function CoverLetterDisplay({
   wordCount = 250 
 }: CoverLetterDisplayProps) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const [renderedHtml, setRenderedHtml] = useState('')
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false)
   const toast = useToast()
 
-  // Convert markdown to HTML using the marked library
-  const renderMarkdownAsHtml = (markdown: string) => {
-    if (!markdown) return ''
+  // Fetch formatted HTML from the API for preview
+  const fetchFormattedHtml = async (coverLetterText: string) => {
+    if (!coverLetterText) return ''
     
-    // Configure marked options for proper HTML output
-    marked.setOptions({
-      breaks: true,        // Convert line breaks to <br>
-      gfm: true,          // GitHub Flavored Markdown
-    })
-    
-    // Parse markdown to HTML
-    return marked(markdown)
-  }
+    setIsLoadingPreview(true)
+    try {
+      console.log('📡 Fetching formatted HTML for:', coverLetterText.substring(0, 100) + '...');
+      console.log('🌐 API URL:', `${config.apiBaseUrl}/api/cover-letter/export/html`);
+      const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/html`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          coverLetter: {
+            jobOffer: {
+              title: "Software Engineer",
+              company: "Company",
+              url: "https://example.com",
+              description: "",
+              requirements: [],
+              location: "Location"
+            },
+            userProfile: {
+              profile: [],
+              positions: [],
+              education: [],
+              skills: []
+            },
+            content: coverLetterText,
+            generatedAt: new Date().toISOString(),
+            metadata: { 
+              wordCount,
+              tone: "professional",
+              focusAreas: []
+            }
+          }
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const html = await response.text();
+      return html;
+    } catch (error) {
+      console.error('Failed to fetch formatted HTML:', error);
+      toast({
+        title: 'Preview generation failed',
+        description: 'Failed to generate formatted preview. Showing raw markdown.',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      });
+      return '';
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
+  // Update rendered HTML when cover letter changes
+  useEffect(() => {
+    if (coverLetter) {
+      console.log('🔄 Cover letter changed, fetching formatted HTML...');
+      fetchFormattedHtml(coverLetter).then(html => {
+        console.log('✅ HTML fetched successfully, length:', html.length);
+        setRenderedHtml(html);
+      }).catch(error => {
+        console.error('❌ Error setting rendered HTML:', error);
+      });
+    }
+  }, [coverLetter]); // Remove wordCount dependency
+
+
 
 
 
@@ -126,86 +189,54 @@ export function CoverLetterDisplay({
     try {
       console.log('📄 Generating PDF from preview content...');
       
-      // Generate the same HTML that's shown in the preview
-      const renderedHtml = renderMarkdownAsHtml(coverLetter);
-      
-      // Create a complete HTML document with the same styling as the preview
-      const fullHtml = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cover Letter</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 8.5in;
-            margin: 0 auto;
-            padding: 1in;
-            background: white;
-        }
-        h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        h2 {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 0.75rem;
-            margin-top: 1.5rem;
-            color: #333;
-        }
-        h3 {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            margin-top: 1rem;
-            color: #333;
-        }
-        strong {
-            font-weight: bold;
-            color: #333;
-        }
-        em {
-            font-style: italic;
-        }
-        p {
-            margin-bottom: 1rem;
-            text-align: justify;
-        }
-        a {
-            color: #0066cc;
-            text-decoration: underline;
-        }
-        a:hover {
-            color: #004499;
-        }
-        @media print {
-            body {
-                margin: 0;
-                padding: 0.5in;
+      // First generate HTML from the markdown content
+      const htmlResponse = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/html`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          coverLetter: {
+            jobOffer: {
+              title: "Software Engineer",
+              company: "Company",
+              url: "https://example.com",
+              description: "",
+              requirements: [],
+              location: "Location"
+            },
+            userProfile: {
+              profile: [],
+              positions: [],
+              education: [],
+              skills: []
+            },
+            content: coverLetter,
+            generatedAt: new Date().toISOString(),
+            metadata: { 
+              wordCount,
+              tone: "professional",
+              focusAreas: []
             }
-        }
-    </style>
-</head>
-<body>
-    ${renderedHtml}
-</body>
-</html>`;
-      
-      // Send the rendered HTML to a new endpoint that converts HTML directly to PDF
+          }
+        }),
+      });
+
+      if (!htmlResponse.ok) {
+        const errorData = await htmlResponse.json();
+        throw new Error(errorData.error || `HTML generation failed: ${htmlResponse.status}`);
+      }
+
+      const html = await htmlResponse.text();
+
+      // Then convert the HTML to PDF
       const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/html-to-pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          html: fullHtml
+          html: html
         }),
       });
 
@@ -330,7 +361,7 @@ export function CoverLetterDisplay({
             >
               <Box
                 dangerouslySetInnerHTML={{
-                  __html: renderMarkdownAsHtml(coverLetter)
+                  __html: renderedHtml || coverLetter
                 }}
                 sx={{
                   '& h1': {

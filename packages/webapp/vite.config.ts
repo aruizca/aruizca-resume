@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
   },
   server: {
     port: 3000,
+    strictPort: true, // Don't try other ports if 3000 is busy
     open: true,
     watch: {
       // Watch for changes in the core package

@@ -12,148 +12,57 @@ export class CoverLetterHtmlExporter implements ICoverLetterHtmlExporter {
    * @returns HTML as string
    */
   async export(coverLetter: CoverLetter): Promise<string> {
-    const { jobOffer, userProfile, content, metadata } = coverLetter;
+    const { jobOffer, userProfile, content } = coverLetter;
     
+    // Return only the essential cover letter content, no headers/footers
     const html = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cover Letter - ${jobOffer.title}</title>
-    <style>
-        body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 8.5in;
-            margin: 0 auto;
-            padding: 1in;
-            background: white;
-        }
-        
-        .header {
-            margin-bottom: 2em;
-        }
-        
-        .contact-info {
-            margin-bottom: 1.5em;
-        }
-        
-        .contact-info p {
-            margin: 0.2em 0;
-            font-size: 14px;
-        }
-        
-        .date {
-            margin-bottom: 1.5em;
-        }
-        
-        .recipient {
-            margin-bottom: 1.5em;
-        }
-        
-        .recipient p {
-            margin: 0.2em 0;
-            font-size: 14px;
-        }
-        
-        .salutation {
-            margin-bottom: 1em;
-            font-weight: bold;
-        }
-        
-        .content {
-            text-align: justify;
-            margin-bottom: 1.5em;
-        }
-        
-        .content p {
-            margin-bottom: 1em;
-            text-indent: 0;
-        }
-        
-        .closing {
-            margin-top: 2em;
-        }
-        
-        .signature {
-            margin-top: 1em;
-        }
-        
-        .metadata {
-            margin-top: 2em;
-            padding-top: 1em;
-            border-top: 1px solid #eee;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .metadata p {
-            margin: 0.2em 0;
-        }
-        
-        @media print {
-            body {
-                margin: 0;
-                padding: 0.5in;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="contact-info">
-            <p><strong>${this.getFullName(userProfile)}</strong></p>
-            ${this.getContactInfo(userProfile)}
-        </div>
-        
-        <div class="date">
-            <p>${this.formatDate(coverLetter.generatedAt)}</p>
-        </div>
-        
-        <div class="recipient">
-            <p><strong>${jobOffer.company}</strong></p>
-            <p>${jobOffer.location || 'Location not specified'}</p>
-        </div>
-    </div>
-    
-    <div class="salutation">
-        <p>Dear Hiring Manager,</p>
-    </div>
-    
-    <div class="content">
+    <div class="cover-letter-content">
         ${this.formatContent(content)}
-    </div>
-    
-    <div class="closing">
-        <p>Sincerely,</p>
-        <div class="signature">
-            <p><strong>${this.getFullName(userProfile)}</strong></p>
-        </div>
-    </div>
-    
-    <div class="metadata">
-        <p><strong>Generated:</strong> ${this.formatDateTime(coverLetter.generatedAt)}</p>
-        <p><strong>Word Count:</strong> ${metadata.wordCount}</p>
-        <p><strong>Tone:</strong> ${metadata.tone}</p>
-        <p><strong>Focus Areas:</strong> ${metadata.focusAreas.join(', ')}</p>
-    </div>
-</body>
-</html>`;
+    </div>`;
 
     return html;
   }
 
   /**
-   * Format the content by converting line breaks to paragraphs
+   * Format the content by converting markdown to HTML
    */
   private formatContent(content: string): string {
     return content
       .split('\n')
       .filter(paragraph => paragraph.trim().length > 0)
-      .map(paragraph => `<p>${paragraph.trim()}</p>`)
+      .map(paragraph => this.parseMarkdown(paragraph.trim()))
       .join('\n        ');
+  }
+
+  /**
+   * Parse markdown syntax to HTML
+   */
+  private parseMarkdown(text: string): string {
+    // Remove markdown code blocks
+    text = text.replace(/```markdown\n?/g, '');
+    text = text.replace(/```\n?/g, '');
+    
+    // Parse headers
+    text = text.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    
+    // Parse bold and italic
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    
+    // Parse links
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    
+    // Parse line breaks
+    text = text.replace(/\n/g, '<br>');
+    
+    // Wrap in paragraph if it's not already a header
+    if (!text.startsWith('<h')) {
+      text = `<p>${text}</p>`;
+    }
+    
+    return text;
   }
 
   /**

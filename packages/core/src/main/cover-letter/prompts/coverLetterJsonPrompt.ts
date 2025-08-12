@@ -53,7 +53,6 @@ When generating the cover letter, please take into account the following prefere
 ## Output Format:
 Return the cover letter in clean markdown format. Start with a heading and include proper formatting:
 
-\`\`\`markdown
 # Cover Letter
 
 Dear Hiring Manager,
@@ -66,6 +65,5 @@ Sincerely,
 ---
 
 **PS:** *This cover letter was automatically generated using AI by analyzing the job offer and matching it with my LinkedIn profile information. More information about this AI-powered resume and cover letter generator can be found at: https://github.com/aruizca/aruizca-resume*
-\`\`\`
 
 Focus on the most relevant aspects of the candidate's experience that match the job requirements. Use concrete examples from the resume data and show how they relate to the job posting requirements. Ensure all content follows the specific considerations and preferences outlined above.`;
