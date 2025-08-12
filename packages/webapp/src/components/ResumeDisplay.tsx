@@ -20,6 +20,7 @@ import {
 import { CopyIcon } from '@chakra-ui/icons'
 import { FaFilePdf, FaFileCode, FaFileAlt } from 'react-icons/fa'
 import { useState } from 'react'
+import { config } from '../config'
 
 interface JsonCodeBlockProps {
   data: object
@@ -165,8 +166,7 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
     setIsExportingHtml(true)
     
     try {
-      const apiUrl = ''; // Use relative URLs for unified server
-      const response = await fetch(`${apiUrl}/api/resume/export/html`, {
+      const response = await fetch(`${config.apiBaseUrl}/api/resume/export/html`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,8 +216,7 @@ export function ResumeDisplay({ jsonResume, isGenerating }: ResumeDisplayProps) 
     setIsExportingPdf(true)
     
     try {
-      const apiUrl = ''; // Use relative URLs for unified server
-      const response = await fetch(`${apiUrl}/api/resume/export/pdf`, {
+      const response = await fetch(`${config.apiBaseUrl}/api/resume/export/pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

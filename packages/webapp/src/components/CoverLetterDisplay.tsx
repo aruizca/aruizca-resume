@@ -20,6 +20,7 @@ import {
 import { CopyIcon } from '@chakra-ui/icons'
 import { FaFilePdf, FaFileAlt } from 'react-icons/fa'
 import { useState } from 'react'
+import { config } from '../config'
 
 interface CoverLetterCodeBlockProps {
   content: string
@@ -107,9 +108,6 @@ export function CoverLetterDisplay({
     if (!markdown) return ''
     
     return markdown
-      // Remove markdown code block syntax
-      .replace(/```[a-z]*\n?/g, '')
-      .replace(/```/g, '')
       // Headers
       .replace(/^# (.*$)/gm, '<h1>$1</h1>')
       .replace(/^## (.*$)/gm, '<h2>$1</h2>')
@@ -118,6 +116,8 @@ export function CoverLetterDisplay({
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       // Italic  
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Links - convert [text](url) to <a href="url">text</a>
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       // Convert double line breaks to paragraphs
       .replace(/\n\n/g, '</p><p>')
       // Convert single line breaks to spaces (for professional formatting)
@@ -188,6 +188,13 @@ export function CoverLetterDisplay({
             margin-bottom: 1rem;
             text-align: justify;
         }
+        a {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        a:hover {
+            color: #004499;
+        }
         @media print {
             body {
                 margin: 0;
@@ -202,7 +209,7 @@ export function CoverLetterDisplay({
 </html>`;
       
       // Send the rendered HTML to a new endpoint that converts HTML directly to PDF
-      const response = await fetch('/api/cover-letter/export/html-to-pdf', {
+      const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/html-to-pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -366,6 +373,16 @@ export function CoverLetterDisplay({
                   '& p': {
                     marginBottom: '1rem',
                     textAlign: 'justify',
+                    fontSize: 'md',
+                    lineHeight: '1.6',
+                    color: 'gray.800',
+                  },
+                  '& a': {
+                    color: 'blue.500',
+                    textDecoration: 'underline',
+                  },
+                  '& a:hover': {
+                    color: 'blue.700',
                   },
                 }}
               />

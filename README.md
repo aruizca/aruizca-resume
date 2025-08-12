@@ -58,12 +58,12 @@ cp env.sample .env
 
 3. **Start development servers**:
 ```bash
-# Start all services with intelligent file watching
-pnpm watch
+# Unified server approach (recommended)
+pnpm start:dev     # Builds webapp + starts API server on port 3000
 
 # Or start individual services
-pnpm dev:webapp    # React web interface
-pnpm dev:api       # REST API server
+pnpm dev:webapp    # React web interface on port 3000
+pnpm dev:api       # REST API server on port 3001
 pnpm dev:core      # Core package in watch mode
 
 # Traditional parallel development (without file watching)
@@ -71,10 +71,50 @@ pnpm dev
 ```
 
 4. **Access the application**:
-- **Full-Stack Server**: http://localhost:3001 (API + Webapp)
+- **Unified Server**: http://localhost:3000 (API + Webapp - recommended)
 - **Development Server**: http://localhost:3000 (Webapp only, hot-reload)
-- **API Endpoints**: http://localhost:3001/api/* (REST API)
-- **Health Check**: http://localhost:3001/health
+- **API Endpoints**: http://localhost:3000/api/* (REST API)
+- **Health Check**: http://localhost:3000/health
+
+## 🏗️ Server Architecture
+
+### **Unified Server Approach (Recommended)**
+
+The project uses a **unified server architecture** where a single Express server handles both API routes and serves the React webapp:
+
+```
+┌─────────────────────────────────────┐
+│         Express Server               │
+│         Port 3000                   │
+├─────────────────────────────────────┤
+│  API Routes:                        │
+│  • /api/resume/*                    │
+│  • /api/cover-letter/*              │
+│  • /health                          │
+├─────────────────────────────────────┤
+│  Static Files:                      │
+│  • React App (/)                    │
+│  • Assets (/assets/*)               │
+│  • SPA Fallback (*)                 │
+└─────────────────────────────────────┘
+```
+
+**Benefits:**
+- ✅ **Single Port**: Everything runs on port 3000
+- ✅ **No CORS Issues**: API and webapp share the same origin
+- ✅ **Simplified Development**: One server to manage
+- ✅ **Production Ready**: Same architecture for development and production
+- ✅ **Relative URLs**: API calls use `/api/*` instead of full URLs
+
+**Usage:**
+```bash
+# Build webapp and start unified server
+pnpm start:dev
+
+# Access everything on port 3000
+# Webapp: http://localhost:3000
+# API: http://localhost:3000/api/*
+```
 
 ## 🚀 Development Workflow
 

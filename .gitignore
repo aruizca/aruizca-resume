@@ -33,3 +33,4 @@ pnpm-debug.log*
 
 # Ignore LinkedIn data
 linkedin-export/
+packages/api/temp/

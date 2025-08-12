@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { config } from '../config';
 
 export interface ResumeGenerationData {
   linkedinExportFile: File;
@@ -34,9 +35,8 @@ export const useResumeGeneration = (): UseResumeGenerationReturn => {
       formData.append('linkedinExport', data.linkedinExportFile);
       formData.append('forceRefresh', (!data.useCache).toString()); // forceRefresh is opposite of useCache
       
-      // Call the API (same origin when served together, or custom URL in development)
-      const apiUrl = ''; // Use relative URLs for unified server
-      const response = await fetch(`${apiUrl}/api/resume/generate`, {
+      // Call the API using config
+      const response = await fetch(`${config.apiBaseUrl}/api/resume/generate`, {
         method: 'POST',
         body: formData,
       });
