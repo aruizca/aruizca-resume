@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Web application for resume and cover letter generation",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "test": "vitest",
+    "build:check": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "dependencies": {

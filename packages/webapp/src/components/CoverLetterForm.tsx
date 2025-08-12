@@ -17,7 +17,7 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import type { CoverLetterFormData } from '../App'
+import type { CoverLetterFormData } from '../hooks/useCoverLetterGeneration'
 
 interface CoverLetterFormProps {
   onSubmit: (data: CoverLetterFormData) => void
@@ -70,7 +70,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
     }
 
     setUploadError('')
-    setFormData(prev => ({ ...prev, resumeFile: file }))
+    setFormData((prev: CoverLetterFormData) => ({ ...prev, resumeFile: file }))
   }
 
   const handleDrag = (e: React.DragEvent) => {
@@ -196,7 +196,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
             type="url"
             placeholder="https://example.com/job-posting"
             value={formData.jobUrl}
-            onChange={(e) => setFormData(prev => ({ ...prev, jobUrl: e.target.value }))}
+            onChange={(e) => setFormData((prev: CoverLetterFormData) => ({ ...prev, jobUrl: e.target.value }))}
           />
           <FormHelperText>
             Enter the URL of the job posting you're applying for
@@ -212,7 +212,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
             max={1000}
             value={formData.wordCount}
             onChange={(_, valueAsNumber) => 
-              setFormData(prev => ({ ...prev, wordCount: valueAsNumber }))
+              setFormData((prev: CoverLetterFormData) => ({ ...prev, wordCount: valueAsNumber }))
             }
           >
             <NumberInputField />
@@ -233,7 +233,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
             placeholder="Any specific points you'd like to emphasize or tone adjustments..."
             value={formData.additionalConsiderations}
             onChange={(e) => 
-              setFormData(prev => ({ ...prev, additionalConsiderations: e.target.value }))
+              setFormData((prev: CoverLetterFormData) => ({ ...prev, additionalConsiderations: e.target.value }))
             }
             rows={4}
           />
@@ -246,7 +246,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
         <Box bg="gray.50" p={4} borderRadius="md" border="1px solid" borderColor="gray.200">
           <Checkbox
             isChecked={formData.useCache}
-            onChange={(e) => setFormData(prev => ({ ...prev, useCache: e.target.checked }))}
+            onChange={(e) => setFormData((prev: CoverLetterFormData) => ({ ...prev, useCache: e.target.checked }))}
             colorScheme="brand"
           >
             <Text fontSize="sm" fontWeight="medium">

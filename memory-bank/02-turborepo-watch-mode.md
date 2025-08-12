@@ -126,7 +126,7 @@ Replace the current multiple watch processes (using `concurrently`) with Turbore
    - Add troubleshooting section
 
 2. **Clean Up Old Code**
-   - Remove `concurrently` dependency if no longer needed
+   - **Remove unused `concurrently` dependency** from root package.json (leftover from CLI cleanup)
    - Clean up old watch scripts
    - Update package.json dependencies
 

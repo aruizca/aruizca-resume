@@ -3,27 +3,25 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Core resume and cover letter generation functionality",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "main": "dist/index.js",
   "types": "dist/main/index.d.ts",
   "scripts": {
     "build": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi",
-    "build:lib": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse",
-    "build:watch": "tsc && esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch",
-    "dev": "npm run build:watch",
+    "build:check": "tsc --noEmit",
+    "build:watch": "esbuild src/main/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --external:@langchain/* --external:openai --external:papaparse --external:playwright --external:chromium-bidi --watch",
     "test": "vitest run",
-    "test:unit": "vitest run src/test/unit",
-    "test:watch": "vitest",
-    "test:watch:unit": "vitest src/test/unit",
-    "clean": "rm -rf dist",
-    "lint": "echo 'Linting not configured yet'"
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@jsonresume/schema": "^1.2.1",
     "@langchain/core": "^0.3.66",
     "@langchain/openai": "^0.6.3",
     "ajv": "^8.17.1",
-    "jszip": "^3.10.1",
     "jsonresume-theme-even": "^0.23.0",
+    "jszip": "^3.10.1",
     "langchain": "^0.3.30",
     "papaparse": "^5.5.3",
     "playwright": "^1.54.2"
@@ -31,8 +29,8 @@
   "devDependencies": {
     "@types/node": "^24.2.0",
     "@types/papaparse": "^5.3.16",
+    "esbuild": "^0.25.8",
     "typescript": "^5.0.0",
-    "vitest": "^1.0.0",
-    "esbuild": "^0.21.5"
+    "vitest": "^3.2.4"
   }
-} 
+}

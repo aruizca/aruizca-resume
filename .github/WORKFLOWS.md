@@ -1,5 +1,7 @@
 # GitHub Actions Workflows
 
+> **Note**: This documentation is also available in the [Actions tab](https://github.com/aruizca/aruizca-resume/actions) of the repository.
+
 This directory contains GitHub Actions workflows for automated testing, security scanning, and dependency management.
 
 ## Workflows
