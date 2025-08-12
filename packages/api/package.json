@@ -11,8 +11,6 @@
     "build": "tsc",
     "build:check": "tsc --noEmit",
     "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js",
-    "test": "echo \"No tests specified\" && exit 0",
     "clean": "rm -rf dist"
   },
   "dependencies": {

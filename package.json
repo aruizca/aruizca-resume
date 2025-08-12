@@ -14,11 +14,7 @@
     "build:check": "turbo run build:check",
     "dev": "turbo run dev --parallel",
     "watch": "turbo watch build:watch dev",
-    "dev:core": "pnpm --filter @aruizca-resume/core run build:watch",
-    "dev:webapp": "pnpm --filter @aruizca-resume/webapp run dev",
-    "dev:api": "pnpm --filter @aruizca-resume/api run dev",
-    "start:dev": "pnpm --filter @aruizca-resume/webapp run build && pnpm --filter @aruizca-resume/api run dev",
-    "start": "pnpm build && pnpm --filter @aruizca-resume/api run start",
+
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean"

@@ -10,8 +10,6 @@
     "dev": "vite",
     "build": "vite build",
     "build:check": "tsc --noEmit",
-    "preview": "vite preview",
-    "test": "echo 'No tests configured for webapp package' && exit 0",
     "clean": "rm -rf dist"
   },
   "dependencies": {
