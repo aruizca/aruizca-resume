@@ -187,10 +187,10 @@ export function CoverLetterDisplay({
     setIsDownloading(true)
     
     try {
-      console.log('📄 Generating PDF from preview content...');
+      console.log('📄 Generating PDF directly using core exporter...');
       
-      // First generate HTML from the markdown content
-      const htmlResponse = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/html`, {
+      // Generate PDF directly using the core exporter (with font fixes)
+      const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -219,24 +219,6 @@ export function CoverLetterDisplay({
               focusAreas: []
             }
           }
-        }),
-      });
-
-      if (!htmlResponse.ok) {
-        const errorData = await htmlResponse.json();
-        throw new Error(errorData.error || `HTML generation failed: ${htmlResponse.status}`);
-      }
-
-      const html = await htmlResponse.text();
-
-      // Then convert the HTML to PDF
-      const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/html-to-pdf`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          html: html
         }),
       });
 

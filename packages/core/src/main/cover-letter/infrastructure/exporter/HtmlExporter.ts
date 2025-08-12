@@ -1,11 +1,10 @@
 import { CoverLetter } from '../../domain';
-import { ICoverLetterHtmlExporter } from '../../domain/services/ICoverLetterExporter';
 
 /**
  * HTML exporter that transforms cover letters to HTML format
  * Generates clean, professional HTML suitable for PDF conversion
  */
-export class CoverLetterHtmlExporter implements ICoverLetterHtmlExporter {
+export class CoverLetterHtmlExporter {
   /**
    * Export a cover letter to HTML string
    * @param coverLetter The cover letter to export

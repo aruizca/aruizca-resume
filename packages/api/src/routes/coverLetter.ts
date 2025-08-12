@@ -183,48 +183,7 @@ router.post('/export/html', async (req, res, next) => {
   }
 });
 
-/**
- * POST /api/cover-letter/export/html-to-pdf
- * Export HTML content directly to PDF format (bypasses business letter template)
- */
-router.post('/export/html-to-pdf', async (req, res, next) => {
-  try {
-    const { html } = req.body;
-    
-    if (!html) {
-      return res.status(400).json({
-        error: 'No HTML content provided',
-        message: 'Please provide html content in the request body'
-      });
-    }
 
-    console.log(`📄 Converting HTML directly to PDF...`);
-
-    try {
-      // Use the shared PlaywrightPdfGenerator directly to convert HTML to PDF
-      const { PlaywrightPdfGenerator } = await import('@aruizca-resume/core');
-      const pdfGenerator = new PlaywrightPdfGenerator();
-      
-      const pdfBuffer = await pdfGenerator.generateFromHtml(html, undefined, 'cover-letter-preview');
-      
-      const filename = `cover-letter-${new Date().toISOString().split('T')[0]}.pdf`;
-      
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.send(pdfBuffer);
-      
-    } catch (exportError) {
-      console.error('HTML to PDF conversion error:', exportError);
-      res.status(500).json({
-        error: 'PDF conversion failed',
-        message: exportError instanceof Error ? exportError.message : 'Unknown conversion error'
-      });
-    }
-    
-  } catch (error) {
-    next(error);
-  }
-});
 
 /**
  * POST /api/cover-letter/export/pdf

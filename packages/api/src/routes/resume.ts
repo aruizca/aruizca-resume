@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { ResumeGenerator, ExporterFactory } from '@aruizca-resume/core';
+import { ResumeGenerator } from '@aruizca-resume/core';
 import { validateResumeRequest } from '../middleware/validation.js';
 import { ResumeHtmlExporter, ResumePdfExporter } from '@aruizca-resume/core';
 
@@ -42,8 +42,7 @@ const upload = multer({
   }
 });
 
-// Get exporter factory instance
-const exporterFactory = ExporterFactory.getInstance();
+
 
 /**
  * POST /api/resume/generate
