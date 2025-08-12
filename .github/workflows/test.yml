@@ -44,7 +44,7 @@ jobs:
       run: pnpm run build
 
     - name: Check for TypeScript errors
-      run: npx tsc --noEmit
+      run: pnpm exec tsc --noEmit
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -81,7 +81,7 @@ jobs:
       run: pnpm install --frozen-lockfile
 
     - name: Check TypeScript compilation
-      run: npx tsc --noEmit
+      run: pnpm exec tsc --noEmit
 
     - name: Check for unused dependencies
       run: npx depcheck --ignores="@types/*,vitest" || true
