@@ -99,7 +99,7 @@ interface CoverLetterDisplayProps {
 export function CoverLetterDisplay({ 
   coverLetter, 
   isGenerating, 
-  wordCount = 300 
+  wordCount = 250 
 }: CoverLetterDisplayProps) {
   const [isDownloading, setIsDownloading] = useState(false)
   const toast = useToast()
