@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Alert,
   AlertIcon,
@@ -12,6 +12,7 @@ import {
   Input,
   Text,
   VStack,
+  useToast,
 } from '@chakra-ui/react'
 
 interface ResumeGenerationFormProps {
@@ -24,6 +25,20 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
   const [dragActive, setDragActive] = useState(false)
   const [uploadError, setUploadError] = useState<string>('')
   const [useCache, setUseCache] = useState<boolean>(true)
+  const toast = useToast()
+
+  // Show warning toast when generation starts
+  useEffect(() => {
+    if (isGenerating) {
+      toast({
+        title: 'Processing Started',
+        description: 'This may take 30-60 seconds as we parse your LinkedIn data and enhance it with AI...',
+        status: 'warning',
+        duration: 60000, // 60 seconds to match the expected processing time
+        isClosable: true,
+      })
+    }
+  }, [isGenerating, toast])
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -223,14 +238,6 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
           🚀 Generate JSON Resume from LinkedIn Data
           {!useCache && " (Fresh)"}
         </Button>
-        
-        {isGenerating && (
-          <Box bg="yellow.50" p={4} borderRadius="md" border="1px solid" borderColor="yellow.200">
-            <Text fontSize="sm" color="yellow.800" textAlign="center">
-              ⏳ This may take 30-60 seconds as we parse your LinkedIn data and enhance it with AI...
-            </Text>
-          </Box>
-        )}
       </VStack>
     </form>
   )
