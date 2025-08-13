@@ -12,6 +12,9 @@ output/
 .cache/
 .turbo/
 
+# TypeScript build info
+*.tsbuildinfo
+
 # IDE and editor files
 .vscode/
 .idea/
