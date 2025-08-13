@@ -67,7 +67,6 @@ export class CoverLetterPdfExporter {
           .cover-letter-content {
             max-width: 21cm !important;
             margin: 0 auto !important;
-            padding: 2.54cm !important;
             background: white !important;
           }
           
