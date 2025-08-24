@@ -19,7 +19,8 @@ import {
 } from '@chakra-ui/react'
 import { CopyIcon } from '@chakra-ui/icons'
 import { FaFilePdf, FaFileAlt } from 'react-icons/fa'
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { config } from '../config'
 
 interface CoverLetterCodeBlockProps {
   content: string
@@ -97,36 +98,88 @@ interface CoverLetterDisplayProps {
 export function CoverLetterDisplay({ 
   coverLetter, 
   isGenerating, 
-  wordCount = 300 
+  wordCount = 250 
 }: CoverLetterDisplayProps) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const [renderedHtml, setRenderedHtml] = useState('')
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false)
   const toast = useToast()
 
-  // Convert markdown to clean HTML for professional display
-  const renderMarkdownAsHtml = (markdown: string) => {
-    if (!markdown) return ''
+  // Fetch formatted HTML from the API for preview
+  const fetchFormattedHtml = async (coverLetterText: string) => {
+    if (!coverLetterText) return ''
     
-    return markdown
-      // Remove markdown code block syntax
-      .replace(/```[a-z]*\n?/g, '')
-      .replace(/```/g, '')
-      // Headers
-      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-      // Bold
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Italic  
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      // Convert double line breaks to paragraphs
-      .replace(/\n\n/g, '</p><p>')
-      // Convert single line breaks to spaces (for professional formatting)
-      .replace(/\n/g, ' ')
-      // Wrap in paragraph tags
-      .replace(/^(.*)$/, '<p>$1</p>')
-      // Clean up empty paragraphs
-      .replace(/<p><\/p>/g, '')
-  }
+    setIsLoadingPreview(true)
+    try {
+      console.log('📡 Fetching formatted HTML for:', coverLetterText.substring(0, 100) + '...');
+      console.log('🌐 API URL:', `${config.apiBaseUrl}/api/cover-letter/export/html`);
+      const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/html`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          coverLetter: {
+            jobOffer: {
+              title: "Software Engineer",
+              company: "Company",
+              url: "https://example.com",
+              description: "",
+              requirements: [],
+              location: "Location"
+            },
+            userProfile: {
+              profile: [],
+              positions: [],
+              education: [],
+              skills: []
+            },
+            content: coverLetterText,
+            generatedAt: new Date().toISOString(),
+            metadata: { 
+              wordCount,
+              tone: "professional",
+              focusAreas: []
+            }
+          }
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const html = await response.text();
+      return html;
+    } catch (error) {
+      console.error('Failed to fetch formatted HTML:', error);
+      toast({
+        title: 'Preview generation failed',
+        description: 'Failed to generate formatted preview. Showing raw markdown.',
+        status: 'warning',
+        duration: 4000,
+        isClosable: true,
+      });
+      return '';
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
+  // Update rendered HTML when cover letter changes
+  useEffect(() => {
+    if (coverLetter) {
+      console.log('🔄 Cover letter changed, fetching formatted HTML...');
+      fetchFormattedHtml(coverLetter).then(html => {
+        console.log('✅ HTML fetched successfully, length:', html.length);
+        setRenderedHtml(html);
+      }).catch(error => {
+        console.error('❌ Error setting rendered HTML:', error);
+      });
+    }
+  }, [coverLetter]); // Remove wordCount dependency
+
+
 
 
 
@@ -134,81 +187,38 @@ export function CoverLetterDisplay({
     setIsDownloading(true)
     
     try {
-      console.log('📄 Generating PDF from preview content...');
+      console.log('📄 Generating PDF directly using core exporter...');
       
-      // Generate the same HTML that's shown in the preview
-      const renderedHtml = renderMarkdownAsHtml(coverLetter);
-      
-      // Create a complete HTML document with the same styling as the preview
-      const fullHtml = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cover Letter</title>
-    <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 8.5in;
-            margin: 0 auto;
-            padding: 1in;
-            background: white;
-        }
-        h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        h2 {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 0.75rem;
-            margin-top: 1.5rem;
-            color: #333;
-        }
-        h3 {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            margin-top: 1rem;
-            color: #333;
-        }
-        strong {
-            font-weight: bold;
-            color: #333;
-        }
-        em {
-            font-style: italic;
-        }
-        p {
-            margin-bottom: 1rem;
-            text-align: justify;
-        }
-        @media print {
-            body {
-                margin: 0;
-                padding: 0.5in;
-            }
-        }
-    </style>
-</head>
-<body>
-    ${renderedHtml}
-</body>
-</html>`;
-      
-      // Send the rendered HTML to a new endpoint that converts HTML directly to PDF
-      const response = await fetch('/api/cover-letter/export/html-to-pdf', {
+      // Generate PDF directly using the core exporter (with font fixes)
+      const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/export/pdf`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          html: fullHtml
+          coverLetter: {
+            jobOffer: {
+              title: "Software Engineer",
+              company: "Company",
+              url: "https://example.com",
+              description: "",
+              requirements: [],
+              location: "Location"
+            },
+            userProfile: {
+              profile: [],
+              positions: [],
+              education: [],
+              skills: []
+            },
+            content: coverLetter,
+            generatedAt: new Date().toISOString(),
+            metadata: { 
+              wordCount,
+              tone: "professional",
+              focusAreas: []
+            }
+          }
         }),
       });
 
@@ -333,7 +343,7 @@ export function CoverLetterDisplay({
             >
               <Box
                 dangerouslySetInnerHTML={{
-                  __html: renderMarkdownAsHtml(coverLetter)
+                  __html: renderedHtml || coverLetter
                 }}
                 sx={{
                   '& h1': {
@@ -366,6 +376,16 @@ export function CoverLetterDisplay({
                   '& p': {
                     marginBottom: '1rem',
                     textAlign: 'justify',
+                    fontSize: 'md',
+                    lineHeight: '1.6',
+                    color: 'gray.800',
+                  },
+                  '& a': {
+                    color: 'blue.500',
+                    textDecoration: 'underline',
+                  },
+                  '& a:hover': {
+                    color: 'blue.700',
                   },
                 }}
               />

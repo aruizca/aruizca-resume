@@ -12,14 +12,14 @@
     "setup": "pnpm install && pnpm install --filter=\"./packages/*\"",
     "build": "turbo run build",
     "build:check": "turbo run build:check",
-    "dev": "turbo run dev --parallel",
-    "watch": "turbo watch build:watch dev",
-
+    "dev": "concurrently \"pnpm watch\" \"pnpm --filter @aruizca-resume/api run dev\" \"pnpm --filter @aruizca-resume/webapp run dev\"",
+    "watch": "pnpm run build && turbo watch build:watch",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean"
   },
   "devDependencies": {
+    "concurrently": "^9.2.0",
     "turbo": "^2.5.5"
   }
 }

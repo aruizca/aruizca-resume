@@ -48,11 +48,12 @@
 - **Performance Optimization**: Single process instead of multiple concurrent watchers
 - **Development Experience**: Simplified commands and better error handling
 
-### 3. **Cover Letter Enhancement** 🔄 (Low Priority)
-- **Postscript Paragraph**: Improve the quality and relevance of postscript content
-- **AI Refinement**: Better AI prompts for postscript generation
-- **Context Awareness**: Tailor postscript to specific job requirements
-- **Professional Tone**: Ensure postscript maintains professional standards
+### 3. **Resume Enhancement** 🔄 (Low Priority)
+- **AI Refinement**: Better AI prompts for resume generation
+- **Context Awareness**: Tailor resume content to specific job requirements and company culture
+- **Professional Tone**: Ensure resume maintains professional standards
+- **Content Optimization**: Improve resume structure and impact
+- **A/B Testing**: Test different AI prompt variations for optimal results
 
 ### 4. **Dependency Management** 🔄 (High Priority)
 - **Fixed Version Policy**: Remove all caret ranges (`^`) from dependencies

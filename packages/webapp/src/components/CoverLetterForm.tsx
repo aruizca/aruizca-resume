@@ -28,7 +28,7 @@ export function CoverLetterForm({ onSubmit, isGenerating }: CoverLetterFormProps
   const [formData, setFormData] = useState<CoverLetterFormData>({
     resumeFile: null,
     jobUrl: '',
-    wordCount: 300,
+    wordCount: 250,
     additionalConsiderations: '',
     useCache: true,
   })

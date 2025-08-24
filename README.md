@@ -58,23 +58,66 @@ cp env.sample .env
 
 3. **Start development servers**:
 ```bash
-# Start all services with intelligent file watching
-pnpm watch
+# Unified development with auto-watching (recommended)
+pnpm dev           # Watches core package + runs API + webapp concurrently
 
-# Or start individual services
-pnpm dev:webapp    # React web interface
-pnpm dev:api       # REST API server
-pnpm dev:core      # Core package in watch mode
-
-# Traditional parallel development (without file watching)
-pnpm dev
+# Or start individual services manually
+pnpm watch         # Watch core package for changes
+pnpm --filter @aruizca-resume/api run dev      # API server on port 3001
+pnpm --filter @aruizca-resume/webapp run dev   # Webapp on port 3000
 ```
 
 4. **Access the application**:
-- **Full-Stack Server**: http://localhost:3001 (API + Webapp)
-- **Development Server**: http://localhost:3000 (Webapp only, hot-reload)
+- **Webapp**: http://localhost:3000 (React interface with hot-reload)
 - **API Endpoints**: http://localhost:3001/api/* (REST API)
 - **Health Check**: http://localhost:3001/health
+
+## 🏗️ Server Architecture
+
+### **Development Setup (Current)**
+
+The project uses a **separated development architecture** for optimal development experience:
+
+```
+┌─────────────────────────────────────┐
+│         Webapp Dev Server            │
+│         Port 3000                    │
+│     (Vite + Hot Reload)             │
+├─────────────────────────────────────┤
+│  React Interface                     │
+│  • Hot Module Replacement           │
+│  • Fast Refresh                     │
+│  • Source Maps                      │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│         API Server                   │
+│         Port 3001                    │
+│      (Express + TypeScript)         │
+├─────────────────────────────────────┤
+│  REST API Endpoints                 │
+│  • /api/resume/*                    │
+│  • /api/cover-letter/*              │
+│  • /health                          │
+└─────────────────────────────────────┘
+```
+
+**Benefits:**
+- ✅ **Fast Development**: Webapp has instant hot-reload
+- ✅ **API Independence**: API server can restart without affecting webapp
+- ✅ **Port Separation**: No conflicts between dev servers
+- ✅ **Core Package Watching**: Automatic rebuilding when core changes
+- ✅ **Concurrent Execution**: All services run simultaneously
+
+**Usage:**
+```bash
+# Single command starts everything with auto-watching
+pnpm dev
+
+# Access services on their respective ports
+# Webapp: http://localhost:3000
+# API: http://localhost:3001/api/*
+```
 
 ## 🚀 Development Workflow
 

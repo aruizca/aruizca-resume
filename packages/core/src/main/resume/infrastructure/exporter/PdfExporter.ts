@@ -1,12 +1,11 @@
 import { Resume } from '../../domain';
-import { IResumePdfExporter } from '../../domain/services/IJsonResumeExporter';
 import { ResumeHtmlExporter } from './HtmlExporter';
 
 /**
  * Resume-specific PDF exporter with custom layout optimizations
  * Uses the HtmlExporter (jsonresume-theme-even) and applies CSS overrides for A4 printing
  */
-export class ResumePdfExporter implements IResumePdfExporter {
+export class ResumePdfExporter {
   private htmlExporter: ResumeHtmlExporter;
 
   constructor() {

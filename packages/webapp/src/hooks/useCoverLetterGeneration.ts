@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createMockCoverLetter } from '../utils/mockData';
+import { config } from '../config';
 
 export interface CoverLetterFormData {
   resumeFile: File | null;
@@ -45,8 +46,7 @@ export const useCoverLetterGeneration = (): UseCoverLetterGenerationReturn => {
       const resumeJson = JSON.parse(resumeText);
       
       // Call the real API
-      const apiUrl = ''; // Use relative URLs for unified server
-      const response = await fetch(`${apiUrl}/api/cover-letter/generate`, {
+      const response = await fetch(`${config.apiBaseUrl}/api/cover-letter/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

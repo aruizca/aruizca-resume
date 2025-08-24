@@ -12,6 +12,9 @@ output/
 .cache/
 .turbo/
 
+# TypeScript build info
+*.tsbuildinfo
+
 # IDE and editor files
 .vscode/
 .idea/
@@ -33,3 +36,4 @@ pnpm-debug.log*
 
 # Ignore LinkedIn data
 linkedin-export/
+packages/api/temp/
