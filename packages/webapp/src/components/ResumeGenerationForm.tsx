@@ -34,7 +34,7 @@ export function ResumeGenerationForm({ onSubmit, isGenerating }: ResumeGeneratio
         title: 'Processing Started',
         description: 'This may take 30-60 seconds as we parse your LinkedIn data and enhance it with AI...',
         status: 'warning',
-        duration: 60000, // 60 seconds to match the expected processing time
+        duration: 10000, // 10 seconds as requested
         isClosable: true,
       })
     }
